@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:todo_refactor/provider/auth_provider.dart';
 import 'package:todo_refactor/views/authentication/login_view.dart';
 import 'package:todo_refactor/views/home/personal_profile_view.dart';
 import 'package:todo_refactor/views/home/tasks_all_view.dart';
@@ -30,8 +32,9 @@ class _HomeViewState extends State<HomeView> {
                     ))),
             onDestinationSelected: (index) {
               if (index == 4) {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => const LoginView()));
+                // Navigator.push(context,
+                //     MaterialPageRoute(builder: (context) => const LoginView()));
+                Provider.of<AuthProvider>(context, listen: false).signOut();
               }
             },
             destinations: [

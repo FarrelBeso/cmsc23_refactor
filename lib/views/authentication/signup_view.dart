@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:string_validator/string_validator.dart';
+import 'package:todo_refactor/model/user_model.dart';
+import 'package:todo_refactor/provider/auth_provider.dart';
 import 'package:todo_refactor/views/authentication/login_view.dart';
 
 class SignupView extends StatefulWidget {
@@ -53,6 +56,8 @@ class _SignupViewState extends State<SignupView> {
                       });
                     } else {
                       print('Sign in');
+                      Provider.of<AuthProvider>(context, listen: false)
+                          .signIn(setNewUser(), passwordfield.text);
                     }
                   }
                 },
@@ -86,16 +91,16 @@ class _SignupViewState extends State<SignupView> {
     }
   }
 
-  // // set the user based on the forms
-  // UserModel setNewUser() {
-  //   return UserModel(
-  //       firstName: firstnamefield.text,
-  //       lastName: lastnamefield.text,
-  //       username: usernamefield.text,
-  //       birthday: DateTime.parse(birthdayfield.text),
-  //       location: locationfield.text,
-  //       email: emailfield.text);
-  // }
+  // set the user based on the forms
+  UserModel setNewUser() {
+    return UserModel(
+        firstName: firstnamefield.text,
+        lastName: lastnamefield.text,
+        username: usernamefield.text,
+        birthday: DateTime.parse(birthdayfield.text),
+        location: locationfield.text,
+        email: emailfield.text);
+  }
 
   // other components
   // buttons

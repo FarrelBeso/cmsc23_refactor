@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:todo_refactor/provider/auth_provider.dart';
 import 'package:todo_refactor/views/authentication/signup_view.dart';
 
 class LoginView extends StatefulWidget {
@@ -65,7 +67,8 @@ class _LoginViewState extends State<LoginView> {
               ElevatedButton(
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
-                      print('Login');
+                      Provider.of<AuthProvider>(context, listen: false)
+                          .login(emailcontroller.text, passwordcontroller.text);
                     }
                   },
                   child: Padding(
