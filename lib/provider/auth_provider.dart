@@ -24,7 +24,7 @@ class AuthProvider extends ChangeNotifier {
       return ResponseModel(success: true, message: 'Successfully signed in');
     } on FirebaseAuthException catch (e) {
       if (e.code == 'email-already-in-use') {
-        return ResponseModel(success: false, message: 'Email already in use.');
+        return ResponseModel(success: false, message: 'Email already in use');
       }
     } catch (e) {
       print(e);
