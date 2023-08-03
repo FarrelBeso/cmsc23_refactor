@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:todo_refactor/model/response_model.dart';
 import 'package:todo_refactor/provider/auth_provider.dart';
 import 'package:todo_refactor/views/authentication/login_view.dart';
 import 'package:todo_refactor/views/home/personal_profile_view.dart';
@@ -30,11 +31,19 @@ class _HomeViewState extends State<HomeView> {
                     icon: Icon(
                       Icons.menu,
                     ))),
-            onDestinationSelected: (index) {
+            onDestinationSelected: (index) async {
               if (index == 4) {
                 // Navigator.push(context,
                 //     MaterialPageRoute(builder: (context) => const LoginView()));
-                Provider.of<AuthProvider>(context, listen: false).signOut();
+                ResponseModel response =
+                    await Provider.of<AuthProvider>(context, listen: false)
+                        .signOut();
+                // put the message in a snackbar
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text(response.message ??
+                        (response.success
+                            ? 'Operation successful'
+                            : 'Operation failed'))));
               }
             },
             destinations: [

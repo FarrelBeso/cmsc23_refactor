@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:todo_refactor/model/response_model.dart';
 import 'package:todo_refactor/provider/auth_provider.dart';
 import 'package:todo_refactor/views/authentication/signup_view.dart';
 
@@ -63,10 +64,19 @@ class _LoginViewState extends State<LoginView> {
               height: 20,
             ),
             ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   if (_formKey.currentState!.validate()) {
-                    Provider.of<AuthProvider>(context, listen: false)
-                        .login(emailcontroller.text, passwordcontroller.text);
+                    // get the result
+                    ResponseModel response =
+                        await Provider.of<AuthProvider>(context, listen: false)
+                            .login(
+                                emailcontroller.text, passwordcontroller.text);
+                    // put the message in a snackbar
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text(response.message ??
+                            (response.success
+                                ? 'Operation successful'
+                                : 'Operation failed'))));
                   }
                 },
                 child: Padding(

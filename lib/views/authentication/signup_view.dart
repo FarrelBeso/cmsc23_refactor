@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:string_validator/string_validator.dart';
+import 'package:todo_refactor/model/response_model.dart';
 import 'package:todo_refactor/model/user_model.dart';
 import 'package:todo_refactor/provider/auth_provider.dart';
 import 'package:todo_refactor/views/authentication/login_view.dart';
@@ -44,7 +45,7 @@ class _SignupViewState extends State<SignupView> {
                 });
               }
             },
-            onStepContinue: () {
+            onStepContinue: () async {
               if ((_sectionIndex < _sectionlength) &&
                   verifySection(_sectionIndex)) {
                 if (_sectionIndex < _sectionlength - 1) {
@@ -52,9 +53,16 @@ class _SignupViewState extends State<SignupView> {
                     _sectionIndex += 1;
                   });
                 } else {
-                  print('Sign in');
-                  Provider.of<AuthProvider>(context, listen: false)
-                      .signIn(setNewUser(), passwordfield.text);
+                  ResponseModel response =
+                      await Provider.of<AuthProvider>(context, listen: false)
+                          .signIn(setNewUser(), passwordfield.text);
+
+                  // put the message in a snackbar
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: Text(response.message ??
+                          (response.success
+                              ? 'Operation successful'
+                              : 'Operation failed'))));
                 }
               }
             },
