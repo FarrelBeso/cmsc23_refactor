@@ -18,6 +18,7 @@ class _AuthViewState extends State<AuthView> {
       body: Container(
         padding: EdgeInsets.all(60),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             // login or signup form?
             formWidget(),
@@ -41,7 +42,7 @@ class _AuthViewState extends State<AuthView> {
           });
         },
         child: Text(
-          isLogin ? 'Create new account' : 'Sign in',
+          isLogin ? 'Create new account' : 'Back to Login',
           style: TextStyle(decoration: TextDecoration.underline),
         ));
   }
