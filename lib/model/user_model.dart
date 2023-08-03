@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class UserModel {
   // required objects are required from forms
   String? id;
@@ -40,5 +42,46 @@ class UserModel {
         biography: other.biography ?? biography,
         friendIds: other.friendIds ?? friendIds,
         taskOwnIds: other.taskOwnIds ?? taskOwnIds);
+  }
+
+  // convert to firestore
+  Map<String, dynamic> toFirestore() {
+    return {
+      if (id != null) "id": id,
+      if (firstName != null) "firstName": firstName,
+      if (lastName != null) "lastName": lastName,
+      if (username != null) "username": username,
+      if (email != null) "email": email,
+      if (birthday != null) "birthday": birthday,
+      if (location != null) "location": location,
+      // optional
+      if (biography != null) "biography": biography,
+      if (friendIds != null) "friendIds": friendIds,
+      if (taskOwnIds != null) "taskOwnIds": taskOwnIds,
+    };
+  }
+
+  // convert from firestore
+  factory UserModel.fromFirestore(
+    DocumentSnapshot<Map<String, dynamic>> snapshot,
+    SnapshotOptions? options,
+  ) {
+    final data = snapshot.data();
+    return UserModel(
+      id: data?['id'],
+      firstName: data?['firstName'],
+      lastName: data?['lastName'],
+      username: data?['username'],
+      email: data?['email'],
+      birthday: data?['birthday'],
+      location: data?['location'],
+      // optional
+      biography: data?['biography'],
+      friendIds:
+          data?['friendIds'] is Iterable ? List.from(data?['friendIds']) : null,
+      taskOwnIds: data?['taskOwnIds'] is Iterable
+          ? List.from(data?['taskOwnIds'])
+          : null,
+    );
   }
 }
