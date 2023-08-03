@@ -66,17 +66,13 @@ class _LoginViewState extends State<LoginView> {
             ElevatedButton(
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
-                    // get the result
                     ResponseModel response =
-                        await Provider.of<AuthProvider>(context, listen: false)
-                            .login(
-                                emailcontroller.text, passwordcontroller.text);
-                    // put the message in a snackbar
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        content: Text(response.message ??
-                            (response.success
-                                ? 'Operation successful'
-                                : 'Operation failed'))));
+                        await Provider.of<AuthProvider>(context).loginWrapper(
+                            emailcontroller.text, passwordcontroller.text);
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(response.message!)));
+                    }
                   }
                 },
                 child: Padding(

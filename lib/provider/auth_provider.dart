@@ -20,9 +20,7 @@ class AuthProvider extends ChangeNotifier {
   Future<ResponseModel> signIn(UserModel user, String password) async {
     try {
       await AuthAPI().signIn(user, password);
-      // set to user here
-      currentuser = await AuthAPI().getCurrentUser();
-      setUser(currentuser!);
+
       return ResponseModel(success: true, message: 'Successfully signed in');
     } on FirebaseAuthException catch (e) {
       if (e.code == 'email-already-in-use') {
@@ -37,9 +35,7 @@ class AuthProvider extends ChangeNotifier {
   Future<ResponseModel> login(String email, String password) async {
     try {
       await AuthAPI().login(email, password);
-      // set to current user here
-      currentuser = await AuthAPI().getCurrentUser();
-      setUser(currentuser!);
+
       return ResponseModel(success: true, message: 'Successfully logged in');
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
@@ -57,12 +53,59 @@ class AuthProvider extends ChangeNotifier {
   Future<ResponseModel> signOut() async {
     try {
       await AuthAPI().signOut();
-      // remove the current user here
-      removeUser();
+
       return ResponseModel(success: true, message: 'Successfully signed out');
     } catch (e) {
       print(e);
     }
     return ResponseModel(success: false, message: 'Unknown sign out error');
+  }
+
+  Future<ResponseModel> fetchCurrentUser() async {
+    if (AuthAPI().currentUser == null) {
+      return ResponseModel(
+          success: false, message: 'Failed to fetch current user');
+    } else {
+      return ResponseModel(
+          success: true, content: await AuthAPI().getCurrentUser());
+    }
+  }
+
+  // wrapper functions
+  Future<ResponseModel> loginWrapper(String email, String password) async {
+    ResponseModel response;
+    // try to login first
+    response = await login(email, password);
+    if (!response.success) return response;
+    // attempt to put to current user
+    response = await fetchCurrentUser();
+    if (!response.success) return response;
+    // successfully return
+    setUser(response.content);
+    return ResponseModel(success: true, message: 'Login successful');
+  }
+
+  Future<ResponseModel> signUpWrapper(
+      UserModel usermodel, String password) async {
+    ResponseModel response;
+    // try to signup first
+    response = await signIn(usermodel, password);
+    if (!response.success) return response;
+    // attempt to put to current user
+    response = await fetchCurrentUser();
+    if (!response.success) return response;
+    // successfully return
+    setUser(response.content);
+    return ResponseModel(success: true, message: 'Sign up successful');
+  }
+
+  Future<ResponseModel> signOutWrapper() async {
+    ResponseModel response;
+    // try to logout first
+    response = await signOut();
+    if (!response.success) return response;
+    // then remove the user
+    removeUser();
+    return ResponseModel(success: true, message: 'Successfully signed out');
   }
 }

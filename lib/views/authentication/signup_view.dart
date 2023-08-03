@@ -55,14 +55,12 @@ class _SignupViewState extends State<SignupView> {
                 } else {
                   ResponseModel response =
                       await Provider.of<AuthProvider>(context, listen: false)
-                          .signIn(setNewUser(), passwordfield.text);
+                          .signInWrapper(setNewUser(), passwordfield.text);
 
-                  // put the message in a snackbar
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content: Text(response.message ??
-                          (response.success
-                              ? 'Operation successful'
-                              : 'Operation failed'))));
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(response.message!)));
+                  }
                 }
               }
             },

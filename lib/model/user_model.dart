@@ -52,7 +52,7 @@ class UserModel {
       if (lastName != null) "lastName": lastName,
       if (username != null) "username": username,
       if (email != null) "email": email,
-      if (birthday != null) "birthday": birthday,
+      if (birthday != null) "birthday": Timestamp.fromDate(birthday!),
       if (location != null) "location": location,
       // optional
       if (biography != null) "biography": biography,
@@ -73,7 +73,7 @@ class UserModel {
       lastName: data?['lastName'],
       username: data?['username'],
       email: data?['email'],
-      birthday: data?['birthday'],
+      birthday: data?['birthday'].toDate(),
       location: data?['location'],
       // optional
       biography: data?['biography'],

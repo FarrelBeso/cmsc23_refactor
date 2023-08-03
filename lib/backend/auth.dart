@@ -43,7 +43,7 @@ class AuthAPI {
     String id = currentUser!.uid;
     final docRef = db.collection("users").doc(id).withConverter(
         fromFirestore: UserModel.fromFirestore,
-        toFirestore: (UserModel model, options) => model.toFirestore());
+        toFirestore: (UserModel model, _) => model.toFirestore());
     final docSnap = await docRef.get();
     final usermodel = docSnap.data();
     return usermodel;
