@@ -67,8 +67,9 @@ class _LoginViewState extends State<LoginView> {
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     ResponseModel response =
-                        await Provider.of<AuthProvider>(context).loginWrapper(
-                            emailcontroller.text, passwordcontroller.text);
+                        await Provider.of<AuthProvider>(context, listen: false)
+                            .loginWrapper(
+                                emailcontroller.text, passwordcontroller.text);
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text(response.message!)));

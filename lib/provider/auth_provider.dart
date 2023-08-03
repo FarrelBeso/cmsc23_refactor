@@ -85,7 +85,7 @@ class AuthProvider extends ChangeNotifier {
     return ResponseModel(success: true, message: 'Login successful');
   }
 
-  Future<ResponseModel> signUpWrapper(
+  Future<ResponseModel> signInWrapper(
       UserModel usermodel, String password) async {
     ResponseModel response;
     // try to signup first
