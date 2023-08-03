@@ -78,17 +78,6 @@ class _LoginViewState extends State<LoginView> {
                       style: TextStyle(fontSize: 20),
                     ),
                   )),
-              TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const SignupView()));
-                  },
-                  child: Text(
-                    'Create new account',
-                    style: TextStyle(decoration: TextDecoration.underline),
-                  ))
             ],
           ),
         ),

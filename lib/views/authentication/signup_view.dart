@@ -32,48 +32,42 @@ class _SignupViewState extends State<SignupView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        padding: EdgeInsets.all(60),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Stepper(
-                currentStep: _sectionIndex,
-                onStepCancel: () {
-                  if ((_sectionIndex > 0)) {
-                    setState(() {
-                      _sectionIndex -= 1;
-                    });
-                  }
-                },
-                onStepContinue: () {
-                  if ((_sectionIndex < _sectionlength) &&
-                      verifySection(_sectionIndex)) {
-                    if (_sectionIndex < _sectionlength - 1) {
-                      setState(() {
-                        _sectionIndex += 1;
-                      });
-                    } else {
-                      print('Sign in');
-                      Provider.of<AuthProvider>(context, listen: false)
-                          .signIn(setNewUser(), passwordfield.text);
-                    }
-                  }
-                },
-                steps: <Step>[
-                  Step(title: Text('Basic Info'), content: basicInfoSection()),
-                  Step(
-                      title: Text('Additional Info'),
-                      content: additionalInfoSection()),
-                  Step(
-                      title: Text('Authentication'),
-                      content: authenticationSection()),
-                ]),
-            goBackButton()
-          ],
-        ),
-      ),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Stepper(
+            currentStep: _sectionIndex,
+            onStepCancel: () {
+              if ((_sectionIndex > 0)) {
+                setState(() {
+                  _sectionIndex -= 1;
+                });
+              }
+            },
+            onStepContinue: () {
+              if ((_sectionIndex < _sectionlength) &&
+                  verifySection(_sectionIndex)) {
+                if (_sectionIndex < _sectionlength - 1) {
+                  setState(() {
+                    _sectionIndex += 1;
+                  });
+                } else {
+                  print('Sign in');
+                  Provider.of<AuthProvider>(context, listen: false)
+                      .signIn(setNewUser(), passwordfield.text);
+                }
+              }
+            },
+            steps: <Step>[
+              Step(title: Text('Basic Info'), content: basicInfoSection()),
+              Step(
+                  title: Text('Additional Info'),
+                  content: additionalInfoSection()),
+              Step(
+                  title: Text('Authentication'),
+                  content: authenticationSection()),
+            ]),
+      ],
     );
   }
 
@@ -100,21 +94,6 @@ class _SignupViewState extends State<SignupView> {
         birthday: DateTime.parse(birthdayfield.text),
         location: locationfield.text,
         email: emailfield.text);
-  }
-
-  // other components
-  // buttons
-
-  Widget goBackButton() {
-    return TextButton(
-        onPressed: () {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => LoginView()));
-        },
-        child: Text(
-          'Go back to login',
-          style: TextStyle(decoration: TextDecoration.underline),
-        ));
   }
 
   // the widgets
