@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 
 class TaskAddView extends StatefulWidget {
   const TaskAddView({super.key});
@@ -10,6 +9,7 @@ class TaskAddView extends StatefulWidget {
 
 class _TaskAddViewState extends State<TaskAddView> {
   TaskStatus currentStatus = TaskStatus.notStarted;
+
   @override
   Widget build(BuildContext context) {
     // build the dropdown items here
@@ -81,24 +81,6 @@ class _TaskAddViewState extends State<TaskAddView> {
                             ],
                           ),
                         ),
-                        TextButton(
-                            onPressed: () {
-                              DatePicker.showDatePicker(context,
-                                  showTitleActions: true,
-                                  minTime: DateTime.now(),
-                                  maxTime: DateTime(DateTime.now().year + 50),
-                                  onChanged: (date) {
-                                print('change $date');
-                              }, onConfirm: (date) {
-                                print('confirm $date');
-                              },
-                                  currentTime: DateTime.now(),
-                                  locale: LocaleType.en);
-                            },
-                            child: Text(
-                              'show date time picker (Chinese)',
-                              style: TextStyle(color: Colors.blue),
-                            ))
                       ],
                     ),
                   )
@@ -158,6 +140,31 @@ class _TaskAddViewState extends State<TaskAddView> {
         ),
       ),
     );
+  }
+
+  // useful functions
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        initialDatePickerMode: DatePickerMode.day,
+        firstDate: DateTime.now(),
+        lastDate: DateTime(DateTime.now().year + 50));
+    if (picked != null)
+      setState(() {
+        print(picked);
+      });
+  }
+
+  Future<void> _selectTime(BuildContext context) async {
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
+    if (picked != null)
+      setState(() {
+        print(picked);
+      });
   }
 }
 
