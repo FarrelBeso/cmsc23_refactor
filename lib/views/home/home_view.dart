@@ -5,6 +5,7 @@ import 'package:todo_refactor/model/user_model.dart';
 import 'package:todo_refactor/provider/auth_provider.dart';
 import 'package:todo_refactor/views/authentication/login_view.dart';
 import 'package:todo_refactor/views/home/personal_profile_view.dart';
+import 'package:todo_refactor/views/home/task_add.dart';
 import 'package:todo_refactor/views/home/tasks_all_view.dart';
 
 class HomeView extends StatefulWidget {
@@ -82,7 +83,11 @@ class _HomeViewState extends State<HomeView> {
         ],
       )),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          setState(() {
+            _displayWidget = TaskAddView();
+          });
+        },
         child: Icon(Icons.add),
       ),
     );
