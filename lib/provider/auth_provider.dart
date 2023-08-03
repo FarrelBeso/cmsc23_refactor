@@ -19,8 +19,10 @@ class AuthProvider extends ChangeNotifier {
 
   Future<ResponseModel> signIn(UserModel user, String password) async {
     try {
-      await AuthAPI().signIn(user.email!, password);
-      // set to current user here
+      await AuthAPI().signIn(user, password);
+      // set to user here
+      currentuser = await AuthAPI().getCurrentUser();
+      setUser(currentuser!);
       return ResponseModel(success: true, message: 'Successfully signed in');
     } on FirebaseAuthException catch (e) {
       if (e.code == 'email-already-in-use') {
@@ -36,6 +38,8 @@ class AuthProvider extends ChangeNotifier {
     try {
       await AuthAPI().login(email, password);
       // set to current user here
+      currentuser = await AuthAPI().getCurrentUser();
+      setUser(currentuser!);
       return ResponseModel(success: true, message: 'Successfully logged in');
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
@@ -54,6 +58,7 @@ class AuthProvider extends ChangeNotifier {
     try {
       await AuthAPI().signOut();
       // remove the current user here
+      removeUser();
       return ResponseModel(success: true, message: 'Successfully signed out');
     } catch (e) {
       print(e);
