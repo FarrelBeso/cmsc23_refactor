@@ -24,9 +24,9 @@ class UserModel {
       this.birthday,
       this.location,
       // optional bits
-      this.biography,
-      this.friendIds,
-      this.taskOwnIds});
+      this.biography = 'Pleasure to work with you all!',
+      this.friendIds = const [],
+      this.taskOwnIds = const []});
 
   // copying some parts
   UserModel copyWith(UserModel other) {
