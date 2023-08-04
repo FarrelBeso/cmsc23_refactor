@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:todo_refactor/backend/auth.dart';
+import 'package:todo_refactor/backend/auth_api.dart';
 import 'package:todo_refactor/model/response_model.dart';
 import 'package:todo_refactor/model/user_model.dart';
 

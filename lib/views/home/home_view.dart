@@ -81,10 +81,7 @@ class _HomeViewState extends State<HomeView> {
             backgroundColor: Theme.of(context).primaryColorLight,
           ),
           Consumer<HomepageProvider>(builder: (context, provider, child) {
-            return Container(
-                child: Provider.of<HomepageProvider>(context, listen: false)
-                    .currentView
-                    .view);
+            return Container(child: provider.currentView.view);
           })
         ],
       )),

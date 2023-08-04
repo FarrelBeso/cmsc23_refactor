@@ -1,5 +1,3 @@
-import 'dart:js_interop';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:todo_refactor/model/user_model.dart';
@@ -36,6 +34,14 @@ class AuthAPI {
             toFirestore: (UserModel model, options) => model.toFirestore())
         .doc(usermodel.id);
     await docRef.set(usermodel);
+  }
+
+  // update that the user has a new task that they made
+  Future<void> addTaskId(String userId, String taskId) async {
+    final docRef = db.collection("users").doc(userId);
+    docRef.update({
+      "taskOwnIds": FieldValue.arrayUnion([taskId])
+    });
   }
 
   Future<UserModel?> getCurrentUser() async {

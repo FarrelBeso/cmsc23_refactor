@@ -125,7 +125,8 @@ class ProfileSection extends StatelessWidget {
               Container(
                   padding: EdgeInsets.all(8),
                   alignment: Alignment.topLeft,
-                  child: Text('Sample Biography. Lorem Ipsum dolor sit amet.'))
+                  child: Text(provider.currentuser?.biography ??
+                      'No biography available.'))
             ],
           ),
         );
