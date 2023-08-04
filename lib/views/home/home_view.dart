@@ -80,7 +80,12 @@ class _HomeViewState extends State<HomeView> {
             groupAlignment: 0.0,
             backgroundColor: Theme.of(context).primaryColorLight,
           ),
-          Provider.of<HomepageProvider>(context).currentView.view
+          Consumer<HomepageProvider>(builder: (context, provider, child) {
+            return Container(
+                child: Provider.of<HomepageProvider>(context, listen: false)
+                    .currentView
+                    .view);
+          })
         ],
       )),
       // this button is only visible on task all
@@ -90,7 +95,7 @@ class _HomeViewState extends State<HomeView> {
         child: FloatingActionButton(
           onPressed: () {
             setState(() {
-              Provider.of<HomepageProvider>(context)
+              Provider.of<HomepageProvider>(context, listen: false)
                   .setView(MainPageViews.taskAdd);
             });
           },
@@ -113,6 +118,6 @@ class _HomeViewState extends State<HomeView> {
         print('Unknown view');
     }
     // update the provider
-    Provider.of<HomepageProvider>(context).setView(view);
+    Provider.of<HomepageProvider>(context, listen: false).setView(view);
   }
 }

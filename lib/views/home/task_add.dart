@@ -75,17 +75,22 @@ class _TaskAddViewState extends State<TaskAddView> {
                     },
                     cursorColor: Colors.white,
                     decoration: InputDecoration(
-                        labelText: 'Task Name',
-                        labelStyle: TextStyle(color: Colors.white60)),
+                      border: InputBorder.none,
+                      labelText: 'Task Name',
+                      labelStyle: TextStyle(color: Colors.white60),
+                      errorStyle: TextStyle(color: Colors.white70),
+                    ),
                     style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white),
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
                   // TextFormField(
                   //   decoration: InputDecoration(labelText: 'Username'),
                   //   style: TextStyle(fontSize: 16, color: Colors.white70),
                   // ),
+                  Divider(),
                   SizedBox(
                     height: 10,
                   ),
@@ -188,6 +193,7 @@ class _TaskAddViewState extends State<TaskAddView> {
             ),
             Divider(),
             Container(
+              padding: EdgeInsets.all(16),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
@@ -199,10 +205,13 @@ class _TaskAddViewState extends State<TaskAddView> {
                         }
                       },
                       icon: Icon(Icons.check)),
+                  SizedBox(
+                    width: 16,
+                  ),
                   IconButton.outlined(
                       onPressed: () {
                         // return back to home
-                        Provider.of<HomepageProvider>(context)
+                        Provider.of<HomepageProvider>(context, listen: false)
                             .setView(MainPageViews.taskAll);
                       },
                       icon: Icon(Icons.close))
