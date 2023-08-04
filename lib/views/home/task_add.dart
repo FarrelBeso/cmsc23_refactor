@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:todo_refactor/model/constants.dart';
+import 'package:todo_refactor/provider/homepage_provider.dart';
 
 class TaskAddView extends StatefulWidget {
   const TaskAddView({super.key});
@@ -192,11 +194,16 @@ class _TaskAddViewState extends State<TaskAddView> {
                   IconButton.filled(
                       onPressed: () {
                         // send the new task
+                        if (_formKey.currentState!.validate()) {
+                          print('Success!');
+                        }
                       },
                       icon: Icon(Icons.check)),
                   IconButton.outlined(
                       onPressed: () {
                         // return back to home
+                        Provider.of<HomepageProvider>(context)
+                            .setView(MainPageViews.taskAll);
                       },
                       icon: Icon(Icons.close))
                 ],
