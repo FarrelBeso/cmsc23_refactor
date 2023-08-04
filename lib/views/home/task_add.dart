@@ -11,8 +11,7 @@ class TaskAddView extends StatefulWidget {
 class _TaskAddViewState extends State<TaskAddView> {
   TextEditingController nameController = TextEditingController();
   TaskStatus currentStatus = TaskStatus.notStarted;
-  DateTime dateDeadline = DateTime.now();
-  TimeOfDay timeDeadline = TimeOfDay.now();
+  DateTime currentDeadline = DateTime.now();
   TextEditingController descriptionController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
@@ -169,7 +168,6 @@ class _TaskAddViewState extends State<TaskAddView> {
               padding: EdgeInsets.all(16),
               child: TextFormField(
                 controller: descriptionController,
-                cursorColor: Colors.white,
                 decoration: InputDecoration(
                     hintText: 'Task Description (optional)',
                     border: OutlineInputBorder(
@@ -195,37 +193,54 @@ class _TaskAddViewState extends State<TaskAddView> {
   // based on the date and time deadline
   String _dateTimeFormat() {
     // String to be appended
-    final now = DateTime.now();
-    String dateString = DateFormat.yMMMd().format(dateDeadline);
-    String timeString = DateFormat.jm().format(DateTime(
-        now.year, now.month, now.day, dateDeadline.hour, dateDeadline.minute));
+    String dateString = DateFormat.yMMMd().format(currentDeadline);
+    String timeString = DateFormat.jm().format(currentDeadline);
 
     return '$dateString, $timeString';
+  }
+
+  // converters
+  TimeOfDay _getDeadlineTime() {
+    return TimeOfDay.fromDateTime(currentDeadline);
+  }
+
+  // set only the date
+  void _setDeadlineDate(DateTime datetime) {
+    currentDeadline = DateTime(datetime.year, datetime.month, datetime.day,
+        currentDeadline.hour, currentDeadline.minute);
+  }
+
+  // set only the date
+  void _setDeadlineTime(TimeOfDay datetime) {
+    currentDeadline = DateTime(currentDeadline.year, currentDeadline.month,
+        currentDeadline.day, datetime.hour, datetime.minute);
   }
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
         context: context,
-        initialDate: dateDeadline,
+        initialDate: currentDeadline,
         initialDatePickerMode: DatePickerMode.day,
-        firstDate: DateTime.now(),
+        firstDate: DateTime(DateTime.now().year - 50),
         lastDate: DateTime(DateTime.now().year + 50));
     if (picked != null) {
       setState(() {
-        dateDeadline = picked;
+        _setDeadlineDate(picked);
       });
+      print(currentDeadline);
     }
   }
 
   Future<void> _selectTime(BuildContext context) async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
-      initialTime: timeDeadline,
+      initialTime: _getDeadlineTime(),
     );
     if (picked != null) {
       setState(() {
-        timeDeadline = picked;
+        _setDeadlineTime(picked);
       });
+      print(currentDeadline);
     }
   }
 }
