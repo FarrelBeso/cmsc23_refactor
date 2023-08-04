@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:todo_refactor/model/constants.dart';
 import 'package:todo_refactor/model/response_model.dart';
 import 'package:todo_refactor/model/user_model.dart';
 import 'package:todo_refactor/provider/auth_provider.dart';
+import 'package:todo_refactor/provider/homepage_provider.dart';
 import 'package:todo_refactor/views/authentication/login_view.dart';
 import 'package:todo_refactor/views/home/personal_profile_view.dart';
 import 'package:todo_refactor/views/home/task_add.dart';
@@ -17,7 +19,6 @@ class HomeView extends StatefulWidget {
 
 class _HomeViewState extends State<HomeView> {
   int _selectedIndex = 2;
-  Widget _displayWidget = TasksView();
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +49,7 @@ class _HomeViewState extends State<HomeView> {
               // default = changing panels
               setState(() {
                 _selectedIndex = index;
-                _displayWidget = displayMain(_selectedIndex);
+                _updateDisplayByIndex(index, context);
               });
             },
             destinations: [
@@ -79,13 +80,14 @@ class _HomeViewState extends State<HomeView> {
             groupAlignment: 0.0,
             backgroundColor: Theme.of(context).primaryColorLight,
           ),
-          _displayWidget
+          Provider.of<HomepageProvider>(context).currentView.view
         ],
       )),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           setState(() {
-            _displayWidget = TaskAddView();
+            Provider.of<HomepageProvider>(context)
+                .setView(MainPageViews.taskAdd);
           });
         },
         child: Icon(Icons.add),
@@ -93,15 +95,19 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 
-  // which to display?
-  Widget displayMain(int index) {
+  // which to display, and update the provider
+  void _updateDisplayByIndex(int index, BuildContext context) {
+    MainPageViews view;
     switch (index) {
       case 0:
-        return PersonalProfileView();
+        view = MainPageViews.personalProfile;
       case 2:
-        return TasksView();
+        view = MainPageViews.taskAll;
       default:
-        return Placeholder();
+        view = MainPageViews.taskAll;
+        print('Unknown view');
     }
+    // update the provider
+    Provider.of<HomepageProvider>(context).setView(view);
   }
 }

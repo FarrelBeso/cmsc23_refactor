@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:todo_refactor/backend/auth.dart';
 import 'package:todo_refactor/firebase_options.dart';
 import 'package:todo_refactor/provider/auth_provider.dart';
+import 'package:todo_refactor/provider/homepage_provider.dart';
 import 'package:todo_refactor/views/authentication/auth_view.dart';
 import 'package:todo_refactor/views/authentication/login_view.dart';
 import 'package:todo_refactor/views/home/home_view.dart';
@@ -12,7 +13,8 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(MultiProvider(providers: [
-    ChangeNotifierProvider(create: ((context) => AuthProvider()))
+    ChangeNotifierProvider(create: ((context) => AuthProvider())),
+    ChangeNotifierProvider(create: ((context) => HomepageProvider()))
   ], child: const MyApp()));
 }
 

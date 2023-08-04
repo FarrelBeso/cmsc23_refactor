@@ -184,6 +184,24 @@ class _TaskAddViewState extends State<TaskAddView> {
                 maxLines: 16,
               ),
             ),
+            Divider(),
+            Container(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  IconButton.filled(
+                      onPressed: () {
+                        // send the new task
+                      },
+                      icon: Icon(Icons.check)),
+                  IconButton.outlined(
+                      onPressed: () {
+                        // return back to home
+                      },
+                      icon: Icon(Icons.close))
+                ],
+              ),
+            )
           ],
         ),
       )),
@@ -234,7 +252,6 @@ class _TaskAddViewState extends State<TaskAddView> {
       setState(() {
         _setDeadlineDate(picked);
       });
-      print(currentDeadline);
     }
   }
 
@@ -247,7 +264,6 @@ class _TaskAddViewState extends State<TaskAddView> {
       setState(() {
         _setDeadlineTime(picked);
       });
-      print(currentDeadline);
     }
   }
 }
