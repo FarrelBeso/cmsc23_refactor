@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:todo_refactor/model/constants.dart';
 
 class TaskAddView extends StatefulWidget {
   const TaskAddView({super.key});
@@ -64,6 +65,12 @@ class _TaskAddViewState extends State<TaskAddView> {
                   ),
                   TextFormField(
                     controller: nameController,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Title is required';
+                      }
+                      return null;
+                    },
                     cursorColor: Colors.white,
                     decoration: InputDecoration(
                         labelText: 'Task Name',
@@ -243,14 +250,4 @@ class _TaskAddViewState extends State<TaskAddView> {
       print(currentDeadline);
     }
   }
-}
-
-enum TaskStatus {
-  notStarted('Not Started', Colors.black45),
-  working('Working', Colors.yellow),
-  done('Done', Colors.green);
-
-  const TaskStatus(this.label, this.color);
-  final String label;
-  final Color color;
 }
