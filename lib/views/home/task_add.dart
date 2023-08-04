@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class TaskAddView extends StatefulWidget {
   const TaskAddView({super.key});
@@ -8,7 +9,13 @@ class TaskAddView extends StatefulWidget {
 }
 
 class _TaskAddViewState extends State<TaskAddView> {
+  TextEditingController nameController = TextEditingController();
   TaskStatus currentStatus = TaskStatus.notStarted;
+  DateTime dateDeadline = DateTime.now();
+  TimeOfDay timeDeadline = TimeOfDay.now();
+  TextEditingController descriptionController = TextEditingController();
+
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -41,171 +48,192 @@ class _TaskAddViewState extends State<TaskAddView> {
       ));
     }
 
-    return Expanded(
-        child: Container(
-      child: Column(
-        children: [
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            color: Theme.of(context).primaryColor,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(
-                  height: 24,
-                ),
-                TextFormField(
-                  cursorColor: Colors.white,
-                  decoration: InputDecoration(
-                      labelText: 'Task Name',
-                      labelStyle: TextStyle(color: Colors.white60)),
-                  style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white),
-                ),
-                // TextFormField(
-                //   decoration: InputDecoration(labelText: 'Username'),
-                //   style: TextStyle(fontSize: 16, color: Colors.white70),
-                // ),
-                SizedBox(
-                  height: 10,
-                ),
-                Container(
-                  padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Container(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Container(
-                              padding: EdgeInsets.symmetric(horizontal: 8),
-                              decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(24)),
-                              child: DropdownButton(
-                                  value: currentStatus,
-                                  items: taskStatusEntries,
-                                  underline: Container(),
-                                  onChanged: (value) {
-                                    setState(() {
-                                      currentStatus = value!;
-                                    });
-                                  }),
-                            ),
-                            SizedBox(
-                              width: 20,
-                            ),
-                            OutlinedButton(
-                              onPressed: () {
-                                _selectTime(context);
-                                _selectDate(context);
-                              },
-                              child: Text(
-                                'SAMPLE TIME',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                              style: ButtonStyle(
-                                  side: MaterialStatePropertyAll(
-                                      BorderSide(color: Colors.white60))),
-                            )
-
-                            // Text(
-                            //   'Working',
-                            //   style: TextStyle(color: Colors.white),
-                            // ),
-                          ],
-                        ),
-                      ),
-                    ],
+    return Form(
+      key: _formKey,
+      child: Expanded(
+          child: Container(
+        child: Column(
+          children: [
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              color: Theme.of(context).primaryColor,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    height: 24,
                   ),
-                )
-              ],
-            ),
-          ),
-          // Container(
-          //   padding: EdgeInsets.only(top: 16, bottom: 4, left: 16, right: 16),
-          //   child: Row(
-          //     children: [
-          //       Expanded(
-          //         child: Align(
-          //           alignment: Alignment.centerLeft,
-          //           child: Column(
-          //             crossAxisAlignment: CrossAxisAlignment.start,
-          //             children: [
-          //               Text(
-          //                 'Last modified by',
-          //                 style:
-          //                     TextStyle(fontSize: 10, color: Colors.black45),
-          //               ),
-          //               Text(
-          //                 'Lorem Ipsum, Jan 14, 4:20 PM',
-          //                 style:
-          //                     TextStyle(fontSize: 12, color: Colors.black87),
-          //               ),
-          //             ],
-          //           ),
-          //         ),
-          //       ),
-          //       IconButton.filledTonal(
-          //           onPressed: () {}, icon: Icon(Icons.edit))
-          //     ],
-          //   ),
-          // ),
+                  TextFormField(
+                    controller: nameController,
+                    cursorColor: Colors.white,
+                    decoration: InputDecoration(
+                        labelText: 'Task Name',
+                        labelStyle: TextStyle(color: Colors.white60)),
+                    style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
+                  ),
+                  // TextFormField(
+                  //   decoration: InputDecoration(labelText: 'Username'),
+                  //   style: TextStyle(fontSize: 16, color: Colors.white70),
+                  // ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Container(
+                    padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Container(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Container(
+                                padding: EdgeInsets.symmetric(horizontal: 8),
+                                decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(24)),
+                                child: DropdownButton(
+                                    value: currentStatus,
+                                    items: taskStatusEntries,
+                                    underline: Container(),
+                                    onChanged: (value) {
+                                      setState(() {
+                                        currentStatus = value!;
+                                      });
+                                    }),
+                              ),
+                              SizedBox(
+                                width: 20,
+                              ),
+                              OutlinedButton(
+                                onPressed: () {
+                                  _dateTimeSelectWrapper(context);
+                                },
+                                child: Text(
+                                  _dateTimeFormat(),
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                style: ButtonStyle(
+                                    side: MaterialStatePropertyAll(
+                                        BorderSide(color: Colors.white60))),
+                              )
 
-          Divider(),
-          Container(
-            padding: EdgeInsets.all(16),
-            child: TextFormField(
-              cursorColor: Colors.white,
-              decoration: InputDecoration(
-                  hintText: 'Task Description',
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8))),
-              style: TextStyle(color: Colors.black45, fontSize: 14),
-              keyboardType: TextInputType.multiline,
-              maxLines: 10,
+                              // Text(
+                              //   'Working',
+                              //   style: TextStyle(color: Colors.white),
+                              // ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                ],
+              ),
             ),
-          ),
-        ],
-      ),
-    ));
+            // Container(
+            //   padding: EdgeInsets.only(top: 16, bottom: 4, left: 16, right: 16),
+            //   child: Row(
+            //     children: [
+            //       Expanded(
+            //         child: Align(
+            //           alignment: Alignment.centerLeft,
+            //           child: Column(
+            //             crossAxisAlignment: CrossAxisAlignment.start,
+            //             children: [
+            //               Text(
+            //                 'Last modified by',
+            //                 style:
+            //                     TextStyle(fontSize: 10, color: Colors.black45),
+            //               ),
+            //               Text(
+            //                 'Lorem Ipsum, Jan 14, 4:20 PM',
+            //                 style:
+            //                     TextStyle(fontSize: 12, color: Colors.black87),
+            //               ),
+            //             ],
+            //           ),
+            //         ),
+            //       ),
+            //       IconButton.filledTonal(
+            //           onPressed: () {}, icon: Icon(Icons.edit))
+            //     ],
+            //   ),
+            // ),
+
+            Divider(),
+            Container(
+              padding: EdgeInsets.all(16),
+              child: TextFormField(
+                controller: descriptionController,
+                cursorColor: Colors.white,
+                decoration: InputDecoration(
+                    hintText: 'Task Description (optional)',
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8))),
+                style: TextStyle(color: Colors.black45, fontSize: 14),
+                keyboardType: TextInputType.multiline,
+                maxLines: 16,
+              ),
+            ),
+          ],
+        ),
+      )),
+    );
   }
 
   // useful functions
+
+  Future<void> _dateTimeSelectWrapper(BuildContext context) async {
+    await _selectDate(context);
+    if (context.mounted) await _selectTime(context);
+  }
+
+  // based on the date and time deadline
+  String _dateTimeFormat() {
+    // String to be appended
+    final now = DateTime.now();
+    String dateString = DateFormat.yMMMd().format(dateDeadline);
+    String timeString = DateFormat.jm().format(DateTime(
+        now.year, now.month, now.day, dateDeadline.hour, dateDeadline.minute));
+
+    return '$dateString, $timeString';
+  }
+
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
         context: context,
-        initialDate: DateTime.now(),
+        initialDate: dateDeadline,
         initialDatePickerMode: DatePickerMode.day,
         firstDate: DateTime.now(),
         lastDate: DateTime(DateTime.now().year + 50));
-    if (picked != null)
+    if (picked != null) {
       setState(() {
-        print(picked);
+        dateDeadline = picked;
       });
+    }
   }
 
   Future<void> _selectTime(BuildContext context) async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
-      initialTime: TimeOfDay.now(),
+      initialTime: timeDeadline,
     );
-    if (picked != null)
+    if (picked != null) {
       setState(() {
-        print(picked);
+        timeDeadline = picked;
       });
+    }
   }
 }
 
 enum TaskStatus {
   notStarted('Not Started', Colors.black45),
   working('Working', Colors.yellow),
-  done('Done', Colors.green),
-  late('Late', Colors.red),
-  doneLate('Done Late', Colors.orange);
+  done('Done', Colors.green);
 
   const TaskStatus(this.label, this.color);
   final String label;
