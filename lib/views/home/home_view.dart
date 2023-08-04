@@ -83,14 +83,19 @@ class _HomeViewState extends State<HomeView> {
           Provider.of<HomepageProvider>(context).currentView.view
         ],
       )),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          setState(() {
-            Provider.of<HomepageProvider>(context)
-                .setView(MainPageViews.taskAdd);
-          });
-        },
-        child: Icon(Icons.add),
+      // this button is only visible on task all
+      floatingActionButton: Visibility(
+        visible: Provider.of<HomepageProvider>(context).currentView ==
+            MainPageViews.taskAll,
+        child: FloatingActionButton(
+          onPressed: () {
+            setState(() {
+              Provider.of<HomepageProvider>(context)
+                  .setView(MainPageViews.taskAdd);
+            });
+          },
+          child: Icon(Icons.add),
+        ),
       ),
     );
   }
