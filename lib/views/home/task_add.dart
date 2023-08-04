@@ -156,18 +156,17 @@ class _TaskAddViewState extends State<TaskAddView> {
           // ),
 
           Divider(),
-
           Container(
             padding: EdgeInsets.all(16),
             child: TextFormField(
               cursorColor: Colors.white,
               decoration: InputDecoration(
-                  labelText: 'Description',
+                  hintText: 'Task Description',
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8))),
               style: TextStyle(color: Colors.black45, fontSize: 14),
               keyboardType: TextInputType.multiline,
-              maxLines: null,
+              maxLines: 10,
             ),
           ),
         ],
