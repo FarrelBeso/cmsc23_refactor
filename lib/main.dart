@@ -7,6 +7,7 @@ import 'package:todo_refactor/provider/auth_provider.dart';
 import 'package:todo_refactor/provider/homepage_provider.dart';
 import 'package:todo_refactor/views/authentication/auth_view.dart';
 import 'package:todo_refactor/views/authentication/login_view.dart';
+import 'package:todo_refactor/views/home/home_root.dart';
 import 'package:todo_refactor/views/home/home_view.dart';
 
 Future<void> main() async {
@@ -14,7 +15,6 @@ Future<void> main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: ((context) => AuthProvider())),
-    ChangeNotifierProvider(create: ((context) => HomepageProvider()))
   ], child: const MyApp()));
 }
 
@@ -48,7 +48,7 @@ class _WidgetTreeState extends State<WidgetTree> {
         stream: AuthAPI().authStateChanges,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return HomeView();
+            return HomeRoot();
           } else {
             return const AuthView();
           }
