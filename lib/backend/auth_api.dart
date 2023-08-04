@@ -37,9 +37,9 @@ class AuthAPI {
   }
 
   // update that the user has a new task that they made
-  Future<void> addTaskId(String userId, String taskId) async {
-    final docRef = db.collection("users").doc(userId);
-    docRef.update({
+  Future<void> addTaskId(String taskId) async {
+    final docRef = db.collection("users").doc(currentUser!.uid);
+    await docRef.update({
       "taskOwnIds": FieldValue.arrayUnion([taskId])
     });
   }

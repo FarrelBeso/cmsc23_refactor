@@ -2,7 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_refactor/model/constants.dart';
+import 'package:todo_refactor/model/response_model.dart';
+import 'package:todo_refactor/model/task_model.dart';
+import 'package:todo_refactor/provider/auth_provider.dart';
 import 'package:todo_refactor/provider/homepage_provider.dart';
+import 'package:todo_refactor/provider/task_provider.dart';
+import 'package:uuid/uuid.dart';
 
 class TaskAddView extends StatefulWidget {
   const TaskAddView({super.key});
@@ -201,7 +206,7 @@ class _TaskAddViewState extends State<TaskAddView> {
                       onPressed: () {
                         // send the new task
                         if (_formKey.currentState!.validate()) {
-                          print('Success!');
+                          _addTaskWrapper(context);
                         }
                       },
                       icon: Icon(Icons.check)),
@@ -225,6 +230,46 @@ class _TaskAddViewState extends State<TaskAddView> {
   }
 
   // useful functions
+
+  // wrapper for adding the tasks
+  Future<void> _addTaskWrapper(BuildContext context) async {
+    // first set the task model
+    TaskModel task = _setNewTask(context);
+    // then check for the response
+    ResponseModel response =
+        await Provider.of<TaskProvider>(context).addTask(task);
+    if (context.mounted) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(response.message!)));
+      // clear the inputs if successful
+      if (response.success) _resetTextFields();
+    }
+  }
+
+  void _resetTextFields() {
+    nameController.clear();
+    descriptionController.clear();
+  }
+
+  // transform the input
+  TaskModel _setNewTask(BuildContext context) {
+    // set the task
+    String id = Uuid().v4();
+    TaskModel task = TaskModel(
+      id: id,
+      taskName: nameController.text,
+      status: currentStatus.label,
+      deadline: currentDeadline,
+      description: descriptionController.text,
+      // misc info
+      ownerId:
+          Provider.of<AuthProvider>(context, listen: false).currentuser!.id,
+      lastEditedDate: DateTime.now(),
+      lastEditUserId:
+          Provider.of<AuthProvider>(context, listen: false).currentuser!.id,
+    );
+    return task;
+  }
 
   Future<void> _dateTimeSelectWrapper(BuildContext context) async {
     await _selectDate(context);
