@@ -17,4 +17,28 @@ class TaskProvider extends ChangeNotifier {
     });
     return response;
   }
+
+  // get list of tasks
+  Future<ResponseModel> getTaskList() async {
+    ResponseModel response = ResponseModel(success: true); // default
+    List<TaskModel> tasklist = [];
+    await TasksAPI()
+        .getTaskIdsFromUser(AuthAPI().currentUser!.uid)
+        .then((taskIds) async {
+      for (var id in taskIds) {
+        TaskModel? task = await TasksAPI().getTaskInfo(id);
+        if (task == null) {
+          // set it up
+          response = ResponseModel(
+              success: false, message: 'Failed to fetch all tasks');
+        } else {
+          tasklist.add(task);
+        }
+      }
+    }).onError((error, stackTrace) {
+      print(error);
+    });
+    response.content = tasklist;
+    return response;
+  }
 }
