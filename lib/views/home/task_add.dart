@@ -237,7 +237,7 @@ class _TaskAddViewState extends State<TaskAddView> {
     TaskModel task = _setNewTask(context);
     // then check for the response
     ResponseModel response =
-        await Provider.of<TaskProvider>(context).addTask(task);
+        await Provider.of<TaskProvider>(context, listen: false).addTask(task);
     if (context.mounted) {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(response.message!)));
