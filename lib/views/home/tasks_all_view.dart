@@ -1,12 +1,15 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:todo_refactor/model/constants.dart';
 import 'package:todo_refactor/model/response_model.dart';
 import 'package:todo_refactor/model/task_model.dart';
 import 'package:todo_refactor/model/user_model.dart';
+import 'package:todo_refactor/provider/homepage_provider.dart';
 import 'package:todo_refactor/utilities/task_utils.dart';
 import 'package:todo_refactor/utilities/user_utils.dart';
+import 'package:todo_refactor/views/home/home_view.dart';
 
 class TasksView extends StatelessWidget {
   const TasksView({super.key});
@@ -72,7 +75,13 @@ class TasksView extends StatelessWidget {
         itemBuilder: (BuildContext context, int index) {
           _CardInfo cardinfo = cardinfolist[index];
           return InkWell(
-            onTap: () {},
+            onTap: () {
+              // switch to task info
+              Provider.of<HomepageProvider>(context, listen: false)
+                  .setArgument(cardinfo.taskId);
+              Provider.of<HomepageProvider>(context, listen: false)
+                  .setView(MainPageViews.taskInfo);
+            },
             child: Container(
               padding: EdgeInsets.all(16),
               child: Row(
@@ -179,6 +188,7 @@ class TasksView extends StatelessWidget {
 
         // then finally add all of them to the cardlist
         cardlist.add(_CardInfo(
+            taskId: task.id,
             taskName: task.taskName,
             taskOwner: fullname,
             taskStatus: TaskStatus.fetchFromName(task.status!)));
@@ -191,12 +201,14 @@ class TasksView extends StatelessWidget {
 
 // temp class to store card info
 class _CardInfo {
+  String? taskId;
   String? taskName;
   String? taskOwner;
   TaskStatus? taskStatus;
 
   _CardInfo(
-      {required this.taskName,
+      {required this.taskId,
+      required this.taskName,
       required this.taskOwner,
       required this.taskStatus});
 }

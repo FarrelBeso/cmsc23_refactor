@@ -6,21 +6,18 @@ import 'package:todo_refactor/model/response_model.dart';
 import 'package:todo_refactor/model/task_model.dart';
 import 'package:todo_refactor/model/user_model.dart';
 import 'package:todo_refactor/provider/homepage_provider.dart';
-import 'package:todo_refactor/utilities/auth_utils.dart';
 import 'package:todo_refactor/utilities/task_utils.dart';
 import 'package:todo_refactor/utilities/user_utils.dart';
-import 'package:uuid/uuid.dart';
 
 class TaskInfoView extends StatelessWidget {
-  const TaskInfoView({super.key, required this.currentTaskId});
-
-  final String currentTaskId;
+  const TaskInfoView({super.key});
 
   @override
   Widget build(BuildContext context) {
+    String id = Provider.of<HomepageProvider>(context).arguments;
     return Expanded(
         child: FutureBuilder(
-      future: _fetchTaskInfo(),
+      future: _fetchTaskInfo(id),
       builder: (context, snapshot) {
         Widget displayWidget;
         if (snapshot.hasData) {
@@ -215,14 +212,14 @@ class TaskInfoView extends StatelessWidget {
   // other aux functions
 
   // get the necessary data
-  Future<_TaskInfo?> _fetchTaskInfo() async {
+  Future<_TaskInfo?> _fetchTaskInfo(String taskId) async {
     ResponseModel res;
     _TaskInfo? taskinfo;
     // ingredients
     TaskModel? task;
     String? ownerName, lastEditorName;
     // first get the task name
-    await TaskUtils().getTaskFromId(currentTaskId).then((res) {
+    await TaskUtils().getTaskFromId(taskId).then((res) {
       if (res.success) {
         task = res.content;
         return UserUtils().getUser(task!.ownerId!);

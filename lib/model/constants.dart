@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:todo_refactor/views/home/personal_profile_view.dart';
 import 'package:todo_refactor/views/home/task_add.dart';
+import 'package:todo_refactor/views/home/task_info_view.dart';
 import 'package:todo_refactor/views/home/tasks_all_view.dart';
 
 enum TaskStatus {
@@ -41,7 +42,8 @@ enum TaskStatus {
 enum MainPageViews {
   taskAll('Task All', TasksView()),
   personalProfile('Personal Profile', PersonalProfileView()),
-  taskAdd('Task Add', TaskAddView());
+  taskAdd('Task Add', TaskAddView()),
+  taskInfo('Task Info', TaskInfoView());
 
   const MainPageViews(this.label, this.view);
   final String label;
