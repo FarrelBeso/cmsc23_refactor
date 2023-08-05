@@ -1,146 +1,180 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
-import 'package:todo_refactor/provider/auth_provider.dart';
+import 'package:todo_refactor/model/response_model.dart';
+import 'package:todo_refactor/model/user_model.dart';
+import 'package:todo_refactor/utilities/auth_utils.dart';
 
 class PersonalProfileView extends StatelessWidget {
   const PersonalProfileView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<AuthProvider>(builder: (context, provider, child) {
-      return Expanded(
-        child: Container(
-          child: Column(
-            children: [
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                color: Theme.of(context).primaryColor,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(
-                      height: 24,
-                    ),
-                    Text(
-                      '${provider.currentuser?.firstName} ${provider.currentuser?.lastName}',
-                      style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white),
-                    ),
-                    Text(
-                      provider.currentuser?.username ?? 'N/A',
-                      style: TextStyle(fontSize: 16, color: Colors.white70),
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          child: Container(
-                            padding: EdgeInsets.all(8),
-                            child: Text(
-                              'PROFILE',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Container(
-                            padding: EdgeInsets.all(8),
-                            child: Text('FRIENDS',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(color: Colors.white)),
-                          ),
-                        )
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-
-              // put whatever the current tab is
-              ProfileSection()
-              //FriendsSection()
-            ],
-          ),
-        ),
-      );
-    });
+    return Expanded(
+        child: FutureBuilder(
+            future: AuthUtils().fetchCurrentUser(),
+            builder: (context, snapshot) {
+              Widget displayWidget;
+              if (snapshot.hasData) {
+                ResponseModel res = snapshot.data!;
+                // check if successful
+                if (res.success) {
+                  displayWidget = _contentWrapper(context, res.content);
+                } else {
+                  displayWidget = _errorWidget();
+                }
+              } else if (snapshot.hasError) {
+                displayWidget = _errorWidget();
+              } else {
+                displayWidget = _loadingWidget();
+              }
+              return displayWidget;
+            }));
   }
-}
 
-// the profile and friends views
-class ProfileSection extends StatelessWidget {
-  const ProfileSection({super.key});
+  // widgets
 
-  @override
-  Widget build(BuildContext context) {
-    return Consumer<AuthProvider>(
-      builder: (context, provider, child) {
-        return Container(
-          padding: EdgeInsets.all(8),
-          child: Column(
-            children: [
-              Container(
-                padding: EdgeInsets.all(6),
-                child: Row(
-                  children: [
-                    Container(padding: EdgeInsets.all(8), child: Text('ID: ')),
-                    Text(provider.currentuser?.id ?? 'N/A')
-                  ],
-                ),
-              ),
-              Card(
-                child: Container(
-                  padding: EdgeInsets.all(12),
-                  child: Row(
-                    children: [
-                      Container(
-                          padding: EdgeInsets.all(8), child: Icon(Icons.cake)),
-                      Text(DateFormat(DateFormat.YEAR_MONTH_DAY).format(
-                          provider.currentuser?.birthday ?? DateTime(1900)))
-                    ],
-                  ),
-                ),
-              ),
-              Card(
-                child: Container(
-                  padding: EdgeInsets.all(12),
-                  child: Row(
-                    children: [
-                      Container(
-                          padding: EdgeInsets.all(8),
-                          child: Icon(Icons.location_on)),
-                      Text(provider.currentuser?.location ?? 'N/A')
-                    ],
-                  ),
-                ),
-              ),
-              Divider(),
-              Container(
-                  padding: EdgeInsets.all(8),
-                  alignment: Alignment.topLeft,
-                  child: Text(provider.currentuser?.biography ??
-                      'No biography available.'))
-            ],
-          ),
-        );
-      },
+  // content wrapper
+  Widget _contentWrapper(BuildContext context, UserModel usermodel) {
+    return Container(
+      child: Column(
+        children: [
+          // put whatever the current tab is
+          _profileHeader(context, usermodel),
+          _profileSection(usermodel),
+          //FriendsSection()
+        ],
+      ),
     );
   }
-}
 
-// insert mock data
-class FriendsSection extends StatelessWidget {
-  const FriendsSection({super.key});
+  Widget _profileHeader(BuildContext context, UserModel usermodel) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 16),
+      color: Theme.of(context).primaryColor,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            height: 24,
+          ),
+          Text(
+            '${usermodel.firstName} ${usermodel.lastName}',
+            style: TextStyle(
+                fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+          ),
+          Text(
+            usermodel.username ?? 'N/A',
+            style: TextStyle(fontSize: 16, color: Colors.white70),
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Expanded(
+                child: Container(
+                  padding: EdgeInsets.all(8),
+                  child: Text(
+                    'PROFILE',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Container(
+                  padding: EdgeInsets.all(8),
+                  child: Text('FRIENDS',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.white)),
+                ),
+              )
+            ],
+          ),
+        ],
+      ),
+    );
+  }
 
-  @override
-  Widget build(BuildContext context) {
+  Widget _profileSection(UserModel usermodel) {
+    return Container(
+      padding: EdgeInsets.all(8),
+      child: Column(
+        children: [
+          Container(
+            padding: EdgeInsets.all(6),
+            child: Row(
+              children: [
+                Container(padding: EdgeInsets.all(8), child: Text('ID: ')),
+                Text(usermodel.id ?? 'N/A')
+              ],
+            ),
+          ),
+          Card(
+            child: Container(
+              padding: EdgeInsets.all(12),
+              child: Row(
+                children: [
+                  Container(
+                      padding: EdgeInsets.all(8), child: Icon(Icons.cake)),
+                  Text(DateFormat(DateFormat.YEAR_MONTH_DAY)
+                      .format(usermodel.birthday ?? DateTime(1900)))
+                ],
+              ),
+            ),
+          ),
+          Card(
+            child: Container(
+              padding: EdgeInsets.all(12),
+              child: Row(
+                children: [
+                  Container(
+                      padding: EdgeInsets.all(8),
+                      child: Icon(Icons.location_on)),
+                  Text(usermodel.location ?? 'N/A')
+                ],
+              ),
+            ),
+          ),
+          Divider(),
+          Container(
+              padding: EdgeInsets.all(8),
+              alignment: Alignment.topLeft,
+              child: Text(usermodel.biography ?? 'No biography available.'))
+        ],
+      ),
+    );
+  }
+
+  // misc widgets
+  Widget _errorWidget() {
+    return Center(
+      child: Column(
+        children: [
+          SizedBox(
+            height: 24,
+          ),
+          Text(
+            'Failed to fetch data',
+            style: TextStyle(fontSize: 20),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _loadingWidget() {
+    return Center(
+      child: SizedBox(
+        width: 60,
+        height: 60,
+        child: CircularProgressIndicator(),
+      ),
+    );
+  }
+
+  Widget _friendSection(UserModel usermodel) {
     return Container(
       padding: EdgeInsets.all(8),
       child: ListView.builder(
