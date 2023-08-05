@@ -75,7 +75,7 @@ class TasksView extends StatelessWidget {
             onTap: () {
               // switch to task info
               Provider.of<HomepageProvider>(context, listen: false)
-                  .setArgument(cardinfo.taskId);
+                  .setArgument(cardinfo.taskModel);
               Provider.of<HomepageProvider>(context, listen: false)
                   .setView(MainPageViews.taskInfo);
             },
@@ -89,7 +89,7 @@ class TasksView extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        cardinfo.taskName!,
+                        cardinfo.taskModel!.taskName!,
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 18),
                       ),
@@ -185,8 +185,7 @@ class TasksView extends StatelessWidget {
 
         // then finally add all of them to the cardlist
         cardlist.add(_CardInfo(
-            taskId: task.id,
-            taskName: task.taskName,
+            taskModel: task,
             taskOwner: fullname,
             taskStatus: TaskStatus.fetchFromName(task.status!)));
       }
@@ -198,14 +197,12 @@ class TasksView extends StatelessWidget {
 
 // temp class to store card info
 class _CardInfo {
-  String? taskId;
-  String? taskName;
+  TaskModel? taskModel;
   String? taskOwner;
   TaskStatus? taskStatus;
 
   _CardInfo(
-      {required this.taskId,
-      required this.taskName,
+      {required this.taskModel,
       required this.taskOwner,
       required this.taskStatus});
 }

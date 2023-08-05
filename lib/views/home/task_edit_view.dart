@@ -18,19 +18,20 @@ class TaskEditView extends StatefulWidget {
 }
 
 class _TaskEditViewState extends State<TaskEditView> {
+  // should be supplied current info
   TextEditingController nameController = TextEditingController();
   TaskStatus currentStatus = TaskStatus.notStarted;
   DateTime currentDeadline = DateTime.now();
   TextEditingController descriptionController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
-  // fetch user info here
+
+  final List<DropdownMenuItem<TaskStatus>> taskStatusEntries =
+      <DropdownMenuItem<TaskStatus>>[];
 
   @override
   Widget build(BuildContext context) {
     // build the dropdown items here
-    final List<DropdownMenuItem<TaskStatus>> taskStatusEntries =
-        <DropdownMenuItem<TaskStatus>>[];
     for (final TaskStatus status in TaskStatus.values) {
       if (status.selectable) {
         taskStatusEntries.add(DropdownMenuItem<TaskStatus>(
@@ -59,6 +60,7 @@ class _TaskEditViewState extends State<TaskEditView> {
       }
     }
 
+    //
     return Form(
       key: _formKey,
       child: Expanded(
@@ -74,31 +76,7 @@ class _TaskEditViewState extends State<TaskEditView> {
                   SizedBox(
                     height: 24,
                   ),
-                  TextFormField(
-                    controller: nameController,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Title is required';
-                      }
-                      return null;
-                    },
-                    cursorColor: Colors.white,
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      labelText: 'Task Name',
-                      labelStyle: TextStyle(color: Colors.white60),
-                      errorStyle: TextStyle(color: Colors.white70),
-                    ),
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                  // TextFormField(
-                  //   decoration: InputDecoration(labelText: 'Username'),
-                  //   style: TextStyle(fontSize: 16, color: Colors.white70),
-                  // ),
+                  _taskNameEdit(),
                   Divider(),
                   SizedBox(
                     height: 10,
@@ -112,41 +90,11 @@ class _TaskEditViewState extends State<TaskEditView> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Container(
-                                padding: EdgeInsets.symmetric(horizontal: 8),
-                                decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(24)),
-                                child: DropdownButton(
-                                    value: currentStatus,
-                                    items: taskStatusEntries,
-                                    underline: Container(),
-                                    onChanged: (value) {
-                                      setState(() {
-                                        currentStatus = value!;
-                                      });
-                                    }),
-                              ),
+                              _taskStatusEdit(),
                               SizedBox(
                                 width: 20,
                               ),
-                              OutlinedButton(
-                                onPressed: () {
-                                  _dateTimeSelectWrapper(context);
-                                },
-                                child: Text(
-                                  _dateTimeFormat(),
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                                style: ButtonStyle(
-                                    side: MaterialStatePropertyAll(
-                                        BorderSide(color: Colors.white60))),
-                              )
-
-                              // Text(
-                              //   'Working',
-                              //   style: TextStyle(color: Colors.white),
-                              // ),
+                              _deadlineEdit()
                             ],
                           ),
                         ),
@@ -156,50 +104,8 @@ class _TaskEditViewState extends State<TaskEditView> {
                 ],
               ),
             ),
-            // Container(
-            //   padding: EdgeInsets.only(top: 16, bottom: 4, left: 16, right: 16),
-            //   child: Row(
-            //     children: [
-            //       Expanded(
-            //         child: Align(
-            //           alignment: Alignment.centerLeft,
-            //           child: Column(
-            //             crossAxisAlignment: CrossAxisAlignment.start,
-            //             children: [
-            //               Text(
-            //                 'Last modified by',
-            //                 style:
-            //                     TextStyle(fontSize: 10, color: Colors.black45),
-            //               ),
-            //               Text(
-            //                 'Lorem Ipsum, Jan 14, 4:20 PM',
-            //                 style:
-            //                     TextStyle(fontSize: 12, color: Colors.black87),
-            //               ),
-            //             ],
-            //           ),
-            //         ),
-            //       ),
-            //       IconButton.filledTonal(
-            //           onPressed: () {}, icon: Icon(Icons.edit))
-            //     ],
-            //   ),
-            // ),
-
             Divider(),
-            Container(
-              padding: EdgeInsets.all(16),
-              child: TextFormField(
-                controller: descriptionController,
-                decoration: InputDecoration(
-                    hintText: 'Task Description (optional)',
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8))),
-                style: TextStyle(color: Colors.black45, fontSize: 14),
-                keyboardType: TextInputType.multiline,
-                maxLines: 16,
-              ),
-            ),
+            _descriptionEdit(),
             Divider(),
             Container(
               padding: EdgeInsets.all(16),
@@ -233,6 +139,76 @@ class _TaskEditViewState extends State<TaskEditView> {
     );
   }
 
+  // widgets
+  Widget _taskNameEdit() {
+    return TextFormField(
+      controller: nameController,
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Title is required';
+        }
+        return null;
+      },
+      cursorColor: Colors.white,
+      decoration: InputDecoration(
+        border: InputBorder.none,
+        labelText: 'Task Name',
+        labelStyle: TextStyle(color: Colors.white60),
+        errorStyle: TextStyle(color: Colors.white70),
+      ),
+      style: TextStyle(
+        fontSize: 24,
+        fontWeight: FontWeight.bold,
+        color: Colors.white,
+      ),
+    );
+  }
+
+  Widget _taskStatusEdit() {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 8),
+      decoration: BoxDecoration(
+          color: Colors.white, borderRadius: BorderRadius.circular(24)),
+      child: DropdownButton(
+          value: currentStatus,
+          items: taskStatusEntries,
+          underline: Container(),
+          onChanged: (value) {
+            setState(() {
+              currentStatus = value!;
+            });
+          }),
+    );
+  }
+
+  Widget _deadlineEdit() {
+    return OutlinedButton(
+      onPressed: () {
+        _dateTimeSelectWrapper(context);
+      },
+      child: Text(
+        _dateTimeFormat(),
+        style: TextStyle(color: Colors.white),
+      ),
+      style: ButtonStyle(
+          side: MaterialStatePropertyAll(BorderSide(color: Colors.white60))),
+    );
+  }
+
+  Widget _descriptionEdit() {
+    return Container(
+      padding: EdgeInsets.all(16),
+      child: TextFormField(
+        controller: descriptionController,
+        decoration: InputDecoration(
+            hintText: 'Task Description (optional)',
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8))),
+        style: TextStyle(color: Colors.black45, fontSize: 14),
+        keyboardType: TextInputType.multiline,
+        maxLines: 16,
+      ),
+    );
+  }
   // useful functions
 
   // wrapper for adding the tasks

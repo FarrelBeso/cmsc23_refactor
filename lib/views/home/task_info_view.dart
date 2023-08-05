@@ -14,10 +14,11 @@ class TaskInfoView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String id = Provider.of<HomepageProvider>(context).arguments;
+    TaskModel currentTask =
+        Provider.of<HomepageProvider>(context, listen: false).arguments;
     return Expanded(
         child: FutureBuilder(
-      future: _fetchTaskInfo(id),
+      future: _fetchTaskInfo(currentTask.id!),
       builder: (context, snapshot) {
         Widget displayWidget;
         if (snapshot.hasData) {
@@ -82,7 +83,7 @@ class TaskInfoView extends StatelessWidget {
               ],
             ),
           ),
-          _modifyWidget(lastEditorFullName, taskmodel.lastEditedDate!),
+          _modifyWidget(lastEditorFullName, taskmodel, context),
           Divider(),
           _descriptionWidget(taskmodel.description!)
         ],
@@ -156,7 +157,8 @@ class TaskInfoView extends StatelessWidget {
     );
   }
 
-  Widget _modifyWidget(String lastEditorFullName, DateTime lastEditDate) {
+  Widget _modifyWidget(
+      String lastEditorFullName, TaskModel task, BuildContext context) {
     return Container(
       padding: EdgeInsets.only(top: 16, bottom: 4, left: 16, right: 16),
       child: Row(
@@ -172,14 +174,22 @@ class TaskInfoView extends StatelessWidget {
                     style: TextStyle(fontSize: 10, color: Colors.black45),
                   ),
                   Text(
-                    '$lastEditorFullName, ${_dateTimeFormat(lastEditDate)}',
+                    '$lastEditorFullName, ${_dateTimeFormat(task.lastEditedDate!)}',
                     style: TextStyle(fontSize: 12, color: Colors.black87),
                   ),
                 ],
               ),
             ),
           ),
-          IconButton.filledTonal(onPressed: () {}, icon: Icon(Icons.edit))
+          IconButton.filledTonal(
+              onPressed: () {
+                // switch to edit mode
+                Provider.of<HomepageProvider>(context, listen: false)
+                    .setArgument(task); // pass the same arguments
+                Provider.of<HomepageProvider>(context, listen: false)
+                    .setView(MainPageViews.taskEdit);
+              },
+              icon: Icon(Icons.edit))
         ],
       ),
     );
