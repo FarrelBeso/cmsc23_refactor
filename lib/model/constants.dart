@@ -16,23 +16,24 @@ enum TaskStatus {
   final Color color;
   final bool selectable;
 
-  // fetching the color from name
-  Color fetchColorFromName(String name) {
+  // fetching the task status
+  factory TaskStatus.fetchFromName(String name) {
     switch (name) {
       case 'Not Started':
-        return TaskStatus.notStarted.color;
+        return TaskStatus.notStarted;
       case 'Working':
-        return TaskStatus.working.color;
+        return TaskStatus.working;
       case 'Done':
-        return TaskStatus.done.color;
+        return TaskStatus.done;
       case 'Neglected':
-        return TaskStatus.neglected.color;
+        return TaskStatus.neglected;
       case 'Late':
-        return TaskStatus.late.color;
+        return TaskStatus.late;
       case 'Done Late':
-        return TaskStatus.doneLate.color;
+        return TaskStatus.doneLate;
       default:
-        return TaskStatus.notStarted.color;
+        print('Undefined task status');
+        return TaskStatus.notStarted;
     }
   }
 }

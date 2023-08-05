@@ -1,6 +1,12 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:todo_refactor/model/constants.dart';
+import 'package:todo_refactor/model/response_model.dart';
+import 'package:todo_refactor/model/task_model.dart';
+import 'package:todo_refactor/model/user_model.dart';
+import 'package:todo_refactor/utilities/task_utils.dart';
+import 'package:todo_refactor/utilities/user_utils.dart';
 
 class TasksView extends StatelessWidget {
   const TasksView({super.key});
@@ -99,4 +105,33 @@ class TasksView extends StatelessWidget {
       ),
     );
   }
+
+  // fetch card info list
+  Future<List<_CardInfo>> _cardInfoList() async {
+    ResponseModel res;
+    // first get the list
+    List<_CardInfo> cardlist = [];
+    res = await TaskUtils().getTaskList();
+    if (!res.success) print(res.message);
+    for (TaskModel task in res.content) {
+      // also fetch the name while at it
+      res = await UserUtils().getUser(task.ownerId!);
+      String name = res.success ? (res.content as UserModel).username! : 'N/A';
+      // then finally add all of them to the cardlist
+      cardlist.add(_CardInfo(
+          taskName: task.taskName,
+          taskOwner: name,
+          taskStatus: TaskStatus.fetchFromName(task.status!)));
+    }
+    return cardlist;
+  }
+}
+
+// temp class to store card info
+class _CardInfo {
+  String? taskName;
+  String? taskOwner;
+  TaskStatus? taskStatus;
+
+  _CardInfo({this.taskName, this.taskOwner, this.taskStatus});
 }
