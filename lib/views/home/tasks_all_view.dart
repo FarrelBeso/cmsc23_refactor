@@ -47,6 +47,7 @@ class TasksView extends StatelessWidget {
           Widget content;
           // what would be on it?
           if (snapshot.hasData) {
+            print(snapshot.data);
             if (snapshot.data!.isNotEmpty) {
               content = _taskListWidget(snapshot.data!);
             } else {
@@ -118,7 +119,15 @@ class TasksView extends StatelessWidget {
   Widget _errorWidget() {
     return Center(
       child: Column(
-        children: [Icon(Icons.error), Text('Failed to fetch data')],
+        children: [
+          SizedBox(
+            height: 24,
+          ),
+          Text(
+            'Failed to fetch data',
+            style: TextStyle(fontSize: 20),
+          )
+        ],
       ),
     );
   }
@@ -137,8 +146,13 @@ class TasksView extends StatelessWidget {
     return Center(
       child: Column(
         children: [
-          Icon(Icons.add_box),
-          Text('Make your day exciting by adding a new task!')
+          SizedBox(
+            height: 24,
+          ),
+          Text(
+            'No tasks to show',
+            style: TextStyle(fontSize: 20),
+          )
         ],
       ),
     );
