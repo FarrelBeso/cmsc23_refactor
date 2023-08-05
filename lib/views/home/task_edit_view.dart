@@ -10,14 +10,14 @@ import 'package:todo_refactor/utilities/auth_utils.dart';
 import 'package:todo_refactor/utilities/task_utils.dart';
 import 'package:uuid/uuid.dart';
 
-class TaskAddView extends StatefulWidget {
-  const TaskAddView({super.key});
+class TaskEditView extends StatefulWidget {
+  const TaskEditView({super.key});
 
   @override
-  State<TaskAddView> createState() => _TaskAddViewState();
+  State<TaskEditView> createState() => _TaskEditViewState();
 }
 
-class _TaskAddViewState extends State<TaskAddView> {
+class _TaskEditViewState extends State<TaskEditView> {
   TextEditingController nameController = TextEditingController();
   TaskStatus currentStatus = TaskStatus.notStarted;
   DateTime currentDeadline = DateTime.now();

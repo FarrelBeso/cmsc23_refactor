@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_refactor/model/constants.dart';
@@ -9,7 +7,6 @@ import 'package:todo_refactor/model/user_model.dart';
 import 'package:todo_refactor/provider/homepage_provider.dart';
 import 'package:todo_refactor/utilities/task_utils.dart';
 import 'package:todo_refactor/utilities/user_utils.dart';
-import 'package:todo_refactor/views/home/home_view.dart';
 
 class TasksView extends StatelessWidget {
   const TasksView({super.key});

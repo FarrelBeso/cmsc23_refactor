@@ -7,7 +7,7 @@ import 'package:todo_refactor/provider/homepage_provider.dart';
 import 'package:todo_refactor/utilities/auth_utils.dart';
 import 'package:todo_refactor/views/authentication/login_view.dart';
 import 'package:todo_refactor/views/home/personal_profile_view.dart';
-import 'package:todo_refactor/views/home/task_add.dart';
+import 'package:todo_refactor/views/home/task_add_view.dart';
 import 'package:todo_refactor/views/home/tasks_all_view.dart';
 
 class HomeView extends StatefulWidget {
