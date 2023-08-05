@@ -33,9 +33,7 @@ class TasksView extends StatelessWidget {
             ),
           ),
           Divider(),
-          Expanded(
-              // to here
-              ),
+          _futureBuilderWrapper()
         ],
       ),
     );
@@ -46,7 +44,16 @@ class TasksView extends StatelessWidget {
     return FutureBuilder(
         future: _cardInfoList(),
         builder: ((context, snapshot) {
+          Widget content;
           // what would be on it?
+          if (snapshot.hasData) {
+            content = _taskListWidget(snapshot.data!);
+          } else if (snapshot.hasError) {
+            content = _errorWidget();
+          } else {
+            content = _loadingWidget();
+          }
+          return Expanded(child: content);
         }));
   }
 
@@ -102,6 +109,24 @@ class TasksView extends StatelessWidget {
             ),
           );
         });
+  }
+
+  Widget _errorWidget() {
+    return Center(
+      child: Column(
+        children: [Icon(Icons.error), Text('Failed to fetch data')],
+      ),
+    );
+  }
+
+  Widget _loadingWidget() {
+    return Center(
+      child: SizedBox(
+        width: 60,
+        height: 60,
+        child: CircularProgressIndicator(),
+      ),
+    );
   }
 
   // fetch card info list
