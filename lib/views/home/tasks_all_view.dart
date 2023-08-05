@@ -47,7 +47,6 @@ class TasksView extends StatelessWidget {
           Widget content;
           // what would be on it?
           if (snapshot.hasData) {
-            print(snapshot.data);
             if (snapshot.data!.isNotEmpty) {
               content = _taskListWidget(snapshot.data!);
             } else {
@@ -66,7 +65,7 @@ class TasksView extends StatelessWidget {
   Widget _taskListWidget(List<_CardInfo> cardinfolist) {
     return ListView.separated(
         padding: EdgeInsets.all(16),
-        itemCount: 15,
+        itemCount: cardinfolist.length,
         separatorBuilder: (context, index) {
           return Divider();
         },
@@ -164,24 +163,28 @@ class TasksView extends StatelessWidget {
     // first get the list
     List<_CardInfo> cardlist = [];
     res = await TaskUtils().getTaskList();
-    if (!res.success) print(res.message);
-    for (TaskModel task in res.content) {
-      // also fetch the name while at it
-      res = await UserUtils().getUser(task.ownerId!);
-      String fullname;
-      if (res.success) {
-        UserModel user = res.content;
-        fullname = '${user.firstName} ${user.lastName}';
-      } else {
-        fullname = 'N/A';
-      }
+    if (!res.success) {
+      print(res.message);
+    } else {
+      for (TaskModel task in res.content) {
+        // also fetch the name while at it
+        res = await UserUtils().getUser(task.ownerId!);
+        String fullname;
+        if (res.success) {
+          UserModel user = res.content;
+          fullname = '${user.firstName} ${user.lastName}';
+        } else {
+          fullname = 'N/A';
+        }
 
-      // then finally add all of them to the cardlist
-      cardlist.add(_CardInfo(
-          taskName: task.taskName,
-          taskOwner: fullname,
-          taskStatus: TaskStatus.fetchFromName(task.status!)));
+        // then finally add all of them to the cardlist
+        cardlist.add(_CardInfo(
+            taskName: task.taskName,
+            taskOwner: fullname,
+            taskStatus: TaskStatus.fetchFromName(task.status!)));
+      }
     }
+
     return cardlist;
   }
 }

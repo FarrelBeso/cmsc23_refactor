@@ -18,7 +18,7 @@ class TasksAPI {
   // fetch task ids of the given user
   Future<List<String>> getTaskIdsFromUser(String id) async {
     List<String> taskIds = [];
-    db
+    await db
         .collection("tasks")
         .where("ownerId",
             isEqualTo: id) // should be adjusted to include friends
@@ -28,6 +28,7 @@ class TasksAPI {
         taskIds.add(docSnapshot.id);
       }
     });
+
     return taskIds;
   }
 
