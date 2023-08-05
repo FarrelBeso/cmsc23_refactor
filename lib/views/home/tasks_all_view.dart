@@ -11,23 +11,6 @@ import 'package:todo_refactor/utilities/user_utils.dart';
 class TasksView extends StatelessWidget {
   const TasksView({super.key});
 
-  // mock data
-  static const List titles = ['Task A', 'Task B', 'Task C'];
-  static const List status = [
-    'Not Started',
-    'Working',
-    'Done',
-    'Late',
-    'Done Late'
-  ];
-  static const List statusColors = [
-    Colors.black45,
-    Colors.yellow,
-    Colors.green,
-    Colors.red,
-    Colors.orange
-  ];
-
   @override
   Widget build(BuildContext context) {
     // create 15 random tasks
@@ -51,59 +34,74 @@ class TasksView extends StatelessWidget {
           ),
           Divider(),
           Expanded(
-            child: ListView.separated(
-                padding: EdgeInsets.all(16),
-                itemCount: 15,
-                separatorBuilder: (context, index) {
-                  return Divider();
-                },
-                itemBuilder: (BuildContext context, int index) {
-                  return InkWell(
-                    onTap: () {},
-                    child: Container(
-                      padding: EdgeInsets.all(16),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                              child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                titles[Random().nextInt(3)],
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 18),
-                              ),
-                              Text(
-                                'First Last',
-                                style: TextStyle(fontSize: 14),
-                              ),
-                            ],
-                          )),
-                          Container(
-                            child: Row(
-                              children: [
-                                Container(
-                                  margin: EdgeInsets.all(5),
-                                  width: 10.0,
-                                  height: 10.0,
-                                  decoration: BoxDecoration(
-                                      color: statusColors[Random().nextInt(5)],
-                                      shape: BoxShape.circle),
-                                ),
-                                Text(status[Random().nextInt(5)]),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                }),
-          ),
+              // to here
+              ),
         ],
       ),
     );
+  }
+
+  // future builder wrapper
+  Widget _futureBuilderWrapper() {
+    return FutureBuilder(
+        future: _cardInfoList(),
+        builder: ((context, snapshot) {
+          // what would be on it?
+        }));
+  }
+
+  // the info list
+  Widget _taskListWidget(List<_CardInfo> cardinfolist) {
+    return ListView.separated(
+        padding: EdgeInsets.all(16),
+        itemCount: 15,
+        separatorBuilder: (context, index) {
+          return Divider();
+        },
+        itemBuilder: (BuildContext context, int index) {
+          _CardInfo cardinfo = cardinfolist[index];
+          return InkWell(
+            onTap: () {},
+            child: Container(
+              padding: EdgeInsets.all(16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                      child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        cardinfo.taskName!,
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 18),
+                      ),
+                      Text(
+                        cardinfo.taskOwner!,
+                        style: TextStyle(fontSize: 14),
+                      ),
+                    ],
+                  )),
+                  Container(
+                    child: Row(
+                      children: [
+                        Container(
+                          margin: EdgeInsets.all(5),
+                          width: 10.0,
+                          height: 10.0,
+                          decoration: BoxDecoration(
+                              color: cardinfo.taskStatus!.color,
+                              shape: BoxShape.circle),
+                        ),
+                        Text(cardinfo.taskStatus!.label),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        });
   }
 
   // fetch card info list
@@ -116,11 +114,18 @@ class TasksView extends StatelessWidget {
     for (TaskModel task in res.content) {
       // also fetch the name while at it
       res = await UserUtils().getUser(task.ownerId!);
-      String name = res.success ? (res.content as UserModel).username! : 'N/A';
+      String fullname;
+      if (res.success) {
+        UserModel user = res.content;
+        fullname = '${user.firstName} ${user.lastName}';
+      } else {
+        fullname = 'N/A';
+      }
+
       // then finally add all of them to the cardlist
       cardlist.add(_CardInfo(
           taskName: task.taskName,
-          taskOwner: name,
+          taskOwner: fullname,
           taskStatus: TaskStatus.fetchFromName(task.status!)));
     }
     return cardlist;
