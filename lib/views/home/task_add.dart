@@ -6,7 +6,7 @@ import 'package:todo_refactor/model/response_model.dart';
 import 'package:todo_refactor/model/task_model.dart';
 import 'package:todo_refactor/provider/auth_provider.dart';
 import 'package:todo_refactor/provider/homepage_provider.dart';
-import 'package:todo_refactor/provider/task_provider.dart';
+import 'package:todo_refactor/utilities/task_utils.dart';
 import 'package:uuid/uuid.dart';
 
 class TaskAddView extends StatefulWidget {
@@ -206,7 +206,7 @@ class _TaskAddViewState extends State<TaskAddView> {
                       onPressed: () {
                         // send the new task
                         if (_formKey.currentState!.validate()) {
-                          _addTaskWrapper(context);
+                          _addTaskWrapper();
                         }
                       },
                       icon: Icon(Icons.check)),
@@ -232,12 +232,11 @@ class _TaskAddViewState extends State<TaskAddView> {
   // useful functions
 
   // wrapper for adding the tasks
-  Future<void> _addTaskWrapper(BuildContext context) async {
+  Future<void> _addTaskWrapper() async {
     // first set the task model
     TaskModel task = _setNewTask(context);
     // then check for the response
-    ResponseModel response =
-        await Provider.of<TaskProvider>(context, listen: false).addTask(task);
+    ResponseModel response = await TaskUtils().addTask(task);
     if (context.mounted) {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(response.message!)));

@@ -1,9 +1,8 @@
-import 'package:flutter/material.dart';
 import 'package:todo_refactor/backend/user_api.dart';
 import 'package:todo_refactor/model/response_model.dart';
 import 'package:todo_refactor/model/user_model.dart';
 
-class UserProvider extends ChangeNotifier {
+class UserProvider {
   Future<ResponseModel> getUser(String id) async {
     UserModel? usermodel;
     await UserAPI().getUser(id).then((value) {
