@@ -47,7 +47,11 @@ class TasksView extends StatelessWidget {
           Widget content;
           // what would be on it?
           if (snapshot.hasData) {
-            content = _taskListWidget(snapshot.data!);
+            if (snapshot.data!.isNotEmpty) {
+              content = _taskListWidget(snapshot.data!);
+            } else {
+              content = _emptyListWidget();
+            }
           } else if (snapshot.hasError) {
             content = _errorWidget();
           } else {
@@ -125,6 +129,17 @@ class TasksView extends StatelessWidget {
         width: 60,
         height: 60,
         child: CircularProgressIndicator(),
+      ),
+    );
+  }
+
+  Widget _emptyListWidget() {
+    return Center(
+      child: Column(
+        children: [
+          Icon(Icons.add_box),
+          Text('Make your day exciting by adding a new task!')
+        ],
       ),
     );
   }
