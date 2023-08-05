@@ -8,24 +8,37 @@ import 'package:todo_refactor/model/user_model.dart';
 import 'package:todo_refactor/provider/homepage_provider.dart';
 import 'package:todo_refactor/utilities/auth_utils.dart';
 import 'package:todo_refactor/utilities/task_utils.dart';
+import 'package:todo_refactor/utilities/user_utils.dart';
 import 'package:uuid/uuid.dart';
 
-class TaskInfoView extends StatefulWidget {
-  const TaskInfoView({super.key});
+class TaskInfoView extends StatelessWidget {
+  const TaskInfoView({super.key, required this.currentTaskId});
 
-  @override
-  State<TaskInfoView> createState() => _TaskInfoViewState();
-}
+  final String currentTaskId;
 
-class _TaskInfoViewState extends State<TaskInfoView> {
   @override
   Widget build(BuildContext context) {
-    return Expanded(child: child);
+    return Expanded(
+        child: FutureBuilder(
+      future: _fetchTaskInfo(),
+      builder: (context, snapshot) {
+        Widget displayWidget;
+        if (snapshot.hasData) {
+          _TaskInfo taskinfo = snapshot.data!;
+          displayWidget = _mainDisplayWidget(taskinfo, context);
+        } else if (snapshot.hasError) {
+          displayWidget = _errorWidget();
+        } else {
+          displayWidget = _loadingWidget();
+        }
+        return displayWidget;
+      },
+    ));
   }
 
 // the main component, call this when the future builder
 // has been loaded
-  Widget _mainDisplayWidget(_TaskInfo taskinfo) {
+  Widget _mainDisplayWidget(_TaskInfo taskinfo, BuildContext context) {
     // parse info
     TaskModel taskmodel = taskinfo.taskmodel!;
     String ownerFullName = taskinfo.ownerFullName!;
@@ -173,7 +186,77 @@ class _TaskInfoViewState extends State<TaskInfoView> {
     );
   }
 
+  Widget _errorWidget() {
+    return Center(
+      child: Column(
+        children: [
+          SizedBox(
+            height: 24,
+          ),
+          Text(
+            'Failed to fetch data',
+            style: TextStyle(fontSize: 20),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _loadingWidget() {
+    return Center(
+      child: SizedBox(
+        width: 60,
+        height: 60,
+        child: CircularProgressIndicator(),
+      ),
+    );
+  }
+
   // other aux functions
+
+  // get the necessary data
+  Future<_TaskInfo?> _fetchTaskInfo() async {
+    ResponseModel res;
+    _TaskInfo? taskinfo;
+    // ingredients
+    TaskModel? task;
+    String? ownerName, lastEditorName;
+    // first get the task name
+    await TaskUtils().getTaskFromId(currentTaskId).then((res) {
+      if (res.success) {
+        task = res.content;
+        return UserUtils().getUser(task!.ownerId!);
+      } else {
+        throw 'Failed to retrieve task from id';
+      }
+      // then the owner name
+    }).then((res) {
+      if (res.success) {
+        ownerName =
+            '${(res.content as UserModel).firstName} ${(res.content as UserModel).lastName}';
+        return UserUtils().getUser(task!.lastEditUserId!);
+      } else {
+        throw 'Failed to fetch task owner name';
+      }
+      // then the last editor name
+    }).then((res) {
+      if (res.success) {
+        lastEditorName =
+            '${(res.content as UserModel).firstName} ${(res.content as UserModel).lastName}';
+        // then combine the components
+        taskinfo = _TaskInfo(
+            taskmodel: task,
+            ownerFullName: ownerName,
+            lastEditorFullName: lastEditorName);
+      } else {
+        throw 'Failed to fetch task last editor name';
+      }
+    }).onError((error, stackTrace) {
+      print(error);
+    });
+    return taskinfo;
+  }
+
   // based on the date and time deadline
   String _dateTimeFormat(DateTime date) {
     // String to be appended

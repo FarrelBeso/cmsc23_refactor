@@ -38,4 +38,17 @@ class TaskUtils {
     response.content = tasklist;
     return response;
   }
+
+  // get task info of one task
+  Future<ResponseModel> getTaskFromId(String id) async {
+    try {
+      TaskModel? task = await TasksAPI().getTaskInfo(id);
+      if (task == null) throw 'Failed to fetch task';
+
+      return ResponseModel(success: true, content: task);
+    } catch (e) {
+      print(e);
+    }
+    return ResponseModel(success: false);
+  }
 }
