@@ -32,29 +32,31 @@ class _TaskAddViewState extends State<TaskAddView> {
     final List<DropdownMenuItem<TaskStatus>> taskStatusEntries =
         <DropdownMenuItem<TaskStatus>>[];
     for (final TaskStatus status in TaskStatus.values) {
-      taskStatusEntries.add(DropdownMenuItem<TaskStatus>(
-        value: status,
-        child: Container(
-          child: Row(
-            children: [
-              Container(
-                margin: EdgeInsets.all(5),
-                width: 10,
-                height: 10,
-                decoration:
-                    BoxDecoration(color: status.color, shape: BoxShape.circle),
-              ),
-              SizedBox(
-                width: 16,
-              ),
-              Text(
-                status.label,
-                style: TextStyle(fontSize: 16),
-              )
-            ],
+      if (status.selectable) {
+        taskStatusEntries.add(DropdownMenuItem<TaskStatus>(
+          value: status,
+          child: Container(
+            child: Row(
+              children: [
+                Container(
+                  margin: EdgeInsets.all(5),
+                  width: 10,
+                  height: 10,
+                  decoration: BoxDecoration(
+                      color: status.color, shape: BoxShape.circle),
+                ),
+                SizedBox(
+                  width: 16,
+                ),
+                Text(
+                  status.label,
+                  style: TextStyle(fontSize: 16),
+                )
+              ],
+            ),
           ),
-        ),
-      ));
+        ));
+      }
     }
 
     return Form(

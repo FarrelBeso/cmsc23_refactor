@@ -195,5 +195,8 @@ class _CardInfo {
   String? taskOwner;
   TaskStatus? taskStatus;
 
-  _CardInfo({this.taskName, this.taskOwner, this.taskStatus});
+  _CardInfo(
+      {required this.taskName,
+      required this.taskOwner,
+      required this.taskStatus});
 }
