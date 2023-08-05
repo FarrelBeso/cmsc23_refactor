@@ -55,12 +55,12 @@ class TaskInfoView extends StatelessWidget {
                 ),
                 _taskNameWidget(taskmodel.taskName!),
                 _taskOwnerWidget(ownerFullName),
-                Divider(),
                 SizedBox(
-                  height: 10,
+                  height: 8,
                 ),
+                Divider(),
                 Container(
-                  padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
@@ -112,7 +112,7 @@ class TaskInfoView extends StatelessWidget {
   Widget _statusWidget(String status) {
     TaskStatus taskstatus = TaskStatus.fetchFromName(status);
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 8),
+      padding: EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
           color: Colors.white, borderRadius: BorderRadius.circular(24)),
       child: Row(
@@ -125,11 +125,11 @@ class TaskInfoView extends StatelessWidget {
                 BoxDecoration(color: taskstatus.color, shape: BoxShape.circle),
           ),
           SizedBox(
-            width: 16,
+            width: 8,
           ),
           Text(
             taskstatus.label,
-            style: TextStyle(fontSize: 16),
+            style: TextStyle(fontSize: 12),
           )
         ],
       ),
@@ -138,7 +138,7 @@ class TaskInfoView extends StatelessWidget {
 
   Widget _deadlineWidget(DateTime deadline) {
     return Text(
-      _dateTimeFormat(deadline!),
+      'Due ${_dateTimeFormat(deadline)}',
       style: TextStyle(color: Colors.white),
     );
   }
@@ -146,9 +146,11 @@ class TaskInfoView extends StatelessWidget {
   Widget _descriptionWidget(String description) {
     return Container(
       padding: EdgeInsets.all(16),
+      alignment: Alignment.topLeft,
       child: Text(
         description,
         style: TextStyle(color: Colors.black45, fontSize: 14),
+        textAlign: TextAlign.justify,
         maxLines: 16,
       ),
     );
