@@ -3,8 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:todo_refactor/model/constants.dart';
 import 'package:todo_refactor/model/response_model.dart';
 import 'package:todo_refactor/model/user_model.dart';
-import 'package:todo_refactor/provider/auth_provider.dart';
 import 'package:todo_refactor/provider/homepage_provider.dart';
+import 'package:todo_refactor/utilities/auth_utils.dart';
 import 'package:todo_refactor/views/authentication/login_view.dart';
 import 'package:todo_refactor/views/home/personal_profile_view.dart';
 import 'package:todo_refactor/views/home/task_add.dart';
@@ -36,9 +36,7 @@ class _HomeViewState extends State<HomeView> {
                     ))),
             onDestinationSelected: (index) async {
               if (index == 4) {
-                ResponseModel response =
-                    await Provider.of<AuthProvider>(context, listen: false)
-                        .signOutWrapper();
+                ResponseModel response = await AuthUtils().signOut();
                 // put the message in a snackbar
                 if (context.mounted) {
                   ScaffoldMessenger.of(context)
