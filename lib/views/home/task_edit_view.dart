@@ -22,9 +22,6 @@ class _TaskEditViewState extends State<TaskEditView> {
   TextEditingController descriptionController = TextEditingController();
   late TaskStatus currentStatus;
   late DateTime currentDeadline;
-  // default values
-  late TaskStatus defaultStatus;
-  late DateTime defaultDeadline;
 
   final _formKey = GlobalKey<FormState>();
 
@@ -35,6 +32,8 @@ class _TaskEditViewState extends State<TaskEditView> {
 
   @override
   Widget build(BuildContext context) {
+    // initialize here
+    _initWrapper();
     return Form(
       key: _formKey,
       child: Expanded(
@@ -113,17 +112,20 @@ class _TaskEditViewState extends State<TaskEditView> {
     );
   }
 
+  void _initWrapper() {
+    _valuesInit();
+    _setStatusList();
+  }
+
   // value initialization
   void _valuesInit() {
     // fetch the task info here from the provider
-    currentTask =
-        Provider.of<HomepageProvider>(context, listen: false).arguments;
-    // set the default values here
-    defaultStatus = TaskStatus.fetchFromName(currentTask.status!);
-    defaultDeadline = currentTask.deadline!;
-    // initialize
-    currentStatus = defaultStatus;
-    currentDeadline = defaultDeadline;
+    currentTask = Provider.of<HomepageProvider>(context).arguments;
+    // init
+    currentStatus = TaskStatus.fetchFromName(currentTask.status!);
+    currentDeadline = currentTask.deadline!;
+    // set the init text for the title
+    nameController.text = currentTask.taskName!;
   }
 
   // set the status choice list
@@ -162,7 +164,6 @@ class _TaskEditViewState extends State<TaskEditView> {
   // (some) widgets have arguments for their default values
   Widget _taskNameEdit() {
     return TextFormField(
-      initialValue: currentTask.taskName,
       controller: nameController,
       validator: (value) {
         if (value == null || value.isEmpty) {
@@ -190,7 +191,7 @@ class _TaskEditViewState extends State<TaskEditView> {
       decoration: BoxDecoration(
           color: Colors.white, borderRadius: BorderRadius.circular(24)),
       child: DropdownButton(
-          value: TaskStatus.fetchFromName(currentTask.status!), // initial value
+          value: currentStatus, // initial value
           items: taskStatusEntries,
           underline: Container(),
           onChanged: (value) {
