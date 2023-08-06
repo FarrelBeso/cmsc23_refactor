@@ -20,47 +20,22 @@ class TaskEditView extends StatefulWidget {
 class _TaskEditViewState extends State<TaskEditView> {
   // should be supplied current info
   TextEditingController nameController = TextEditingController();
-  TaskStatus currentStatus = TaskStatus.notStarted;
-  DateTime currentDeadline = DateTime.now();
   TextEditingController descriptionController = TextEditingController();
+  late TaskStatus currentStatus;
+  late DateTime currentDeadline;
+  // default values
+  late TaskStatus defaultStatus;
+  late DateTime defaultDeadline;
 
   final _formKey = GlobalKey<FormState>();
 
   final List<DropdownMenuItem<TaskStatus>> taskStatusEntries =
       <DropdownMenuItem<TaskStatus>>[];
 
+  late TaskModel currentTask;
+
   @override
   Widget build(BuildContext context) {
-    // build the dropdown items here
-    for (final TaskStatus status in TaskStatus.values) {
-      if (status.selectable) {
-        taskStatusEntries.add(DropdownMenuItem<TaskStatus>(
-          value: status,
-          child: Container(
-            child: Row(
-              children: [
-                Container(
-                  margin: EdgeInsets.all(5),
-                  width: 10,
-                  height: 10,
-                  decoration: BoxDecoration(
-                      color: status.color, shape: BoxShape.circle),
-                ),
-                SizedBox(
-                  width: 16,
-                ),
-                Text(
-                  status.label,
-                  style: TextStyle(fontSize: 16),
-                )
-              ],
-            ),
-          ),
-        ));
-      }
-    }
-
-    //
     return Form(
       key: _formKey,
       child: Expanded(
@@ -94,7 +69,7 @@ class _TaskEditViewState extends State<TaskEditView> {
                               SizedBox(
                                 width: 20,
                               ),
-                              _deadlineEdit()
+                              _deadlineEdit(context)
                             ],
                           ),
                         ),
@@ -125,9 +100,9 @@ class _TaskEditViewState extends State<TaskEditView> {
                   ),
                   IconButton.outlined(
                       onPressed: () {
-                        // return back to home
+                        // return back to task info view
                         Provider.of<HomepageProvider>(context, listen: false)
-                            .setView(MainPageViews.taskAll);
+                            .setView(MainPageViews.taskInfo);
                       },
                       icon: Icon(Icons.close))
                 ],
@@ -139,9 +114,56 @@ class _TaskEditViewState extends State<TaskEditView> {
     );
   }
 
+  // value initialization
+  void _valuesInit() {
+    // fetch the task info here from the provider
+    currentTask =
+        Provider.of<HomepageProvider>(context, listen: false).arguments;
+    // set the default values here
+    defaultStatus = TaskStatus.fetchFromName(currentTask.status!);
+    defaultDeadline = currentTask.deadline!;
+    // initialize
+    currentStatus = defaultStatus;
+    currentDeadline = defaultDeadline;
+  }
+
+  // set the status choice list
+  void _setStatusList() {
+    // build the dropdown items here
+    for (final TaskStatus status in TaskStatus.values) {
+      if (status.selectable) {
+        taskStatusEntries.add(DropdownMenuItem<TaskStatus>(
+          value: status,
+          child: Container(
+            child: Row(
+              children: [
+                Container(
+                  margin: EdgeInsets.all(5),
+                  width: 10,
+                  height: 10,
+                  decoration: BoxDecoration(
+                      color: status.color, shape: BoxShape.circle),
+                ),
+                SizedBox(
+                  width: 16,
+                ),
+                Text(
+                  status.label,
+                  style: TextStyle(fontSize: 16),
+                )
+              ],
+            ),
+          ),
+        ));
+      }
+    }
+  }
+
   // widgets
+  // (some) widgets have arguments for their default values
   Widget _taskNameEdit() {
     return TextFormField(
+      initialValue: currentTask.taskName,
       controller: nameController,
       validator: (value) {
         if (value == null || value.isEmpty) {
@@ -152,7 +174,6 @@ class _TaskEditViewState extends State<TaskEditView> {
       cursorColor: Colors.white,
       decoration: InputDecoration(
         border: InputBorder.none,
-        labelText: 'Task Name',
         labelStyle: TextStyle(color: Colors.white60),
         errorStyle: TextStyle(color: Colors.white70),
       ),
@@ -170,7 +191,7 @@ class _TaskEditViewState extends State<TaskEditView> {
       decoration: BoxDecoration(
           color: Colors.white, borderRadius: BorderRadius.circular(24)),
       child: DropdownButton(
-          value: currentStatus,
+          value: TaskStatus.fetchFromName(currentTask.status!), // initial value
           items: taskStatusEntries,
           underline: Container(),
           onChanged: (value) {
@@ -181,7 +202,7 @@ class _TaskEditViewState extends State<TaskEditView> {
     );
   }
 
-  Widget _deadlineEdit() {
+  Widget _deadlineEdit(BuildContext context) {
     return OutlinedButton(
       onPressed: () {
         _dateTimeSelectWrapper(context);
@@ -201,7 +222,7 @@ class _TaskEditViewState extends State<TaskEditView> {
       child: TextFormField(
         controller: descriptionController,
         decoration: InputDecoration(
-            hintText: 'Task Description (optional)',
+            hintText: currentTask.description,
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(8))),
         style: TextStyle(color: Colors.black45, fontSize: 14),
         keyboardType: TextInputType.multiline,
