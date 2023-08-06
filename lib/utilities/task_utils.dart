@@ -17,6 +17,18 @@ class TaskUtils {
     return response;
   }
 
+// practically the same as add task
+  Future<ResponseModel> updateTask(TaskModel taskmodel) async {
+    ResponseModel response = ResponseModel(
+        success: true, message: 'Task updated successfully'); // default value
+    await TasksAPI().updateTask(taskmodel).onError((error, stackTrace) {
+      print(error);
+      response =
+          ResponseModel(success: false, message: 'Failed to update task');
+    });
+    return response;
+  }
+
   // get list of tasks
   Future<ResponseModel> getTaskList() async {
     ResponseModel response = ResponseModel(success: true); // default

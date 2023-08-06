@@ -8,7 +8,6 @@ import 'package:todo_refactor/model/user_model.dart';
 import 'package:todo_refactor/provider/homepage_provider.dart';
 import 'package:todo_refactor/utilities/auth_utils.dart';
 import 'package:todo_refactor/utilities/task_utils.dart';
-import 'package:uuid/uuid.dart';
 
 class TaskEditView extends StatefulWidget {
   const TaskEditView({super.key});
@@ -91,7 +90,7 @@ class _TaskEditViewState extends State<TaskEditView> {
                       onPressed: () {
                         // send the new task
                         if (_formKey.currentState!.validate()) {
-                          _addTaskWrapper();
+                          _editTaskWrapper(context);
                         }
                       },
                       icon: Icon(Icons.check)),
@@ -233,15 +232,22 @@ class _TaskEditViewState extends State<TaskEditView> {
   // useful functions
 
   // wrapper for adding the tasks
-  Future<void> _addTaskWrapper() async {
+  Future<void> _editTaskWrapper(BuildContext context) async {
+    late TaskModel updatedtask; // for future reference
     // first set the task model
-    await _setNewTask().then((task) {
-      if (task == null) throw 'Task Creation Failed';
-      return TaskUtils().addTask(task);
+    await _setUpdatedTask().then((task) {
+      if (task == null) throw 'Task update failed';
+      updatedtask = task;
+      return TaskUtils().updateTask(task);
     }).then((res) {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(res.message!)));
-      if (res.success) _resetTextFields();
+      // go back to the main screen if updating is successful
+      if (res.success) {
+        // go back to the info with the updated data
+        Provider.of<HomepageProvider>(context).setArgument(updatedtask);
+        Provider.of<HomepageProvider>(context).setView(MainPageViews.taskInfo);
+      }
     }).onError((error, stackTrace) {
       print(error);
     });
@@ -253,15 +259,13 @@ class _TaskEditViewState extends State<TaskEditView> {
   }
 
   // transform the input
-  Future<TaskModel?> _setNewTask() async {
-    TaskModel? task;
-    // set the task
-    String id = Uuid().v4();
+  Future<TaskModel?> _setUpdatedTask() async {
+    TaskModel task = currentTask;
     // fetch the current user
     ResponseModel res = await AuthUtils().fetchCurrentUser();
     if (res.success) {
       task = TaskModel(
-        id: id,
+        id: task.id,
         taskName: nameController.text,
         status: currentStatus.label,
         deadline: currentDeadline,

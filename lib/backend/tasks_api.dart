@@ -15,6 +15,18 @@ class TasksAPI {
     await docRef.set(taskmodel);
   }
 
+  // make sure other fields are complete here such as the time stamp
+  // this is similar to add task
+  Future<void> updateTask(TaskModel taskmodel) async {
+    final docRef = db
+        .collection("tasks")
+        .withConverter(
+            fromFirestore: TaskModel.fromFirestore,
+            toFirestore: (TaskModel model, options) => model.toFirestore())
+        .doc(taskmodel.id);
+    await docRef.set(taskmodel);
+  }
+
   // fetch task ids of the given user
   Future<List<String>> getTaskIdsFromUser(String id) async {
     List<String> taskIds = [];
