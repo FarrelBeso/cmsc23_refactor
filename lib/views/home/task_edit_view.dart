@@ -245,8 +245,10 @@ class _TaskEditViewState extends State<TaskEditView> {
       // go back to the main screen if updating is successful
       if (res.success) {
         // go back to the info with the updated data
-        Provider.of<HomepageProvider>(context).setArgument(updatedtask);
-        Provider.of<HomepageProvider>(context).setView(MainPageViews.taskInfo);
+        Provider.of<HomepageProvider>(context, listen: false)
+            .setArgument(updatedtask);
+        Provider.of<HomepageProvider>(context, listen: false)
+            .setView(MainPageViews.taskInfo);
       }
     }).onError((error, stackTrace) {
       print(error);
