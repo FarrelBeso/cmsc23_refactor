@@ -19,7 +19,7 @@ class TaskAddView extends StatefulWidget {
 
 class _TaskAddViewState extends State<TaskAddView> {
   TextEditingController nameController = TextEditingController();
-  TaskStatus currentStatus = TaskStatus.notStarted;
+  late TaskStatus currentStatus; // to be set at the first item
   DateTime currentDeadline = DateTime.now();
   TextEditingController descriptionController = TextEditingController();
 
@@ -30,34 +30,8 @@ class _TaskAddViewState extends State<TaskAddView> {
 
   @override
   Widget build(BuildContext context) {
-    // build the dropdown items here
-    for (final TaskStatus status in TaskStatus.values) {
-      if (status.selectable) {
-        taskStatusEntries.add(DropdownMenuItem<TaskStatus>(
-          value: status,
-          child: Container(
-            child: Row(
-              children: [
-                Container(
-                  margin: EdgeInsets.all(5),
-                  width: 10,
-                  height: 10,
-                  decoration: BoxDecoration(
-                      color: status.color, shape: BoxShape.circle),
-                ),
-                SizedBox(
-                  width: 16,
-                ),
-                Text(
-                  status.label,
-                  style: TextStyle(fontSize: 16),
-                )
-              ],
-            ),
-          ),
-        ));
-      }
-    }
+// initialize here
+    _initWrapper();
 
     //
     return Form(
@@ -136,6 +110,49 @@ class _TaskAddViewState extends State<TaskAddView> {
         ),
       )),
     );
+  }
+
+  // initialize
+  void _initWrapper() {
+    _setStatusList();
+    _valuesInit();
+  }
+
+  // value initialization
+  void _valuesInit() {
+    currentStatus = taskStatusEntries.first.value!;
+  }
+
+  // set the status choice list
+  void _setStatusList() {
+    // build the dropdown items here
+    for (final TaskStatus status in TaskStatus.values) {
+      if (status.selectable) {
+        taskStatusEntries.add(DropdownMenuItem<TaskStatus>(
+          value: status,
+          child: Container(
+            child: Row(
+              children: [
+                Container(
+                  margin: EdgeInsets.all(5),
+                  width: 10,
+                  height: 10,
+                  decoration: BoxDecoration(
+                      color: status.color, shape: BoxShape.circle),
+                ),
+                SizedBox(
+                  width: 16,
+                ),
+                Text(
+                  status.label,
+                  style: TextStyle(fontSize: 16),
+                )
+              ],
+            ),
+          ),
+        ));
+      }
+    }
   }
 
   // widgets
