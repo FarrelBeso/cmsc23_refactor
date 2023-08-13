@@ -1,5 +1,6 @@
 import 'package:todo_refactor/backend/auth_api.dart';
 import 'package:todo_refactor/backend/tasks_api.dart';
+import 'package:todo_refactor/backend/user_api.dart';
 import 'package:todo_refactor/model/response_model.dart';
 import 'package:todo_refactor/model/task_model.dart';
 
@@ -25,6 +26,17 @@ class TaskUtils {
       print(error);
       response =
           ResponseModel(success: false, message: 'Failed to update task');
+    });
+    return response;
+  }
+
+  Future<ResponseModel> removeTask(TaskModel taskModel) async {
+    ResponseModel response =
+        ResponseModel(success: true, message: 'Task deleted successfully');
+    await TasksAPI().removeTask(taskModel).onError((error, stackTrace) {
+      print(error);
+      response =
+          ResponseModel(success: false, message: 'Failed to delete task');
     });
     return response;
   }

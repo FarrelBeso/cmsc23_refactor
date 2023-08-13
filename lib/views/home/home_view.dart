@@ -23,81 +23,68 @@ class _HomeViewState extends State<HomeView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-          child: Row(
-        children: [
-          NavigationRail(
-            leading: Container(
-                padding: EdgeInsets.symmetric(vertical: 8),
-                child: IconButton(
-                    onPressed: () {},
-                    icon: Icon(
-                      Icons.menu,
-                    ))),
-            onDestinationSelected: (index) async {
-              if (index == 4) {
-                ResponseModel response = await AuthUtils().signOut();
-                // put the message in a snackbar
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context)
-                      .showSnackBar(SnackBar(content: Text(response.message!)));
+        body: SafeArea(
+            child: Row(
+          children: [
+            NavigationRail(
+              leading: Container(
+                  padding: EdgeInsets.symmetric(vertical: 8),
+                  child: IconButton(
+                      onPressed: () {},
+                      icon: Icon(
+                        Icons.menu,
+                      ))),
+              onDestinationSelected: (index) async {
+                if (index == 4) {
+                  ResponseModel response = await AuthUtils().signOut();
+                  // put the message in a snackbar
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(response.message!)));
+                  }
                 }
-              }
 
-              // default = changing panels
-              setState(() {
-                _selectedIndex = index;
-                _updateDisplayByIndex(index, context);
-              });
-            },
-            destinations: [
-              NavigationRailDestination(
-                  padding: EdgeInsets.symmetric(vertical: 8),
-                  icon: Icon(Icons.person),
-                  label: Text(
-                    'Profile',
-                  )),
-              NavigationRailDestination(
-                  padding: EdgeInsets.symmetric(vertical: 8),
-                  icon: Icon(Icons.group),
-                  label: Text('Users')),
-              NavigationRailDestination(
-                  padding: EdgeInsets.symmetric(vertical: 8),
-                  icon: Icon(Icons.home),
-                  label: Text('Tasks')),
-              NavigationRailDestination(
-                  padding: EdgeInsets.symmetric(vertical: 8),
-                  icon: Icon(Icons.mail),
-                  label: Text('Notifs')),
-              NavigationRailDestination(
-                  padding: EdgeInsets.symmetric(vertical: 8),
-                  icon: Icon(Icons.exit_to_app),
-                  label: Text('Logout')),
-            ],
-            selectedIndex: _selectedIndex,
-            groupAlignment: 0.0,
-            backgroundColor: Theme.of(context).primaryColorLight,
-          ),
-          Consumer<HomepageProvider>(builder: (context, provider, child) {
-            return Container(child: provider.currentView.view);
-          })
-        ],
-      )),
-      // this button is only visible on task all
-      floatingActionButton: Visibility(
-        visible: Provider.of<HomepageProvider>(context).currentView ==
-            MainPageViews.taskAll,
-        child: FloatingActionButton(
-          onPressed: () {
-            setState(() {
-              Provider.of<HomepageProvider>(context, listen: false)
-                  .setView(MainPageViews.taskAdd);
-            });
-          },
-          child: Icon(Icons.add),
-        ),
-      ),
-    );
+                // default = changing panels
+                setState(() {
+                  _selectedIndex = index;
+                  _updateDisplayByIndex(index, context);
+                });
+              },
+              destinations: [
+                NavigationRailDestination(
+                    padding: EdgeInsets.symmetric(vertical: 8),
+                    icon: Icon(Icons.person),
+                    label: Text(
+                      'Profile',
+                    )),
+                NavigationRailDestination(
+                    padding: EdgeInsets.symmetric(vertical: 8),
+                    icon: Icon(Icons.group),
+                    label: Text('Users')),
+                NavigationRailDestination(
+                    padding: EdgeInsets.symmetric(vertical: 8),
+                    icon: Icon(Icons.home),
+                    label: Text('Tasks')),
+                NavigationRailDestination(
+                    padding: EdgeInsets.symmetric(vertical: 8),
+                    icon: Icon(Icons.mail),
+                    label: Text('Notifs')),
+                NavigationRailDestination(
+                    padding: EdgeInsets.symmetric(vertical: 8),
+                    icon: Icon(Icons.exit_to_app),
+                    label: Text('Logout')),
+              ],
+              selectedIndex: _selectedIndex,
+              groupAlignment: 0.0,
+              backgroundColor: Theme.of(context).primaryColorLight,
+            ),
+            Consumer<HomepageProvider>(builder: (context, provider, child) {
+              return Container(child: provider.currentView.view);
+            })
+          ],
+        )),
+        // this button is only visible on task all
+        floatingActionButton: _floatingButtonBuilder());
   }
 
   // which to display, and update the provider
@@ -114,5 +101,22 @@ class _HomeViewState extends State<HomeView> {
     }
     // update the provider
     Provider.of<HomepageProvider>(context, listen: false).setView(view);
+  }
+
+  // the floating button depends on the state
+  Widget _floatingButtonBuilder() {
+    // is the button visible
+    return Visibility(
+        visible: Provider.of<HomepageProvider>(context).currentView ==
+            MainPageViews.taskAll,
+        child: FloatingActionButton(
+          onPressed: () {
+            setState(() {
+              Provider.of<HomepageProvider>(context, listen: false)
+                  .setView(MainPageViews.taskAdd);
+            });
+          },
+          child: Icon(Icons.add),
+        ));
   }
 }
