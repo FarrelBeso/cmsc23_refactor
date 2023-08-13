@@ -27,6 +27,12 @@ class TasksAPI {
     await docRef.set(taskmodel);
   }
 
+  // remove task, only the task and not the reference
+  Future<void> removeTask(TaskModel taskmodel) async {
+    final docRef = db.collection("tasks").doc(taskmodel.id);
+    await docRef.delete();
+  }
+
   // fetch task ids of the given user
   Future<List<String>> getTaskIdsFromUser(String id) async {
     List<String> taskIds = [];
