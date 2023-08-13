@@ -28,6 +28,9 @@ class _TaskAddViewState extends State<TaskAddView> {
   final List<DropdownMenuItem<TaskStatus>> taskStatusEntries =
       <DropdownMenuItem<TaskStatus>>[];
 
+  // call this if variables haven't been initialized properly
+  bool hasInit = false;
+
   @override
   Widget build(BuildContext context) {
 // initialize here
@@ -114,8 +117,12 @@ class _TaskAddViewState extends State<TaskAddView> {
 
   // initialize
   void _initWrapper() {
-    _setStatusList();
-    _valuesInit();
+    // only runs if it has not yet init
+    if (!hasInit) {
+      _setStatusList();
+      _valuesInit();
+      hasInit = true;
+    }
   }
 
   // value initialization

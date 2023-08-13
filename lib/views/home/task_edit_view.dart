@@ -30,6 +30,8 @@ class _TaskEditViewState extends State<TaskEditView> {
 
   late TaskModel currentTask;
 
+  bool hasInit = false;
+
   @override
   Widget build(BuildContext context) {
     // initialize here
@@ -113,8 +115,12 @@ class _TaskEditViewState extends State<TaskEditView> {
   }
 
   void _initWrapper() {
-    _valuesInit();
-    _setStatusList();
+    // only init for the first time
+    if (!hasInit) {
+      _valuesInit();
+      _setStatusList();
+      hasInit = true;
+    }
   }
 
   // value initialization
@@ -126,6 +132,8 @@ class _TaskEditViewState extends State<TaskEditView> {
     currentDeadline = currentTask.deadline!;
     // set the init text for the title
     nameController.text = currentTask.taskName!;
+    // and of the description
+    descriptionController.text = currentTask.description!;
   }
 
   // set the status choice list
@@ -222,7 +230,6 @@ class _TaskEditViewState extends State<TaskEditView> {
       child: TextFormField(
         controller: descriptionController,
         decoration: InputDecoration(
-            hintText: currentTask.description,
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(8))),
         style: TextStyle(color: Colors.black45, fontSize: 14),
         keyboardType: TextInputType.multiline,
