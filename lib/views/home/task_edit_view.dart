@@ -51,7 +51,11 @@ class _TaskEditViewState extends State<TaskEditView> {
                   SizedBox(
                     height: 24,
                   ),
-                  _taskNameEdit(),
+                  Row(
+                    children: [
+                      _taskNameEdit(),
+                    ],
+                  ),
                   Divider(),
                   SizedBox(
                     height: 10,
@@ -192,6 +196,45 @@ class _TaskEditViewState extends State<TaskEditView> {
       ),
     );
   }
+
+  Widget _deleteButton() {
+    return IconButton.filled(
+        onPressed: () async {
+          String? response = await showDialog<String>(
+            context: context,
+            builder: (BuildContext context) => AlertDialog(
+              title: const Text('Confirm deletion'),
+              content: const Text(
+                  'Are you sure to delete this task? Your friends would be notified.'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () => Navigator.pop(context, 'Cancel'),
+                  child: const Text('Cancel'),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.pop(context, 'OK'),
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          );
+          // check response
+          if (response == 'OK') {
+            ResponseModel res = await TaskUtils().removeTask(currentTask);
+            if (res.success) {
+              // move back to the home page
+              Provider.of<HomepageProvider>(context)
+                  .setView(MainPageViews.taskAll);
+            }
+
+            ScaffoldMessenger.of(context)
+                .showSnackBar(SnackBar(content: Text(res.message!)));
+          }
+        },
+        icon: Icon(Icons.delete));
+  }
+
+  // the modal
 
   Widget _taskStatusEdit() {
     return Container(

@@ -36,14 +36,6 @@ class AuthAPI {
     await docRef.set(usermodel);
   }
 
-  // update that the user has a new task that they made
-  Future<void> addTaskId(String taskId) async {
-    final docRef = db.collection("users").doc(currentUser!.uid);
-    await docRef.update({
-      "taskOwnIds": FieldValue.arrayUnion([taskId])
-    });
-  }
-
   Future<UserModel?> getCurrentUser() async {
     if (currentUser == null) return null;
     String id = currentUser!.uid;
