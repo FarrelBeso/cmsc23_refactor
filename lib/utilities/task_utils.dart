@@ -10,7 +10,7 @@ class TaskUtils {
         ResponseModel(success: true, message: 'Task added'); // default value
     await TasksAPI()
         .addTask(taskmodel)
-        .then((value) => AuthAPI().addTaskId(taskmodel.id!))
+        .then((value) => UserAPI().addTaskId(taskmodel.id!))
         .onError((error, stackTrace) {
       print(error);
       response = ResponseModel(success: false, message: 'Failed to add task');
@@ -33,7 +33,10 @@ class TaskUtils {
   Future<ResponseModel> removeTask(TaskModel taskModel) async {
     ResponseModel response =
         ResponseModel(success: true, message: 'Task deleted successfully');
-    await TasksAPI().removeTask(taskModel).onError((error, stackTrace) {
+    await TasksAPI()
+        .removeTask(taskModel)
+        .then((value) => UserAPI().removeTaskId(taskModel.id!))
+        .onError((error, stackTrace) {
       print(error);
       response =
           ResponseModel(success: false, message: 'Failed to delete task');
