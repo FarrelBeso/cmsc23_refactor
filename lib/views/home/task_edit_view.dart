@@ -51,11 +51,7 @@ class _TaskEditViewState extends State<TaskEditView> {
                   SizedBox(
                     height: 24,
                   ),
-                  Row(
-                    children: [
-                      _taskNameEdit(),
-                    ],
-                  ),
+                  _taskNameEdit(),
                   Divider(),
                   SizedBox(
                     height: 10,
@@ -108,10 +104,12 @@ class _TaskEditViewState extends State<TaskEditView> {
                         Provider.of<HomepageProvider>(context, listen: false)
                             .setView(MainPageViews.taskInfo);
                       },
-                      icon: Icon(Icons.close))
+                      icon: Icon(Icons.close)),
                 ],
               ),
-            )
+            ),
+            Divider(),
+            _deleteButton()
           ],
         ),
       )),
@@ -198,7 +196,7 @@ class _TaskEditViewState extends State<TaskEditView> {
   }
 
   Widget _deleteButton() {
-    return IconButton.filled(
+    return FilledButton(
         onPressed: () async {
           String? response = await showDialog<String>(
             context: context,
@@ -219,19 +217,24 @@ class _TaskEditViewState extends State<TaskEditView> {
             ),
           );
           // check response
+
           if (response == 'OK') {
             ResponseModel res = await TaskUtils().removeTask(currentTask);
-            if (res.success) {
-              // move back to the home page
-              Provider.of<HomepageProvider>(context)
-                  .setView(MainPageViews.taskAll);
-            }
+            if (context.mounted) {
+              if (res.success) {
+                // move back to the home page
+                Provider.of<HomepageProvider>(context, listen: false)
+                    .setView(MainPageViews.taskAll);
+              }
 
-            ScaffoldMessenger.of(context)
-                .showSnackBar(SnackBar(content: Text(res.message!)));
+              ScaffoldMessenger.of(context)
+                  .showSnackBar(SnackBar(content: Text(res.message!)));
+            }
           }
         },
-        icon: Icon(Icons.delete));
+        child: Container(
+            padding: EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+            child: Text('Delete Task')));
   }
 
   // the modal
