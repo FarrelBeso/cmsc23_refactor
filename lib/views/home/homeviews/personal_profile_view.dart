@@ -1,53 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:todo_refactor/model/response_model.dart';
 import 'package:todo_refactor/model/user_model.dart';
+import 'package:todo_refactor/provider/auth_provider.dart';
 import 'package:todo_refactor/utilities/auth_utils.dart';
 
-class PersonalProfileView extends StatelessWidget {
+class PersonalProfileView extends StatefulWidget {
   const PersonalProfileView({super.key});
 
   @override
+  State<PersonalProfileView> createState() => _PersonalProfileViewState();
+}
+
+class _PersonalProfileViewState extends State<PersonalProfileView> {
+  late UserModel user;
+  @override
   Widget build(BuildContext context) {
-    return Expanded(
-        child: FutureBuilder(
-            future: AuthUtils().fetchCurrentUser(),
-            builder: (context, snapshot) {
-              Widget displayWidget;
-              if (snapshot.hasData) {
-                ResponseModel res = snapshot.data!;
-                // check if successful
-                if (res.success) {
-                  displayWidget = _contentWrapper(context, res.content);
-                } else {
-                  displayWidget = _errorWidget();
-                }
-              } else if (snapshot.hasError) {
-                displayWidget = _errorWidget();
-              } else {
-                displayWidget = _loadingWidget();
-              }
-              return displayWidget;
-            }));
+    // fetch the user first
+    user = Provider.of<AuthProvider>(context, listen: false).user!;
+    return Expanded(child: _contentWrapper());
   }
 
   // widgets
-
-  // content wrapper
-  Widget _contentWrapper(BuildContext context, UserModel usermodel) {
+  Widget _contentWrapper() {
     return Container(
       child: Column(
         children: [
           // put whatever the current tab is
-          _profileHeader(context, usermodel),
-          _profileSection(usermodel),
+          _profileHeader(),
+          _profileSection(),
           //FriendsSection()
         ],
       ),
     );
   }
 
-  Widget _profileHeader(BuildContext context, UserModel usermodel) {
+  Widget _profileHeader() {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16),
       color: Theme.of(context).primaryColor,
@@ -58,12 +47,12 @@ class PersonalProfileView extends StatelessWidget {
             height: 24,
           ),
           Text(
-            '${usermodel.firstName} ${usermodel.lastName}',
+            '${user.firstName} ${user.lastName}',
             style: TextStyle(
                 fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
           ),
           Text(
-            usermodel.username ?? 'N/A',
+            user.username!,
             style: TextStyle(fontSize: 16, color: Colors.white70),
           ),
           SizedBox(
@@ -97,7 +86,7 @@ class PersonalProfileView extends StatelessWidget {
     );
   }
 
-  Widget _profileSection(UserModel usermodel) {
+  Widget _profileSection() {
     return Container(
       padding: EdgeInsets.all(8),
       child: Column(
@@ -107,7 +96,7 @@ class PersonalProfileView extends StatelessWidget {
             child: Row(
               children: [
                 Container(padding: EdgeInsets.all(8), child: Text('ID: ')),
-                Text(usermodel.id ?? 'N/A')
+                Text(user.id!)
               ],
             ),
           ),
@@ -119,7 +108,7 @@ class PersonalProfileView extends StatelessWidget {
                   Container(
                       padding: EdgeInsets.all(8), child: Icon(Icons.cake)),
                   Text(DateFormat(DateFormat.YEAR_MONTH_DAY)
-                      .format(usermodel.birthday ?? DateTime(1900)))
+                      .format(user.birthday!))
                 ],
               ),
             ),
@@ -132,7 +121,7 @@ class PersonalProfileView extends StatelessWidget {
                   Container(
                       padding: EdgeInsets.all(8),
                       child: Icon(Icons.location_on)),
-                  Text(usermodel.location ?? 'N/A')
+                  Text(user.location!)
                 ],
               ),
             ),
@@ -141,7 +130,7 @@ class PersonalProfileView extends StatelessWidget {
           Container(
               padding: EdgeInsets.all(8),
               alignment: Alignment.topLeft,
-              child: Text(usermodel.biography ?? 'No biography available.'))
+              child: Text(user.biography!))
         ],
       ),
     );
