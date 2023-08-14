@@ -5,9 +5,9 @@ import 'package:todo_refactor/model/constants.dart';
 import 'package:todo_refactor/model/response_model.dart';
 import 'package:todo_refactor/model/task_model.dart';
 import 'package:todo_refactor/model/user_model.dart';
+import 'package:todo_refactor/provider/auth_provider.dart';
 import 'package:todo_refactor/provider/homepage_provider.dart';
-import 'package:todo_refactor/utilities/auth_utils.dart';
-import 'package:todo_refactor/utilities/task_utils.dart';
+import 'package:todo_refactor/provider/task_provider.dart';
 import 'package:uuid/uuid.dart';
 
 class TaskAddView extends StatefulWidget {
@@ -237,16 +237,16 @@ class _TaskAddViewState extends State<TaskAddView> {
   // wrapper for adding the tasks
   Future<void> _addTaskWrapper() async {
     // first set the task model
-    await _setNewTask().then((task) {
-      if (task == null) throw 'Task Creation Failed';
-      return TaskUtils().addTask(task);
-    }).then((res) {
+    TaskModel task = _setNewTask();
+
+    ResponseModel res = await Provider.of<TaskProvider>(context).addTask(task);
+    if (context.mounted) {
+      if (res.success) {
+        _resetTextFields();
+      }
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(res.message!)));
-      if (res.success) _resetTextFields();
-    }).onError((error, stackTrace) {
-      print(error);
-    });
+    }
   }
 
   void _resetTextFields() {
@@ -255,25 +255,22 @@ class _TaskAddViewState extends State<TaskAddView> {
   }
 
   // transform the input
-  Future<TaskModel?> _setNewTask() async {
-    TaskModel? task;
-    // set the task
-    String id = Uuid().v4();
-    // fetch the current user
-    ResponseModel res = await AuthUtils().fetchCurrentUser();
-    if (res.success) {
-      task = TaskModel(
-        id: id,
-        taskName: nameController.text,
-        status: currentStatus.label,
-        deadline: currentDeadline,
-        description: descriptionController.text,
-        // misc info
-        ownerId: (res.content as UserModel).id,
-        lastEditedDate: DateTime.now(),
-        lastEditUserId: (res.content as UserModel).id,
-      );
-    }
+  TaskModel _setNewTask() {
+    UserModel user = Provider.of<AuthProvider>(context).user!;
+    TaskModel task = TaskModel(
+      id: Uuid().v4(),
+      taskName: nameController.text,
+      status: currentStatus.label,
+      deadline: currentDeadline,
+      description: descriptionController.text,
+      // misc info
+      ownerId: user.id,
+      lastEditedDate: DateTime.now(),
+      lastEditUserId: user.id,
+      // more info
+      ownerFullName: '${user.firstName} ${user.lastName}',
+      lastEditFullName: '${user.firstName} ${user.lastName}',
+    );
 
     return task;
   }
