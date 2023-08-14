@@ -4,13 +4,18 @@ import 'package:todo_refactor/model/constants.dart';
 import 'package:todo_refactor/model/response_model.dart';
 import 'package:todo_refactor/model/task_model.dart';
 import 'package:todo_refactor/model/user_model.dart';
+import 'package:todo_refactor/provider/auth_provider.dart';
 import 'package:todo_refactor/provider/homepage_provider.dart';
-import 'package:todo_refactor/utilities/task_utils.dart';
-import 'package:todo_refactor/utilities/user_utils.dart';
+import 'package:todo_refactor/provider/task_provider.dart';
 
-class TasksView extends StatelessWidget {
+class TasksView extends StatefulWidget {
   const TasksView({super.key});
 
+  @override
+  State<TasksView> createState() => _TasksViewState();
+}
+
+class _TasksViewState extends State<TasksView> {
   @override
   Widget build(BuildContext context) {
     // create 15 random tasks
@@ -164,34 +169,51 @@ class TasksView extends StatelessWidget {
   }
 
   // fetch card info list
-  Future<List<_CardInfo>> _cardInfoList() async {
-    ResponseModel res;
+  Future<List<_CardInfo>?> _cardInfoList() async {
     // first get the list
-    List<_CardInfo> cardlist = [];
-    res = await TaskUtils().getTaskList();
-    if (!res.success) {
-      print(res.message);
-    } else {
-      for (TaskModel task in res.content) {
-        // also fetch the name while at it
-        res = await UserUtils().getUser(task.ownerId!);
-        String fullname;
-        if (res.success) {
-          UserModel user = res.content;
-          fullname = '${user.firstName} ${user.lastName}';
-        } else {
-          fullname = 'N/A';
-        }
+    List<_CardInfo>? cardlist;
+    List<TaskModel>? tasklist = await _getTaskListWrapper();
 
+    if (tasklist != null) {
+      cardlist = [];
+      for (TaskModel task in tasklist) {
         // then finally add all of them to the cardlist
         cardlist.add(_CardInfo(
             taskModel: task,
-            taskOwner: fullname,
+            taskOwner: _fullName(),
             taskStatus: TaskStatus.fetchFromName(task.status!)));
       }
     }
 
     return cardlist;
+  }
+
+  // wrapper for calling the async task list
+  Future<List<TaskModel>?> _getTaskListWrapper() async {
+    // only reload if the current is null
+    List<TaskModel>? tasklist =
+        Provider.of<TaskProvider>(context, listen: false).tasklist;
+    if (tasklist == null) {
+      ResponseModel res =
+          await Provider.of<TaskProvider>(context, listen: false)
+              .updateTaskList();
+      if (context.mounted) {
+        if (res.success) {
+          // reupdate the tasklist
+          tasklist = Provider.of<TaskProvider>(context, listen: false).tasklist;
+        } else {
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text(res.message!)));
+        }
+      }
+    }
+    return tasklist;
+  }
+
+  // wrapper for getting the full name
+  String _fullName() {
+    UserModel user = Provider.of<AuthProvider>(context).user!;
+    return '${user.firstName} ${user.lastName}';
   }
 }
 
