@@ -2,13 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_refactor/model/constants.dart';
 import 'package:todo_refactor/model/response_model.dart';
-import 'package:todo_refactor/model/user_model.dart';
 import 'package:todo_refactor/provider/homepage_provider.dart';
 import 'package:todo_refactor/utilities/auth_utils.dart';
-import 'package:todo_refactor/views/authentication/login_view.dart';
-import 'package:todo_refactor/views/home/personal_profile_view.dart';
-import 'package:todo_refactor/views/home/task_add_view.dart';
-import 'package:todo_refactor/views/home/tasks_all_view.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});

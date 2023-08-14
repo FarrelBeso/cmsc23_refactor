@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:todo_refactor/views/home/personal_profile_view.dart';
-import 'package:todo_refactor/views/home/task_add_view.dart';
-import 'package:todo_refactor/views/home/task_edit_view.dart';
-import 'package:todo_refactor/views/home/task_info_view.dart';
-import 'package:todo_refactor/views/home/tasks_all_view.dart';
+import 'package:todo_refactor/views/home/homeviews/personal_profile_view.dart';
+import 'package:todo_refactor/views/home/homeviews/task_add_view.dart';
+import 'package:todo_refactor/views/home/homeviews/task_edit_view.dart';
+import 'package:todo_refactor/views/home/homeviews/task_info_view.dart';
+import 'package:todo_refactor/views/home/homeviews/tasks_all_view.dart';
 
 enum TaskStatus {
   notStarted('Not Started', Colors.black12, true),

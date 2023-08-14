@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_refactor/model/response_model.dart';
+import 'package:todo_refactor/provider/auth_provider.dart';
 import 'package:todo_refactor/utilities/auth_utils.dart';
-import 'package:todo_refactor/views/authentication/signup_view.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -66,12 +66,7 @@ class _LoginViewState extends State<LoginView> {
             ElevatedButton(
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
-                    ResponseModel response = await AuthUtils()
-                        .login(emailcontroller.text, passwordcontroller.text);
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(response.message!)));
-                    }
+                    _loginWrapper();
                   }
                 },
                 child: Padding(
@@ -85,5 +80,16 @@ class _LoginViewState extends State<LoginView> {
         ),
       ),
     );
+  }
+
+  // wrapper for login
+  void _loginWrapper() async {
+    ResponseModel response =
+        await Provider.of<AuthProvider>(context, listen: false)
+            .login(emailcontroller.text, passwordcontroller.text);
+    if (context.mounted) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(response.message!)));
+    }
   }
 }

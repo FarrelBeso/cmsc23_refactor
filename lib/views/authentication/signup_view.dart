@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:string_validator/string_validator.dart';
 import 'package:todo_refactor/model/response_model.dart';
 import 'package:todo_refactor/model/user_model.dart';
+import 'package:todo_refactor/provider/auth_provider.dart';
 import 'package:todo_refactor/utilities/auth_utils.dart';
 import 'package:todo_refactor/views/authentication/login_view.dart';
 
@@ -53,13 +54,7 @@ class _SignupViewState extends State<SignupView> {
                     _sectionIndex += 1;
                   });
                 } else {
-                  ResponseModel response = await AuthUtils()
-                      .signIn(setNewUser(), passwordfield.text);
-
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(response.message!)));
-                  }
+                  _signInWrapper();
                 }
               }
             },
@@ -74,6 +69,17 @@ class _SignupViewState extends State<SignupView> {
             ]),
       ],
     );
+  }
+
+  // wrapper for signup
+  void _signInWrapper() async {
+    ResponseModel response =
+        await Provider.of<AuthProvider>(context, listen: false)
+            .signIn(setNewUser(), passwordfield.text);
+    if (context.mounted) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(response.message!)));
+    }
   }
 
   // verification functions
