@@ -5,7 +5,9 @@ import 'package:todo_refactor/model/constants.dart';
 import 'package:todo_refactor/model/response_model.dart';
 import 'package:todo_refactor/model/task_model.dart';
 import 'package:todo_refactor/model/user_model.dart';
+import 'package:todo_refactor/provider/auth_provider.dart';
 import 'package:todo_refactor/provider/homepage_provider.dart';
+import 'package:todo_refactor/provider/task_provider.dart';
 import 'package:todo_refactor/utilities/auth_utils.dart';
 import 'package:todo_refactor/utilities/task_utils.dart';
 
@@ -69,7 +71,7 @@ class _TaskEditViewState extends State<TaskEditView> {
                               SizedBox(
                                 width: 20,
                               ),
-                              _deadlineEdit(context)
+                              _deadlineEdit()
                             ],
                           ),
                         ),
@@ -91,7 +93,7 @@ class _TaskEditViewState extends State<TaskEditView> {
                       onPressed: () {
                         // send the new task
                         if (_formKey.currentState!.validate()) {
-                          _editTaskWrapper(context);
+                          _editTaskWrapper();
                         }
                       },
                       icon: Icon(Icons.check)),
@@ -128,7 +130,8 @@ class _TaskEditViewState extends State<TaskEditView> {
   // value initialization
   void _valuesInit() {
     // fetch the task info here from the provider
-    currentTask = Provider.of<HomepageProvider>(context).arguments;
+    currentTask =
+        Provider.of<HomepageProvider>(context, listen: false).arguments;
     // init
     currentStatus = TaskStatus.fetchFromName(currentTask.status!);
     currentDeadline = currentTask.deadline!;
@@ -256,10 +259,10 @@ class _TaskEditViewState extends State<TaskEditView> {
     );
   }
 
-  Widget _deadlineEdit(BuildContext context) {
+  Widget _deadlineEdit() {
     return OutlinedButton(
       onPressed: () {
-        _dateTimeSelectWrapper(context);
+        _dateTimeSelectWrapper();
       },
       child: Text(
         _dateTimeFormat(),
@@ -286,27 +289,19 @@ class _TaskEditViewState extends State<TaskEditView> {
   // useful functions
 
   // wrapper for adding the tasks
-  Future<void> _editTaskWrapper(BuildContext context) async {
-    late TaskModel updatedtask; // for future reference
-    // first set the task model
-    await _setUpdatedTask().then((task) {
-      if (task == null) throw 'Task update failed';
-      updatedtask = task;
-      return TaskUtils().updateTask(task);
-    }).then((res) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(res.message!)));
-      // go back to the main screen if updating is successful
+  Future<void> _editTaskWrapper() async {
+    TaskModel updatedtask = _setUpdatedTask(); // for future reference
+
+    ResponseModel res = await Provider.of<TaskProvider>(context, listen: false)
+        .updateTask(updatedtask);
+    if (context.mounted) {
       if (res.success) {
-        // go back to the info with the updated data
-        Provider.of<HomepageProvider>(context, listen: false)
-            .setArgument(updatedtask);
         Provider.of<HomepageProvider>(context, listen: false)
             .setView(MainPageViews.taskInfo);
       }
-    }).onError((error, stackTrace) {
-      print(error);
-    });
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(res.message!)));
+    }
   }
 
   void _resetTextFields() {
@@ -315,30 +310,29 @@ class _TaskEditViewState extends State<TaskEditView> {
   }
 
   // transform the input
-  Future<TaskModel?> _setUpdatedTask() async {
-    TaskModel task = currentTask;
-    // fetch the current user
-    ResponseModel res = await AuthUtils().fetchCurrentUser();
-    if (res.success) {
-      task = TaskModel(
-        id: task.id,
-        taskName: nameController.text,
-        status: currentStatus.label,
-        deadline: currentDeadline,
-        description: descriptionController.text,
-        // misc info
-        ownerId: (res.content as UserModel).id,
-        lastEditedDate: DateTime.now(),
-        lastEditUserId: (res.content as UserModel).id,
-      );
-    }
+  TaskModel _setUpdatedTask() {
+    UserModel user = Provider.of<AuthProvider>(context, listen: false).user!;
+    TaskModel task = TaskModel(
+      id: currentTask.id,
+      taskName: nameController.text,
+      status: currentStatus.label,
+      deadline: currentDeadline,
+      description: descriptionController.text,
+      // misc info
+      ownerId: currentTask.ownerId,
+      lastEditedDate: DateTime.now(),
+      lastEditUserId: user.id,
+      // more info
+      ownerFullName: currentTask.ownerFullName,
+      lastEditFullName: '${user.firstName} ${user.lastName}',
+    );
 
     return task;
   }
 
-  Future<void> _dateTimeSelectWrapper(BuildContext context) async {
-    await _selectDate(context);
-    if (context.mounted) await _selectTime(context);
+  Future<void> _dateTimeSelectWrapper() async {
+    await _selectDate();
+    if (context.mounted) await _selectTime();
   }
 
   // based on the date and time deadline
@@ -367,7 +361,7 @@ class _TaskEditViewState extends State<TaskEditView> {
         currentDeadline.day, datetime.hour, datetime.minute);
   }
 
-  Future<void> _selectDate(BuildContext context) async {
+  Future<void> _selectDate() async {
     final DateTime? picked = await showDatePicker(
         context: context,
         initialDate: currentDeadline,
@@ -381,7 +375,7 @@ class _TaskEditViewState extends State<TaskEditView> {
     }
   }
 
-  Future<void> _selectTime(BuildContext context) async {
+  Future<void> _selectTime() async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: _getDeadlineTime(),

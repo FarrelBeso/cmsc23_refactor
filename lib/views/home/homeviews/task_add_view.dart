@@ -239,7 +239,8 @@ class _TaskAddViewState extends State<TaskAddView> {
     // first set the task model
     TaskModel task = _setNewTask();
 
-    ResponseModel res = await Provider.of<TaskProvider>(context).addTask(task);
+    ResponseModel res =
+        await Provider.of<TaskProvider>(context, listen: false).addTask(task);
     if (context.mounted) {
       if (res.success) {
         _resetTextFields();
@@ -256,7 +257,7 @@ class _TaskAddViewState extends State<TaskAddView> {
 
   // transform the input
   TaskModel _setNewTask() {
-    UserModel user = Provider.of<AuthProvider>(context).user!;
+    UserModel user = Provider.of<AuthProvider>(context, listen: false).user!;
     TaskModel task = TaskModel(
       id: Uuid().v4(),
       taskName: nameController.text,

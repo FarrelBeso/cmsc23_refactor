@@ -6,42 +6,28 @@ import 'package:todo_refactor/model/response_model.dart';
 import 'package:todo_refactor/model/task_model.dart';
 import 'package:todo_refactor/model/user_model.dart';
 import 'package:todo_refactor/provider/homepage_provider.dart';
+import 'package:todo_refactor/provider/task_provider.dart';
 import 'package:todo_refactor/utilities/task_utils.dart';
 import 'package:todo_refactor/utilities/user_utils.dart';
 
-class TaskInfoView extends StatelessWidget {
+class TaskInfoView extends StatefulWidget {
   const TaskInfoView({super.key});
 
   @override
+  State<TaskInfoView> createState() => _TaskInfoViewState();
+}
+
+class _TaskInfoViewState extends State<TaskInfoView> {
+  late TaskModel currentTask;
+  @override
   Widget build(BuildContext context) {
-    TaskModel currentTask =
-        Provider.of<HomepageProvider>(context, listen: false).arguments;
-    return Expanded(
-        child: FutureBuilder(
-      future: _fetchTaskInfo(currentTask.id!),
-      builder: (context, snapshot) {
-        Widget displayWidget;
-        if (snapshot.hasData) {
-          _TaskInfo taskinfo = snapshot.data!;
-          displayWidget = _mainDisplayWidget(taskinfo, context);
-        } else if (snapshot.hasError) {
-          displayWidget = _errorWidget();
-        } else {
-          displayWidget = _loadingWidget();
-        }
-        return displayWidget;
-      },
-    ));
+    currentTask =
+        Provider.of<TaskProvider>(context, listen: false).selectedTask!;
+    return Expanded(child: _mainDisplayWidget());
   }
 
 // the main component, call this when the future builder
-// has been loaded
-  Widget _mainDisplayWidget(_TaskInfo taskinfo, BuildContext context) {
-    // parse info
-    TaskModel taskmodel = taskinfo.taskmodel!;
-    String ownerFullName = taskinfo.ownerFullName!;
-    String lastEditorFullName = taskinfo.lastEditorFullName!;
-
+  Widget _mainDisplayWidget() {
     return Container(
       child: Column(
         children: [
@@ -54,8 +40,8 @@ class TaskInfoView extends StatelessWidget {
                 SizedBox(
                   height: 24,
                 ),
-                _taskNameWidget(taskmodel.taskName!),
-                _taskOwnerWidget(ownerFullName),
+                _taskNameWidget(),
+                _taskOwnerWidget(),
                 SizedBox(
                   height: 8,
                 ),
@@ -69,11 +55,11 @@ class TaskInfoView extends StatelessWidget {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            _statusWidget(taskmodel.status!),
+                            _statusWidget(),
                             SizedBox(
                               width: 20,
                             ),
-                            _deadlineWidget(taskmodel.deadline!)
+                            _deadlineWidget()
                           ],
                         ),
                       ),
@@ -83,18 +69,18 @@ class TaskInfoView extends StatelessWidget {
               ],
             ),
           ),
-          _modifyWidget(lastEditorFullName, taskmodel, context),
+          _modifyWidget(),
           Divider(),
-          _descriptionWidget(taskmodel.description!)
+          _descriptionWidget()
         ],
       ),
     );
   }
 
   // components
-  Widget _taskNameWidget(String name) {
+  Widget _taskNameWidget() {
     return Text(
-      name,
+      currentTask.taskName!,
       style: TextStyle(
         fontSize: 24,
         fontWeight: FontWeight.bold,
@@ -103,15 +89,15 @@ class TaskInfoView extends StatelessWidget {
     );
   }
 
-  Widget _taskOwnerWidget(String name) {
+  Widget _taskOwnerWidget() {
     return Text(
-      name,
+      currentTask.ownerFullName!,
       style: TextStyle(fontSize: 16, color: Colors.white70),
     );
   }
 
-  Widget _statusWidget(String status) {
-    TaskStatus taskstatus = TaskStatus.fetchFromName(status);
+  Widget _statusWidget() {
+    TaskStatus taskstatus = TaskStatus.fetchFromName(currentTask.status!);
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
@@ -137,19 +123,19 @@ class TaskInfoView extends StatelessWidget {
     );
   }
 
-  Widget _deadlineWidget(DateTime deadline) {
+  Widget _deadlineWidget() {
     return Text(
-      'Due ${_dateTimeFormat(deadline)}',
+      'Due ${_dateTimeFormat(currentTask.deadline!)}',
       style: TextStyle(color: Colors.white),
     );
   }
 
-  Widget _descriptionWidget(String description) {
+  Widget _descriptionWidget() {
     return Container(
       padding: EdgeInsets.all(16),
       alignment: Alignment.topLeft,
       child: Text(
-        description,
+        currentTask.description!,
         style: TextStyle(color: Colors.black45, fontSize: 14),
         textAlign: TextAlign.justify,
         maxLines: 16,
@@ -157,8 +143,7 @@ class TaskInfoView extends StatelessWidget {
     );
   }
 
-  Widget _modifyWidget(
-      String lastEditorFullName, TaskModel task, BuildContext context) {
+  Widget _modifyWidget() {
     return Container(
       padding: EdgeInsets.only(top: 16, bottom: 4, left: 16, right: 16),
       child: Row(
@@ -174,7 +159,7 @@ class TaskInfoView extends StatelessWidget {
                     style: TextStyle(fontSize: 10, color: Colors.black45),
                   ),
                   Text(
-                    '$lastEditorFullName, ${_dateTimeFormat(task.lastEditedDate!)}',
+                    '${currentTask.lastEditFullName}, ${_dateTimeFormat(currentTask.lastEditedDate!)}',
                     style: TextStyle(fontSize: 12, color: Colors.black87),
                   ),
                 ],
@@ -184,8 +169,6 @@ class TaskInfoView extends StatelessWidget {
           IconButton.filledTonal(
               onPressed: () {
                 // switch to edit mode
-                Provider.of<HomepageProvider>(context, listen: false)
-                    .setArgument(task); // pass the same arguments
                 Provider.of<HomepageProvider>(context, listen: false)
                     .setView(MainPageViews.taskEdit);
               },
@@ -222,8 +205,6 @@ class TaskInfoView extends StatelessWidget {
   }
 
   // other aux functions
-
-  // get the necessary data
   Future<_TaskInfo?> _fetchTaskInfo(String taskId) async {
     ResponseModel res;
     _TaskInfo? taskinfo;

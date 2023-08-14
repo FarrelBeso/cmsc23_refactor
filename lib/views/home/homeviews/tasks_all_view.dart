@@ -216,7 +216,7 @@ class _TasksViewState extends State<TasksView> {
 
   // wrapper for getting the full name
   String _fullName() {
-    UserModel user = Provider.of<AuthProvider>(context).user!;
+    UserModel user = Provider.of<AuthProvider>(context, listen: false).user!;
     return '${user.firstName} ${user.lastName}';
   }
 }
