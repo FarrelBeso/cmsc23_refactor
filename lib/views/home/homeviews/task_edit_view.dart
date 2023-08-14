@@ -131,7 +131,7 @@ class _TaskEditViewState extends State<TaskEditView> {
   void _valuesInit() {
     // fetch the task info here from the provider
     currentTask =
-        Provider.of<HomepageProvider>(context, listen: false).arguments;
+        Provider.of<TaskProvider>(context, listen: false).selectedTask!;
     // init
     currentStatus = TaskStatus.fetchFromName(currentTask.status!);
     currentDeadline = currentTask.deadline!;
