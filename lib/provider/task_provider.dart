@@ -8,6 +8,11 @@ class TaskProvider extends ChangeNotifier {
 
   List<TaskModel>? get tasklist => currentTaskList;
 
+  // the task that was recently selected
+  TaskModel? recentlySelectedTask;
+
+  TaskModel? get selectedTask => recentlySelectedTask;
+
   void setTaskList(List<TaskModel> tasklist) {
     currentTaskList = tasklist;
     notifyListeners();
@@ -15,6 +20,16 @@ class TaskProvider extends ChangeNotifier {
 
   void clearTaskList() {
     currentTaskList = null;
+    notifyListeners();
+  }
+
+  void setSelectedTask(TaskModel task) {
+    recentlySelectedTask = task;
+    notifyListeners();
+  }
+
+  void clearSelectedTask() {
+    recentlySelectedTask = null;
     notifyListeners();
   }
 
