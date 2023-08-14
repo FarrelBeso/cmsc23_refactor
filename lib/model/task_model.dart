@@ -11,29 +11,41 @@ class TaskModel {
   String? ownerId;
   DateTime? lastEditedDate;
   String? lastEditUserId;
+  // more information to lessen load
+  String? ownerFullName;
+  String? lastEditFullName;
 
-  TaskModel(
-      {this.id,
-      this.taskName,
-      this.status,
-      this.deadline,
-      this.description,
-      // misc info
-      this.ownerId,
-      this.lastEditedDate,
-      this.lastEditUserId});
+  TaskModel({
+    this.id,
+    this.taskName,
+    this.status,
+    this.deadline,
+    this.description,
+    // misc info
+    this.ownerId,
+    this.lastEditedDate,
+    this.lastEditUserId,
+    // other info
+
+    this.ownerFullName,
+    this.lastEditFullName,
+  });
 
   TaskModel copyWith(TaskModel other) {
     return TaskModel(
-        id: other.id ?? id,
-        taskName: other.taskName ?? taskName,
-        status: other.status ?? status,
-        deadline: other.deadline ?? deadline,
-        description: other.description ?? description,
-        // other info
-        ownerId: other.ownerId ?? ownerId,
-        lastEditedDate: other.lastEditedDate ?? lastEditedDate,
-        lastEditUserId: other.lastEditUserId ?? lastEditUserId);
+      id: other.id ?? id,
+      taskName: other.taskName ?? taskName,
+      status: other.status ?? status,
+      deadline: other.deadline ?? deadline,
+      description: other.description ?? description,
+      // other info
+      ownerId: other.ownerId ?? ownerId,
+      lastEditedDate: other.lastEditedDate ?? lastEditedDate,
+      lastEditUserId: other.lastEditUserId ?? lastEditUserId,
+      // other info to lessen load
+      ownerFullName: other.ownerFullName ?? ownerFullName,
+      lastEditFullName: other.lastEditFullName ?? lastEditFullName,
+    );
   }
 
   Map<String, dynamic> toFirestore() {
@@ -47,7 +59,10 @@ class TaskModel {
       if (ownerId != null) "ownerId": ownerId,
       if (lastEditedDate != null)
         "lastEditedDate": Timestamp.fromDate(lastEditedDate!),
-      if (lastEditUserId != null) "lastEditedUserId": lastEditUserId
+      if (lastEditUserId != null) "lastEditedUserId": lastEditUserId,
+      // more other info
+      if (ownerFullName != null) "ownerFullName": ownerFullName,
+      if (lastEditFullName != null) "lastEditFullName": lastEditFullName,
     };
   }
 
@@ -58,14 +73,18 @@ class TaskModel {
   ) {
     final data = snapshot.data();
     return TaskModel(
-        id: data?['id'],
-        taskName: data?['taskName'],
-        status: data?['status'],
-        deadline: (data?['deadline'] as Timestamp).toDate(),
-        description: data?['description'],
-        // other info
-        ownerId: data?['ownerId'],
-        lastEditedDate: (data?['lastEditedDate'] as Timestamp).toDate(),
-        lastEditUserId: data?['lastEditedUserId']);
+      id: data?['id'],
+      taskName: data?['taskName'],
+      status: data?['status'],
+      deadline: (data?['deadline'] as Timestamp).toDate(),
+      description: data?['description'],
+      // other info
+      ownerId: data?['ownerId'],
+      lastEditedDate: (data?['lastEditedDate'] as Timestamp).toDate(),
+      lastEditUserId: data?['lastEditedUserId'],
+      // more other info
+      ownerFullName: data?['ownerFullName'],
+      lastEditFullName: data?['lastEditFullName'],
+    );
   }
 }
