@@ -12,21 +12,38 @@ class AuthProvider extends ChangeNotifier {
 
   UserModel? get user => currentUser;
 
+  // set the current user
+  void setCurrentUser(UserModel user) {
+    currentUser = user;
+    notifyListeners();
+  }
+
+  // remove the current user
+  void removeCurrentUser() {
+    currentUser = null;
+    notifyListeners();
+  }
+
   // wrappers
   Future<ResponseModel> signIn(UserModel user, String password) async {
     ResponseModel res = await AuthUtils().signIn(user, password);
     // the additional part
     if (res.success) {
-      currentUser = user;
+      setCurrentUser(user);
     }
     return res;
   }
 
   Future<ResponseModel> login(String email, String password) async {
-    ResponseModel res = await AuthUtils().login(email, password);
+    ResponseModel res;
+    res = await AuthUtils().login(email, password);
     // the additional part
     if (res.success) {
-      currentUser = user;
+      // fetch info
+      res = await AuthUtils().fetchCurrentUser();
+      if (res.success) {
+        setCurrentUser(res.content);
+      }
     }
     return res;
   }
@@ -35,7 +52,7 @@ class AuthProvider extends ChangeNotifier {
     ResponseModel res = await AuthUtils().signOut();
     // the additional part
     if (res.success) {
-      currentUser = null;
+      removeCurrentUser();
     }
     return res;
   }
