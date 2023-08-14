@@ -18,8 +18,6 @@ class TasksView extends StatefulWidget {
 class _TasksViewState extends State<TasksView> {
   @override
   Widget build(BuildContext context) {
-    // create 15 random tasks
-
     return Expanded(
       child: Column(
         children: [
@@ -79,10 +77,7 @@ class _TasksViewState extends State<TasksView> {
           return InkWell(
             onTap: () {
               // switch to task info
-              Provider.of<HomepageProvider>(context, listen: false)
-                  .setArgument(cardinfo.taskModel);
-              Provider.of<HomepageProvider>(context, listen: false)
-                  .setView(MainPageViews.taskInfo);
+              _viewTaskWrapper(cardinfo.taskModel!);
             },
             child: Container(
               padding: EdgeInsets.all(16),
@@ -124,6 +119,15 @@ class _TasksViewState extends State<TasksView> {
             ),
           );
         });
+  }
+
+  // wrapper to view the task
+  void _viewTaskWrapper(TaskModel task) {
+    // set the task first
+    Provider.of<TaskProvider>(context, listen: false).setSelectedTask(task);
+
+    Provider.of<HomepageProvider>(context, listen: false)
+        .setView(MainPageViews.taskInfo);
   }
 
   Widget _errorWidget() {
