@@ -90,10 +90,25 @@ class _TaskEditViewState extends State<TaskEditView> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   IconButton.filled(
-                      onPressed: () {
+                      onPressed: () async {
                         // send the new task
                         if (_formKey.currentState!.validate()) {
-                          _editTaskWrapper();
+                          TaskModel updatedtask =
+                              _setUpdatedTask(); // for future reference
+
+                          ResponseModel res = await Provider.of<TaskProvider>(
+                                  context,
+                                  listen: false)
+                              .updateTask(updatedtask);
+                          if (context.mounted) {
+                            if (res.success) {
+                              Provider.of<HomepageProvider>(context,
+                                      listen: false)
+                                  .setView(MainPageViews.taskInfo);
+                            }
+                            // ScaffoldMessenger.of(context).showSnackBar(
+                            //     SnackBar(content: Text(res.message!)));
+                          }
                         }
                       },
                       icon: Icon(Icons.check)),
@@ -221,17 +236,21 @@ class _TaskEditViewState extends State<TaskEditView> {
           );
           // check response
 
-          if (response == 'OK') {
-            ResponseModel res = await TaskUtils().removeTask(currentTask);
-            if (context.mounted) {
-              if (res.success) {
-                // move back to the home page
-                Provider.of<HomepageProvider>(context, listen: false)
-                    .setView(MainPageViews.taskAll);
-              }
+          if (context.mounted) {
+            if (response == 'OK') {
+              ResponseModel res =
+                  await Provider.of<TaskProvider>(context, listen: false)
+                      .removeTask(currentTask);
+              if (context.mounted) {
+                if (res.success) {
+                  // move back to the home page
+                  Provider.of<HomepageProvider>(context, listen: false)
+                      .setView(MainPageViews.taskAll);
+                }
 
-              ScaffoldMessenger.of(context)
-                  .showSnackBar(SnackBar(content: Text(res.message!)));
+                // ScaffoldMessenger.of(context)
+                //     .showSnackBar(SnackBar(content: Text(res.message!)));
+              }
             }
           }
         },
@@ -288,22 +307,6 @@ class _TaskEditViewState extends State<TaskEditView> {
   }
   // useful functions
 
-  // wrapper for adding the tasks
-  Future<void> _editTaskWrapper() async {
-    TaskModel updatedtask = _setUpdatedTask(); // for future reference
-
-    ResponseModel res = await Provider.of<TaskProvider>(context, listen: false)
-        .updateTask(updatedtask);
-    if (context.mounted) {
-      if (res.success) {
-        Provider.of<HomepageProvider>(context, listen: false)
-            .setView(MainPageViews.taskInfo);
-      }
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(res.message!)));
-    }
-  }
-
   void _resetTextFields() {
     nameController.clear();
     descriptionController.clear();
@@ -332,7 +335,7 @@ class _TaskEditViewState extends State<TaskEditView> {
 
   Future<void> _dateTimeSelectWrapper() async {
     await _selectDate();
-    if (context.mounted) await _selectTime();
+    if (mounted) await _selectTime();
   }
 
   // based on the date and time deadline

@@ -66,7 +66,14 @@ class _LoginViewState extends State<LoginView> {
             ElevatedButton(
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
-                    _loginWrapper();
+                    ResponseModel response =
+                        await Provider.of<AuthProvider>(context, listen: false)
+                            .login(
+                                emailcontroller.text, passwordcontroller.text);
+                    if (context.mounted) {
+                      // ScaffoldMessenger.of(context).showSnackBar(
+                      //     SnackBar(content: Text(response.message!)));
+                    }
                   }
                 },
                 child: Padding(
@@ -80,16 +87,5 @@ class _LoginViewState extends State<LoginView> {
         ),
       ),
     );
-  }
-
-  // wrapper for login
-  void _loginWrapper() async {
-    ResponseModel response =
-        await Provider.of<AuthProvider>(context, listen: false)
-            .login(emailcontroller.text, passwordcontroller.text);
-    if (context.mounted) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(response.message!)));
-    }
   }
 }

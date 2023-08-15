@@ -206,8 +206,8 @@ class _TasksViewState extends State<TasksView> {
           // reupdate the tasklist
           tasklist = Provider.of<TaskProvider>(context, listen: false).tasklist;
         } else {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text(res.message!)));
+          // ScaffoldMessenger.of(context)
+          //     .showSnackBar(SnackBar(content: Text(res.message!)));
         }
       }
     }

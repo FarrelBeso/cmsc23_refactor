@@ -72,15 +72,7 @@ class _SignupViewState extends State<SignupView> {
   }
 
   // wrapper for signup
-  void _signInWrapper() async {
-    ResponseModel response =
-        await Provider.of<AuthProvider>(context, listen: false)
-            .signIn(setNewUser(), passwordfield.text);
-    if (context.mounted) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(response.message!)));
-    }
-  }
+  void _signInWrapper() async {}
 
   // verification functions
   bool verifySection(int index) {

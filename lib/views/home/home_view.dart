@@ -34,8 +34,8 @@ class _HomeViewState extends State<HomeView> {
                   ResponseModel response = await AuthUtils().signOut();
                   // put the message in a snackbar
                   if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(response.message!)));
+                    // ScaffoldMessenger.of(context).showSnackBar(
+                    //     SnackBar(content: Text(response.message!)));
                   }
                 }
 

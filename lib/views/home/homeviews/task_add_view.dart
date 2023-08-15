@@ -89,10 +89,23 @@ class _TaskAddViewState extends State<TaskAddView> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   IconButton.filled(
-                      onPressed: () {
+                      onPressed: () async {
                         // send the new task
                         if (_formKey.currentState!.validate()) {
-                          _addTaskWrapper();
+                          // first set the task model
+                          TaskModel task = _setNewTask();
+
+                          ResponseModel res = await Provider.of<TaskProvider>(
+                                  context,
+                                  listen: false)
+                              .addTask(task);
+                          if (context.mounted) {
+                            if (res.success) {
+                              _resetTextFields();
+                            }
+                            // ScaffoldMessenger.of(context).showSnackBar(
+                            //     SnackBar(content: Text(res.message!)));
+                          }
                         }
                       },
                       icon: Icon(Icons.check)),
@@ -234,22 +247,6 @@ class _TaskAddViewState extends State<TaskAddView> {
   }
   // useful functions
 
-  // wrapper for adding the tasks
-  Future<void> _addTaskWrapper() async {
-    // first set the task model
-    TaskModel task = _setNewTask();
-
-    ResponseModel res =
-        await Provider.of<TaskProvider>(context, listen: false).addTask(task);
-    if (context.mounted) {
-      if (res.success) {
-        _resetTextFields();
-      }
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(res.message!)));
-    }
-  }
-
   void _resetTextFields() {
     nameController.clear();
     descriptionController.clear();
@@ -278,7 +275,7 @@ class _TaskAddViewState extends State<TaskAddView> {
 
   Future<void> _dateTimeSelectWrapper(BuildContext context) async {
     await _selectDate(context);
-    if (context.mounted) await _selectTime(context);
+    if (mounted) await _selectTime(context);
   }
 
   // based on the date and time deadline
