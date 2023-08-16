@@ -2,13 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_refactor/model/constants.dart';
-import 'package:todo_refactor/model/response_model.dart';
 import 'package:todo_refactor/model/task_model.dart';
-import 'package:todo_refactor/model/user_model.dart';
 import 'package:todo_refactor/provider/homepage_provider.dart';
 import 'package:todo_refactor/provider/task_provider.dart';
-import 'package:todo_refactor/utilities/task_utils.dart';
-import 'package:todo_refactor/utilities/user_utils.dart';
 
 class TaskInfoView extends StatefulWidget {
   const TaskInfoView({super.key});
@@ -204,49 +200,6 @@ class _TaskInfoViewState extends State<TaskInfoView> {
     );
   }
 
-  // other aux functions
-  Future<_TaskInfo?> _fetchTaskInfo(String taskId) async {
-    ResponseModel res;
-    _TaskInfo? taskinfo;
-    // ingredients
-    TaskModel? task;
-    String? ownerName, lastEditorName;
-    // first get the task name
-    await TaskUtils().getTaskFromId(taskId).then((res) {
-      if (res.success) {
-        task = res.content;
-        return UserUtils().getUser(task!.ownerId!);
-      } else {
-        throw 'Failed to retrieve task from id';
-      }
-      // then the owner name
-    }).then((res) {
-      if (res.success) {
-        ownerName =
-            '${(res.content as UserModel).firstName} ${(res.content as UserModel).lastName}';
-        return UserUtils().getUser(task!.lastEditUserId!);
-      } else {
-        throw 'Failed to fetch task owner name';
-      }
-      // then the last editor name
-    }).then((res) {
-      if (res.success) {
-        lastEditorName =
-            '${(res.content as UserModel).firstName} ${(res.content as UserModel).lastName}';
-        // then combine the components
-        taskinfo = _TaskInfo(
-            taskmodel: task,
-            ownerFullName: ownerName,
-            lastEditorFullName: lastEditorName);
-      } else {
-        throw 'Failed to fetch task last editor name';
-      }
-    }).onError((error, stackTrace) {
-      print(error);
-    });
-    return taskinfo;
-  }
-
   // based on the date and time deadline
   String _dateTimeFormat(DateTime date) {
     // String to be appended
@@ -255,16 +208,4 @@ class _TaskInfoViewState extends State<TaskInfoView> {
 
     return '$dateString, $timeString';
   }
-}
-
-// temp class for passing argument to the main display
-class _TaskInfo {
-  TaskModel? taskmodel;
-  String? ownerFullName;
-  String? lastEditorFullName;
-
-  _TaskInfo(
-      {required this.taskmodel,
-      required this.ownerFullName,
-      required this.lastEditorFullName});
 }

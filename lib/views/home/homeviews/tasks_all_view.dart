@@ -16,6 +16,11 @@ class TasksView extends StatefulWidget {
 }
 
 class _TasksViewState extends State<TasksView> {
+  // the search query
+  String searchQuery = '';
+  // the whole list to be loaded
+  List<TaskModel>? currentLoadResult;
+
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -25,14 +30,7 @@ class _TasksViewState extends State<TasksView> {
             padding: EdgeInsets.all(4),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                IconButton(
-                    onPressed: () {},
-                    icon: Icon(
-                      Icons.search,
-                      size: 32,
-                    ))
-              ],
+              children: [_searchBar()],
             ),
           ),
           Divider(),
@@ -42,10 +40,19 @@ class _TasksViewState extends State<TasksView> {
     );
   }
 
+  // the main search bar
+  Widget _searchBar() {
+    return SearchBar(
+      onChanged: (value) {
+        searchQuery = value;
+      },
+    );
+  }
+
   // future builder wrapper
   Widget _futureBuilderWrapper() {
     return FutureBuilder(
-        future: _cardInfoList(),
+        future: _getTaskListWrapper(),
         builder: ((context, snapshot) {
           Widget content;
           // what would be on it?
@@ -55,6 +62,8 @@ class _TasksViewState extends State<TasksView> {
             } else {
               content = _emptyListWidget();
             }
+            // assign the data here
+            currentLoadResult = snapshot.data!;
           } else if (snapshot.hasError) {
             content = _errorWidget();
           } else {
@@ -65,19 +74,20 @@ class _TasksViewState extends State<TasksView> {
   }
 
   // the info list
-  Widget _taskListWidget(List<_CardInfo> cardinfolist) {
+  Widget _taskListWidget(List<TaskModel> tasklist) {
     return ListView.separated(
         padding: EdgeInsets.all(16),
-        itemCount: cardinfolist.length,
+        itemCount: tasklist.length,
         separatorBuilder: (context, index) {
           return Divider();
         },
         itemBuilder: (BuildContext context, int index) {
-          _CardInfo cardinfo = cardinfolist[index];
+          TaskModel task = tasklist[index];
+          TaskStatus status = TaskStatus.fetchFromName(task.status!);
           return InkWell(
             onTap: () {
               // switch to task info
-              _viewTaskWrapper(cardinfo.taskModel!);
+              _viewTaskWrapper(task);
             },
             child: Container(
               padding: EdgeInsets.all(16),
@@ -89,12 +99,12 @@ class _TasksViewState extends State<TasksView> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        cardinfo.taskModel!.taskName!,
+                        task.taskName!,
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 18),
                       ),
                       Text(
-                        cardinfo.taskOwner!,
+                        task.ownerFullName!,
                         style: TextStyle(fontSize: 14),
                       ),
                     ],
@@ -107,10 +117,9 @@ class _TasksViewState extends State<TasksView> {
                           width: 10.0,
                           height: 10.0,
                           decoration: BoxDecoration(
-                              color: cardinfo.taskStatus!.color,
-                              shape: BoxShape.circle),
+                              color: status.color, shape: BoxShape.circle),
                         ),
-                        Text(cardinfo.taskStatus!.label),
+                        Text(status.label),
                       ],
                     ),
                   ),
@@ -172,26 +181,6 @@ class _TasksViewState extends State<TasksView> {
     );
   }
 
-  // fetch card info list
-  Future<List<_CardInfo>?> _cardInfoList() async {
-    // first get the list
-    List<_CardInfo>? cardlist;
-    List<TaskModel>? tasklist = await _getTaskListWrapper();
-
-    if (tasklist != null) {
-      cardlist = [];
-      for (TaskModel task in tasklist) {
-        // then finally add all of them to the cardlist
-        cardlist.add(_CardInfo(
-            taskModel: task,
-            taskOwner: _fullName(),
-            taskStatus: TaskStatus.fetchFromName(task.status!)));
-      }
-    }
-
-    return cardlist;
-  }
-
   // wrapper for calling the async task list
   Future<List<TaskModel>?> _getTaskListWrapper() async {
     // only reload if the current is null
@@ -213,22 +202,4 @@ class _TasksViewState extends State<TasksView> {
     }
     return tasklist;
   }
-
-  // wrapper for getting the full name
-  String _fullName() {
-    UserModel user = Provider.of<AuthProvider>(context, listen: false).user!;
-    return '${user.firstName} ${user.lastName}';
-  }
-}
-
-// temp class to store card info
-class _CardInfo {
-  TaskModel? taskModel;
-  String? taskOwner;
-  TaskStatus? taskStatus;
-
-  _CardInfo(
-      {required this.taskModel,
-      required this.taskOwner,
-      required this.taskStatus});
 }
