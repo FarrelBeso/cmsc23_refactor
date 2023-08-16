@@ -42,10 +42,23 @@ class _TasksViewState extends State<TasksView> {
 
   // the main search bar
   Widget _searchBar() {
-    return SearchBar(
-      onChanged: (value) {
-        searchQuery = value;
-      },
+    return Expanded(
+      child: Container(
+        padding: EdgeInsets.all(8),
+        margin: EdgeInsets.all(8),
+        child: SearchBar(
+          trailing: [
+            Container(
+                padding: EdgeInsets.symmetric(horizontal: 8),
+                child: Icon(Icons.search))
+          ],
+          onChanged: (value) {
+            setState(() {
+              searchQuery = value;
+            });
+          },
+        ),
+      ),
     );
   }
 
@@ -63,9 +76,22 @@ class _TasksViewState extends State<TasksView> {
   // the filter function based on the
   // current load result
   List<TaskModel> _searchFilter() {
-    return currentLoadResult!.where((task) =>
-        ((task.taskName)!.contains(searchQuery)) ||
-        ((task.status)!.contains(searchQuery))) as List<TaskModel>;
+    // manual filtering
+
+    if (searchQuery.isEmpty) {
+      return currentLoadResult!;
+    } else {
+      List<TaskModel> list = [];
+      String lowersearch = searchQuery.toLowerCase();
+      for (var task in currentLoadResult!) {
+        if (!(list.contains(task)) &&
+            ((task.taskName!.toLowerCase()).contains(lowersearch) ||
+                (task.status!.toLowerCase()).contains(lowersearch))) {
+          list.add(task);
+        }
+      }
+      return list;
+    }
   }
 
   // future builder wrapper
@@ -82,7 +108,6 @@ class _TasksViewState extends State<TasksView> {
               content = _emptyListWidget();
             }
             // assign the data here
-            currentLoadResult = snapshot.data!;
           } else if (snapshot.hasError) {
             content = _errorWidget();
           } else {
@@ -94,59 +119,61 @@ class _TasksViewState extends State<TasksView> {
 
   // the info list
   Widget _taskListWidget(List<TaskModel> tasklist) {
-    return ListView.separated(
-        padding: EdgeInsets.all(16),
-        itemCount: tasklist.length,
-        separatorBuilder: (context, index) {
-          return Divider();
-        },
-        itemBuilder: (BuildContext context, int index) {
-          TaskModel task = tasklist[index];
-          TaskStatus status = TaskStatus.fetchFromName(task.status!);
-          return InkWell(
-            onTap: () {
-              // switch to task info
-              _viewTaskWrapper(task);
-            },
-            child: Container(
-              padding: EdgeInsets.all(16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                      child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        task.taskName!,
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 18),
-                      ),
-                      Text(
-                        task.ownerFullName!,
-                        style: TextStyle(fontSize: 14),
-                      ),
-                    ],
-                  )),
-                  Container(
-                    child: Row(
+    return Expanded(
+      child: ListView.separated(
+          padding: EdgeInsets.all(16),
+          itemCount: tasklist.length,
+          separatorBuilder: (context, index) {
+            return Divider();
+          },
+          itemBuilder: (BuildContext context, int index) {
+            TaskModel task = tasklist[index];
+            TaskStatus status = TaskStatus.fetchFromName(task.status!);
+            return InkWell(
+              onTap: () {
+                // switch to task info
+                _viewTaskWrapper(task);
+              },
+              child: Container(
+                padding: EdgeInsets.all(16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                        child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Container(
-                          margin: EdgeInsets.all(5),
-                          width: 10.0,
-                          height: 10.0,
-                          decoration: BoxDecoration(
-                              color: status.color, shape: BoxShape.circle),
+                        Text(
+                          task.taskName!,
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 18),
                         ),
-                        Text(status.label),
+                        Text(
+                          task.ownerFullName!,
+                          style: TextStyle(fontSize: 14),
+                        ),
                       ],
+                    )),
+                    Container(
+                      child: Row(
+                        children: [
+                          Container(
+                            margin: EdgeInsets.all(5),
+                            width: 10.0,
+                            height: 10.0,
+                            decoration: BoxDecoration(
+                                color: status.color, shape: BoxShape.circle),
+                          ),
+                          Text(status.label),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          );
-        });
+            );
+          }),
+    );
   }
 
   // wrapper to view the task
@@ -213,6 +240,10 @@ class _TasksViewState extends State<TasksView> {
         if (res.success) {
           // reupdate the tasklist
           tasklist = Provider.of<TaskProvider>(context, listen: false).tasklist;
+          // also update the state
+          setState(() {
+            currentLoadResult = tasklist;
+          });
         } else {
           // ScaffoldMessenger.of(context)
           //     .showSnackBar(SnackBar(content: Text(res.message!)));
