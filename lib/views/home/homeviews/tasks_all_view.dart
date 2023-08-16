@@ -34,7 +34,7 @@ class _TasksViewState extends State<TasksView> {
             ),
           ),
           Divider(),
-          _futureBuilderWrapper()
+          _contentWrapper()
         ],
       ),
     );
@@ -47,6 +47,25 @@ class _TasksViewState extends State<TasksView> {
         searchQuery = value;
       },
     );
+  }
+
+  // wrapper on the overall content
+  Widget _contentWrapper() {
+    if (currentLoadResult == null) {
+      return _futureBuilderWrapper();
+    } else {
+      // filter the tasklist here
+      List<TaskModel> tasklist = _searchFilter();
+      return _taskListWidget(tasklist);
+    }
+  }
+
+  // the filter function based on the
+  // current load result
+  List<TaskModel> _searchFilter() {
+    return currentLoadResult!.where((task) =>
+        ((task.taskName)!.contains(searchQuery)) ||
+        ((task.status)!.contains(searchQuery))) as List<TaskModel>;
   }
 
   // future builder wrapper
