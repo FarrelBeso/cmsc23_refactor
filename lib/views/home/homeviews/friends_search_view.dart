@@ -210,9 +210,10 @@ class _FriendsViewState extends State<FriendsView> {
         // remove the user itself
         List<UserModel> userlist = res.content;
         final currentuser =
-            Provider.of<AuthProvider>(context, listen: false).user;
-        userlist.remove(currentuser);
-        return res.content;
+            Provider.of<AuthProvider>(context, listen: false).user!;
+        userlist =
+            userlist.where((user) => (user.id != currentuser.id)).toList();
+        return userlist;
       } else {
         // ScaffoldMessenger.of(context)
         //     .showSnackBar(SnackBar(content: Text(res.message!)));
