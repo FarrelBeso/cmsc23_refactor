@@ -53,3 +53,12 @@ enum MainPageViews {
   final String label;
   final Widget view;
 }
+
+enum UserRelationStatus {
+  stranger,
+  request,
+  pending,
+  friend
+  // request = the current user received friend request from other user
+  // pending = the current user sent a friend request to other user
+}

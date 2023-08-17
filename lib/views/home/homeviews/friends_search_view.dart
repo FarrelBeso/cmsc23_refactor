@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:todo_refactor/model/constants.dart';
 import 'package:todo_refactor/model/response_model.dart';
 import 'package:todo_refactor/model/user_model.dart';
+import 'package:todo_refactor/provider/auth_provider.dart';
 import 'package:todo_refactor/provider/user_provider.dart';
+import 'package:todo_refactor/utilities/user_utils.dart';
 
 class FriendsView extends StatefulWidget {
   const FriendsView({super.key});
@@ -129,14 +132,31 @@ class _FriendsViewState extends State<FriendsView> {
                   //     ],
                   //   ),
                   // ),
-                  Container(
-                      child: FilledButton(
-                          onPressed: () {}, child: Text('ADD FRIEND')))
+                  Container(child: _personStatusButton(user.id!))
                 ],
               ),
             ),
           );
         });
+  }
+
+  // button builder depending on friend status
+  Widget _personStatusButton(String otherId) {
+    UserModel currentUser =
+        Provider.of<AuthProvider>(context, listen: false).user!;
+    UserRelationStatus status = UserUtils().getStatus(currentUser, otherId);
+    switch (status) {
+      case UserRelationStatus.stranger:
+        return FilledButton(onPressed: () {}, child: Text('Add Friend'));
+      case UserRelationStatus.request:
+        return FilledButton.tonal(
+            onPressed: () {}, child: Text('Accept Request'));
+      case UserRelationStatus.pending:
+        return FilledButton.tonal(
+            onPressed: () {}, child: Text('Cancel Request'));
+      case UserRelationStatus.friend:
+        return OutlinedButton(onPressed: () {}, child: Text('Unfriend'));
+    }
   }
 
   Widget _errorWidget() {
@@ -187,12 +207,17 @@ class _FriendsViewState extends State<FriendsView> {
         .searchUsers(searchQuery);
     if (context.mounted) {
       if (res.success) {
-        //return res.content;
+        // remove the user itself
+        List<UserModel> userlist = res.content;
+        final currentuser =
+            Provider.of<AuthProvider>(context, listen: false).user;
+        userlist.remove(currentuser);
+        return res.content;
       } else {
         // ScaffoldMessenger.of(context)
         //     .showSnackBar(SnackBar(content: Text(res.message!)));
       }
     }
-    return res.content;
+    return [];
   }
 }

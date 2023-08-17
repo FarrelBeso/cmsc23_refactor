@@ -13,35 +13,45 @@ class UserModel {
   String? biography;
   List<String>? friendIds;
   List<String>? taskOwnIds;
-  UserModel(
-      {
-      // required objects are required from forms
-      this.id,
-      this.firstName,
-      this.lastName,
-      this.username,
-      this.email,
-      this.birthday,
-      this.location,
-      // optional bits
-      this.biography = 'Pleasure to work with you all!',
-      this.friendIds = const [],
-      this.taskOwnIds = const []});
+  // for friend requests
+  List<String>? friendRequests; // friend request received from others
+  List<String>? pendingRequests; // friend requests sent to others
+  UserModel({
+    // required objects are required from forms
+    this.id,
+    this.firstName,
+    this.lastName,
+    this.username,
+    this.email,
+    this.birthday,
+    this.location,
+    // optional bits
+    this.biography = 'Pleasure to work with you all!',
+    this.friendIds = const [],
+    this.taskOwnIds = const [],
+    // friend requests
+    this.friendRequests = const [],
+    this.pendingRequests = const [],
+  });
 
   // copying some parts
   UserModel copyWith(UserModel other) {
     return UserModel(
-        id: other.id ?? id,
-        firstName: other.firstName ?? firstName,
-        lastName: other.lastName ?? lastName,
-        username: other.username ?? username,
-        email: other.email ?? email,
-        birthday: other.birthday ?? birthday,
-        location: other.location ?? location,
-        // optional
-        biography: other.biography ?? biography,
-        friendIds: other.friendIds ?? friendIds,
-        taskOwnIds: other.taskOwnIds ?? taskOwnIds);
+      id: other.id ?? id,
+      firstName: other.firstName ?? firstName,
+      lastName: other.lastName ?? lastName,
+      username: other.username ?? username,
+      email: other.email ?? email,
+      birthday: other.birthday ?? birthday,
+      location: other.location ?? location,
+      // optional
+      biography: other.biography ?? biography,
+      friendIds: other.friendIds ?? friendIds,
+      taskOwnIds: other.taskOwnIds ?? taskOwnIds,
+      // friend requests
+      friendRequests: other.friendRequests ?? friendRequests,
+      pendingRequests: other.pendingRequests ?? pendingRequests,
+    );
   }
 
   // convert to firestore
@@ -58,6 +68,9 @@ class UserModel {
       if (biography != null) "biography": biography,
       if (friendIds != null) "friendIds": friendIds,
       if (taskOwnIds != null) "taskOwnIds": taskOwnIds,
+      // friend requests
+      if (friendRequests != null) "friendRequests": friendRequests,
+      if (pendingRequests != null) "pendingRequests": pendingRequests,
     };
   }
 
@@ -81,6 +94,13 @@ class UserModel {
           data?['friendIds'] is Iterable ? List.from(data?['friendIds']) : null,
       taskOwnIds: data?['taskOwnIds'] is Iterable
           ? List.from(data?['taskOwnIds'])
+          : null,
+      // friend requests
+      friendRequests: data?['friendRequests'] is Iterable
+          ? List.from(data?['friendRequests'])
+          : null,
+      pendingRequests: data?['pendingRequests'] is Iterable
+          ? List.from(data?['pendingRequests'])
           : null,
     );
   }
