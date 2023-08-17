@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:todo_refactor/model/constants.dart';
 import 'package:todo_refactor/model/response_model.dart';
-import 'package:todo_refactor/model/task_model.dart';
-import 'package:todo_refactor/provider/homepage_provider.dart';
-import 'package:todo_refactor/provider/task_provider.dart';
+import 'package:todo_refactor/model/user_model.dart';
+import 'package:todo_refactor/provider/user_provider.dart';
 
 class FriendsView extends StatefulWidget {
   const FriendsView({super.key});
@@ -17,7 +15,7 @@ class _FriendsViewState extends State<FriendsView> {
   // the search query
   String searchQuery = '';
   // the whole list to be loaded
-  List<TaskModel>? currentLoadResult;
+  List<UserModel>? currentLoadResult;
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +30,7 @@ class _FriendsViewState extends State<FriendsView> {
             ),
           ),
           Divider(),
-          _contentWrapper()
+          _futureBuilderWrapper()
         ],
       ),
     );
@@ -60,38 +58,6 @@ class _FriendsViewState extends State<FriendsView> {
     );
   }
 
-  // wrapper on the overall content
-  Widget _contentWrapper() {
-    if (currentLoadResult == null) {
-      return _futureBuilderWrapper();
-    } else {
-      // filter the tasklist here
-      List<TaskModel> tasklist = _searchFilter();
-      return _taskListWidget(tasklist);
-    }
-  }
-
-  // the filter function based on the
-  // current load result
-  List<TaskModel> _searchFilter() {
-    // manual filtering
-
-    if (searchQuery.isEmpty) {
-      return currentLoadResult!;
-    } else {
-      List<TaskModel> list = [];
-      String lowersearch = searchQuery.toLowerCase();
-      for (var task in currentLoadResult!) {
-        if (!(list.contains(task)) &&
-            ((task.taskName!.toLowerCase()).contains(lowersearch) ||
-                (task.status!.toLowerCase()).contains(lowersearch))) {
-          list.add(task);
-        }
-      }
-      return list;
-    }
-  }
-
   // future builder wrapper
   Widget _futureBuilderWrapper() {
     return FutureBuilder(
@@ -100,8 +66,8 @@ class _FriendsViewState extends State<FriendsView> {
           Widget content;
           // what would be on it?
           if (snapshot.hasData) {
-            if (snapshot.data!.isNotEmpty) {
-              content = _taskListWidget(snapshot.data!);
+            if ((snapshot.data as List).isNotEmpty) {
+              content = _userListWidget();
             } else {
               content = _emptyListWidget();
             }
@@ -116,21 +82,20 @@ class _FriendsViewState extends State<FriendsView> {
   }
 
   // the info list
-  Widget _taskListWidget(List<TaskModel> tasklist) {
+  Widget _userListWidget() {
     return Expanded(
       child: ListView.separated(
           padding: EdgeInsets.all(16),
-          itemCount: tasklist.length,
+          itemCount: currentLoadResult!.length,
           separatorBuilder: (context, index) {
             return Divider();
           },
           itemBuilder: (BuildContext context, int index) {
-            TaskModel task = tasklist[index];
-            TaskStatus status = TaskStatus.fetchFromName(task.status!);
+            UserModel user = currentLoadResult![index];
             return InkWell(
               onTap: () {
-                // switch to task info
-                _viewTaskWrapper(task);
+                // switch to user view
+                // _viewTaskWrapper(user);
               },
               child: Container(
                 padding: EdgeInsets.all(16),
@@ -142,45 +107,38 @@ class _FriendsViewState extends State<FriendsView> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          task.taskName!,
+                          '${user.firstName} ${user.lastName}',
                           style: TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 18),
                         ),
                         Text(
-                          task.ownerFullName!,
+                          user.username!,
                           style: TextStyle(fontSize: 14),
                         ),
                       ],
                     )),
-                    Container(
-                      child: Row(
-                        children: [
-                          Container(
-                            margin: EdgeInsets.all(5),
-                            width: 10.0,
-                            height: 10.0,
-                            decoration: BoxDecoration(
-                                color: status.color, shape: BoxShape.circle),
-                          ),
-                          Text(status.label),
-                        ],
-                      ),
-                    ),
+                    // replace if friend or not
+                    // Container(
+                    //   child: Row(
+                    //     children: [
+                    //       Container(
+                    //         margin: EdgeInsets.all(5),
+                    //         width: 10.0,
+                    //         height: 10.0,
+                    //         decoration: BoxDecoration(
+                    //             color: status.color, shape: BoxShape.circle),
+                    //       ),
+                    //       Text(status.label),
+                    //     ],
+                    //   ),
+                    // ),
+                    FilledButton(onPressed: () {}, child: Text('ADD FRIEND'))
                   ],
                 ),
               ),
             );
           }),
     );
-  }
-
-  // wrapper to view the task
-  void _viewTaskWrapper(TaskModel task) {
-    // set the task first
-    Provider.of<TaskProvider>(context, listen: false).setSelectedTask(task);
-
-    Provider.of<HomepageProvider>(context, listen: false)
-        .setView(MainPageViews.taskInfo);
   }
 
   Widget _errorWidget() {
@@ -217,7 +175,7 @@ class _FriendsViewState extends State<FriendsView> {
             height: 24,
           ),
           Text(
-            'No tasks to show',
+            'No users found',
             style: TextStyle(fontSize: 20),
           )
         ],
@@ -225,29 +183,20 @@ class _FriendsViewState extends State<FriendsView> {
     );
   }
 
-  // wrapper for calling the async task list
-  Future<List<TaskModel>?> _getTaskListWrapper() async {
-    // only reload if the current is null
-    List<TaskModel>? tasklist =
-        Provider.of<TaskProvider>(context, listen: false).tasklist;
-    if (tasklist == null) {
-      ResponseModel res =
-          await Provider.of<TaskProvider>(context, listen: false)
-              .updateTaskList();
-      if (context.mounted) {
-        if (res.success) {
-          // reupdate the tasklist
-          tasklist = Provider.of<TaskProvider>(context, listen: false).tasklist;
-          // also update the state
-          setState(() {
-            currentLoadResult = tasklist;
-          });
-        } else {
-          // ScaffoldMessenger.of(context)
-          //     .showSnackBar(SnackBar(content: Text(res.message!)));
-        }
+  // wrapper for calling the async user list
+  Future<void> _getTaskListWrapper() async {
+    ResponseModel res = await Provider.of<UserProvider>(context, listen: false)
+        .searchUsers(searchQuery);
+    if (context.mounted) {
+      if (res.success) {
+        //update the state
+        setState(() {
+          currentLoadResult = res.content;
+        });
+      } else {
+        // ScaffoldMessenger.of(context)
+        //     .showSnackBar(SnackBar(content: Text(res.message!)));
       }
     }
-    return tasklist;
   }
 }

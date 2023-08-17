@@ -22,9 +22,14 @@ class UserUtils {
   // i.e., first and last name, or username
   Future<ResponseModel> getUsersByQuery(String stringQuery) async {
     Set<UserModel> searchResult = {};
-    searchResult.addAll(await UserAPI().getByUsername(stringQuery));
-    searchResult.addAll(await UserAPI().getByLastName(stringQuery));
-    searchResult.addAll(await UserAPI().getByFirstName(stringQuery));
+    if (stringQuery.isEmpty) {
+      searchResult.addAll(await UserAPI().getAllUsers());
+    } else {
+      searchResult.addAll(await UserAPI().getByUsername(stringQuery));
+      searchResult.addAll(await UserAPI().getByLastName(stringQuery));
+      searchResult.addAll(await UserAPI().getByFirstName(stringQuery));
+    }
+
     return ResponseModel(success: true, content: searchResult.toList());
   }
 }

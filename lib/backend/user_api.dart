@@ -69,4 +69,16 @@ class UserAPI {
     });
     return userlist;
   }
+
+  // get all users
+  Future<List<UserModel>> getAllUsers() async {
+    List<UserModel> userlist = [];
+    final collectionRef = db.collection("users");
+    await collectionRef.get().then((querySnaphost) {
+      userlist = (querySnaphost.docs)
+          .map((doc) => UserModel.fromFirestore(doc, null))
+          .toList();
+    });
+    return userlist;
+  }
 }
