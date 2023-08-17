@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:todo_refactor/model/constants.dart';
 import 'package:todo_refactor/model/user_model.dart';
 
 class UserAPI {
@@ -81,5 +80,19 @@ class UserAPI {
           .toList();
     });
     return userlist;
+  }
+
+  // friend related functions
+  Future<void> addFriend(String senderId, String receiverId) async {
+    final senderRef = db.collection("users").doc(senderId);
+    final receiverRef = db.collection("users").doc(receiverId);
+    // the sender would modify pending
+    await senderRef.update({
+      "pendingRequests": FieldValue.arrayUnion([receiverId])
+    });
+    // the receiver would modify requests
+    await receiverRef.update({
+      "friendRequests": FieldValue.arrayUnion([senderId])
+    });
   }
 }
