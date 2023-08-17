@@ -46,4 +46,6 @@ class UserUtils {
       return UserRelationStatus.stranger;
     }
   }
+
+  // friend request related
 }

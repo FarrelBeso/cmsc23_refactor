@@ -95,4 +95,49 @@ class UserAPI {
       "friendRequests": FieldValue.arrayUnion([senderId])
     });
   }
+
+  Future<void> acceptRequest(String senderId, String receiverId) async {
+    final senderRef = db.collection("users").doc(senderId);
+    final receiverRef = db.collection("users").doc(receiverId);
+    // sender function
+    await senderRef.update({
+      "pendingRequests": FieldValue.arrayRemove([receiverId])
+    });
+    await senderRef.update({
+      "friendIds": FieldValue.arrayUnion([receiverId])
+    });
+    // receiver function
+    await receiverRef.update({
+      "friendRequests": FieldValue.arrayRemove([senderId])
+    });
+    await receiverRef.update({
+      "friendIds": FieldValue.arrayUnion([senderId])
+    });
+  }
+
+  Future<void> rejectRequest(String senderId, String receiverId) async {
+    final senderRef = db.collection("users").doc(senderId);
+    final receiverRef = db.collection("users").doc(receiverId);
+    // sender function
+    await senderRef.update({
+      "pendingRequests": FieldValue.arrayRemove([receiverId])
+    });
+    // receiver function
+    await receiverRef.update({
+      "friendRequests": FieldValue.arrayRemove([senderId])
+    });
+  }
+
+  Future<void> removeFriend(String senderId, String receiverId) async {
+    final senderRef = db.collection("users").doc(senderId);
+    final receiverRef = db.collection("users").doc(receiverId);
+    // sender function
+    await senderRef.update({
+      "friendIds": FieldValue.arrayRemove([receiverId])
+    });
+    // receiver function
+    await receiverRef.update({
+      "friendIds": FieldValue.arrayRemove([senderId])
+    });
+  }
 }
