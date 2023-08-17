@@ -31,4 +31,42 @@ class UserAPI {
       "taskOwnIds": FieldValue.arrayRemove([taskId])
     });
   }
+
+  // get all users of related string query
+  // via their first and last name or username
+  Future<List<UserModel>> getByFirstName(String stringQuery) async {
+    List<UserModel> userlist = [];
+    final collectionRef = db.collection("users");
+    final query = collectionRef.where("firstName", isEqualTo: stringQuery);
+    await query.get().then((querySnaphost) {
+      userlist = (querySnaphost.docs)
+          .map((doc) => UserModel.fromFirestore(doc, null))
+          .toList();
+    });
+    return userlist;
+  }
+
+  Future<List<UserModel>> getByLastName(String stringQuery) async {
+    List<UserModel> userlist = [];
+    final collectionRef = db.collection("users");
+    final query = collectionRef.where("lastName", isEqualTo: stringQuery);
+    await query.get().then((querySnaphost) {
+      userlist = (querySnaphost.docs)
+          .map((doc) => UserModel.fromFirestore(doc, null))
+          .toList();
+    });
+    return userlist;
+  }
+
+  Future<List<UserModel>> getByUsername(String stringQuery) async {
+    List<UserModel> userlist = [];
+    final collectionRef = db.collection("users");
+    final query = collectionRef.where("username", isEqualTo: stringQuery);
+    await query.get().then((querySnaphost) {
+      userlist = (querySnaphost.docs)
+          .map((doc) => UserModel.fromFirestore(doc, null))
+          .toList();
+    });
+    return userlist;
+  }
 }

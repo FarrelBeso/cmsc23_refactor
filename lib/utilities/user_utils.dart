@@ -17,4 +17,14 @@ class UserUtils {
     });
     return ResponseModel(success: true, content: usermodel);
   }
+
+  // fetch users based on search
+  // i.e., first and last name, or username
+  Future<ResponseModel> getUsersByQuery(String stringQuery) async {
+    Set<UserModel> searchResult = {};
+    searchResult.addAll(await UserAPI().getByUsername(stringQuery));
+    searchResult.addAll(await UserAPI().getByLastName(stringQuery));
+    searchResult.addAll(await UserAPI().getByFirstName(stringQuery));
+    return ResponseModel(success: true, content: searchResult.toList());
+  }
 }
