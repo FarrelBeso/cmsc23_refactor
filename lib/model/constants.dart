@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:todo_refactor/views/home/homeviews/friends_search_view.dart';
 import 'package:todo_refactor/views/home/homeviews/personal_profile_view.dart';
 import 'package:todo_refactor/views/home/homeviews/task_add_view.dart';
 import 'package:todo_refactor/views/home/homeviews/task_edit_view.dart';
@@ -42,6 +43,7 @@ enum TaskStatus {
 
 enum MainPageViews {
   personalProfile('Personal Profile', PersonalProfileView()),
+  friendAll('Friend All', FriendsView()),
   taskAll('Task All', TasksView()),
   taskAdd('Task Add', TaskAddView()),
   taskInfo('Task Info', TaskInfoView()),

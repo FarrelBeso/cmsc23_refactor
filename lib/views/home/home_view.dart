@@ -88,6 +88,8 @@ class _HomeViewState extends State<HomeView> {
     switch (index) {
       case 0:
         view = MainPageViews.personalProfile;
+      case 1:
+        view = MainPageViews.friendAll;
       case 2:
         view = MainPageViews.taskAll;
       default:
