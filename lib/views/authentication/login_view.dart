@@ -73,6 +73,7 @@ class _LoginViewState extends State<LoginView> {
                     if (context.mounted) {
                       // ScaffoldMessenger.of(context).showSnackBar(
                       //     SnackBar(content: Text(response.message!)));
+                      print(response.message);
                     }
                   }
                 },
