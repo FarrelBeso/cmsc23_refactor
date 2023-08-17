@@ -17,8 +17,8 @@ class FriendsView extends StatefulWidget {
 class _FriendsViewState extends State<FriendsView> {
   // the search query
   String searchQuery = '';
-  // check if update is required
-  bool updateRequired = true;
+  // view all users
+  List<UserModel>? currentLoadResult;
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +33,7 @@ class _FriendsViewState extends State<FriendsView> {
             ),
           ),
           Divider(),
-          _futureBuilderWrapper()
+          _contentWrapper()
         ],
       ),
     );
@@ -59,6 +59,39 @@ class _FriendsViewState extends State<FriendsView> {
         ),
       ),
     );
+  }
+
+  // wrapper on the overall content
+  Widget _contentWrapper() {
+    if (currentLoadResult == null) {
+      return _futureBuilderWrapper();
+    } else {
+      // filter the userlist here
+      List<UserModel> userlist = _searchFilter();
+      return _userListWidget(userlist);
+    }
+  }
+
+  // the filter function based on the
+  // current load result
+  List<UserModel> _searchFilter() {
+    // manual filtering
+
+    if (searchQuery.isEmpty) {
+      return currentLoadResult!;
+    } else {
+      List<UserModel> list = [];
+      String lowersearch = searchQuery.toLowerCase();
+      for (var user in currentLoadResult!) {
+        if (!(list.contains(user)) &&
+            ((user.firstName!.toLowerCase()).contains(lowersearch) ||
+                (user.lastName!.toLowerCase()).contains(lowersearch) ||
+                (user.username!.toLowerCase()).contains(lowersearch))) {
+          list.add(user);
+        }
+      }
+      return list;
+    }
   }
 
   // future builder wrapper
