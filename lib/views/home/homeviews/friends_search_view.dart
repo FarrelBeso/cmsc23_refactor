@@ -19,9 +19,12 @@ class _FriendsViewState extends State<FriendsView> {
   String searchQuery = '';
   // view all users
   List<UserModel>? currentLoadResult;
+  // the current user
+  late UserModel currentUser;
 
   @override
   Widget build(BuildContext context) {
+    currentUser = Provider.of<AuthProvider>(context, listen: false).user!;
     return Expanded(
       child: Column(
         children: [
@@ -152,7 +155,7 @@ class _FriendsViewState extends State<FriendsView> {
                       ),
                     ],
                   )),
-                  Container(child: _personStatusButton(user.id!))
+                  Container(child: _personStatusButton(index))
                 ],
               ),
             ),
@@ -161,9 +164,8 @@ class _FriendsViewState extends State<FriendsView> {
   }
 
   // button builder depending on friend status
-  Widget _personStatusButton(String otherId) {
-    UserModel currentUser =
-        Provider.of<AuthProvider>(context, listen: false).user!;
+  Widget _personStatusButton(int index) {
+    String otherId = currentLoadResult![index].id!;
     UserRelationStatus status = UserUtils().getStatus(currentUser, otherId);
     switch (status) {
       case UserRelationStatus.stranger:
@@ -187,7 +189,8 @@ class _FriendsViewState extends State<FriendsView> {
   }
 
   // actions on the button
-  Future<void> _statusButtonAction(String otherId, String action) async {
+  Future<void> _statusButtonAction(
+      int index, String otherId, String action) async {
     switch (action) {
       case 'addFriend':
         await Provider.of<UserProvider>(context, listen: false)
@@ -205,6 +208,23 @@ class _FriendsViewState extends State<FriendsView> {
         await Provider.of<UserProvider>(context, listen: false)
             .removeFriend(otherId);
     }
+
+    // the state would also change
+    setState(() {
+      switch (action) {
+        case 'addFriend':
+          currentUser.friendIds!.add(otherId);
+        case 'acceptRequest':
+          currentUser.friendRequests!.remove(otherId);
+          currentUser.friendIds!.add(otherId);
+        case 'rejectRequest':
+          currentUser.friendRequests!.remove(otherId);
+        case 'cancelRequest':
+          currentUser.pendingRequests!.remove(otherId);
+        case 'removeFriend':
+          currentUser.friendIds!.remove(otherId);
+      }
+    });
   }
 
   Widget _errorWidget() {
