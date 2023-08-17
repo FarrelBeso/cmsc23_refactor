@@ -122,75 +122,97 @@ class _FriendsViewState extends State<FriendsView> {
 
   // the info list
   Widget _userListWidget(List<UserModel> userlist) {
-    return ListView.separated(
-        padding: EdgeInsets.all(16),
-        itemCount: userlist.length,
-        separatorBuilder: (context, index) {
-          return Divider();
-        },
-        itemBuilder: (BuildContext context, int index) {
-          UserModel user = userlist[index];
-          return InkWell(
-            onTap: () {
-              // switch to user view
-              // _viewTaskWrapper(user);
-            },
-            child: Container(
-              padding: EdgeInsets.all(16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                      child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '${user.firstName} ${user.lastName}',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 18),
-                      ),
-                      Text(
-                        user.username!,
-                        style: TextStyle(fontSize: 14),
-                      ),
-                    ],
-                  )),
-                  Container(child: _personStatusButton(index))
-                ],
+    return Expanded(
+      child: ListView.separated(
+          padding: EdgeInsets.all(16),
+          itemCount: userlist.length,
+          separatorBuilder: (context, index) {
+            return Divider();
+          },
+          itemBuilder: (BuildContext context, int index) {
+            UserModel user = userlist[index];
+            return InkWell(
+              onTap: () {
+                // switch to user view
+                // _viewTaskWrapper(user);
+              },
+              child: Container(
+                padding: EdgeInsets.all(16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                        child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '${user.firstName} ${user.lastName}',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 18),
+                        ),
+                        Text(
+                          user.username!,
+                          style: TextStyle(fontSize: 14),
+                        ),
+                      ],
+                    )),
+                    Container(child: _personStatusButton(user.id!))
+                  ],
+                ),
               ),
-            ),
-          );
-        });
+            );
+          }),
+    );
   }
 
   // button builder depending on friend status
-  Widget _personStatusButton(int index) {
-    String otherId = currentLoadResult![index].id!;
+  Widget _personStatusButton(String otherId) {
     UserRelationStatus status = UserUtils().getStatus(currentUser, otherId);
     switch (status) {
       case UserRelationStatus.stranger:
-        return FilledButton(onPressed: () {}, child: Text('Add Friend'));
+        return FilledButton(
+            onPressed: () {
+              _statusButtonAction(otherId, 'addFriend');
+            },
+            child: Text('Add Friend'));
       case UserRelationStatus.request:
         return Container(
           child: Row(
             children: [
-              FilledButton.tonal(onPressed: () {}, child: Text('Accept')),
-              OutlinedButton(onPressed: () {}, child: Text('Reject'))
+              FilledButton.tonal(
+                  onPressed: () {
+                    _statusButtonAction(otherId, 'acceptRequest');
+                  },
+                  child: Text('Accept')),
+              SizedBox(
+                width: 4,
+              ),
+              OutlinedButton(
+                  onPressed: () {
+                    _statusButtonAction(otherId, 'rejectRequest');
+                  },
+                  child: Text('Reject'))
             ],
           ),
         );
 
       case UserRelationStatus.pending:
         return FilledButton.tonal(
-            onPressed: () {}, child: Text('Cancel Request'));
+            onPressed: () {
+              _statusButtonAction(otherId, 'cancelRequest');
+            },
+            child: Text('Cancel Request'));
       case UserRelationStatus.friend:
-        return OutlinedButton(onPressed: () {}, child: Text('Unfriend'));
+        return OutlinedButton(
+            onPressed: () {
+              _statusButtonAction(otherId, 'removeFriend');
+            },
+            child: Text('Unfriend'));
     }
   }
 
   // actions on the button
-  Future<void> _statusButtonAction(
-      int index, String otherId, String action) async {
+  Future<void> _statusButtonAction(String otherId, String action) async {
     switch (action) {
       case 'addFriend':
         await Provider.of<UserProvider>(context, listen: false)
@@ -213,7 +235,7 @@ class _FriendsViewState extends State<FriendsView> {
     setState(() {
       switch (action) {
         case 'addFriend':
-          currentUser.friendIds!.add(otherId);
+          currentUser.pendingRequests!.add(otherId);
         case 'acceptRequest':
           currentUser.friendRequests!.remove(otherId);
           currentUser.friendIds!.add(otherId);

@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:todo_refactor/backend/auth_api.dart';
 import 'package:todo_refactor/model/response_model.dart';
 import 'package:todo_refactor/model/user_model.dart';
 import 'package:todo_refactor/utilities/user_utils.dart';
@@ -22,7 +23,11 @@ class UserProvider extends ChangeNotifier {
   Future<ResponseModel> updateUserList(String stringQuery) async {
     ResponseModel res = await UserUtils().getUsersByQuery(stringQuery);
     if (res.success) {
-      setResultList(res.content);
+      // except the main user
+      List<UserModel> list = (res.content)
+          .where((user) => (user.id != AuthAPI().currentUser!.uid))
+          .toList();
+      setResultList(list);
     }
     return res;
   }
