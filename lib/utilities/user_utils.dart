@@ -65,6 +65,11 @@ class UserUtils {
     return ResponseModel(success: true);
   }
 
+  Future<ResponseModel> cancelRequest(String otherId) async {
+    await UserAPI().cancelRequest(AuthAPI().currentUser!.uid, otherId);
+    return ResponseModel(success: true);
+  }
+
   Future<ResponseModel> removeFriend(String otherId) async {
     await UserAPI().acceptRequest(AuthAPI().currentUser!.uid, otherId);
     return ResponseModel(success: true);

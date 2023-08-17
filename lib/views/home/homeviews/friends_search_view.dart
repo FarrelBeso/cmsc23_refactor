@@ -17,6 +17,8 @@ class FriendsView extends StatefulWidget {
 class _FriendsViewState extends State<FriendsView> {
   // the search query
   String searchQuery = '';
+  // check if update is required
+  bool updateRequired = true;
 
   @override
   Widget build(BuildContext context) {
@@ -117,21 +119,6 @@ class _FriendsViewState extends State<FriendsView> {
                       ),
                     ],
                   )),
-                  // replace if friend or not
-                  // Container(
-                  //   child: Row(
-                  //     children: [
-                  //       Container(
-                  //         margin: EdgeInsets.all(5),
-                  //         width: 10.0,
-                  //         height: 10.0,
-                  //         decoration: BoxDecoration(
-                  //             color: status.color, shape: BoxShape.circle),
-                  //       ),
-                  //       Text(status.label),
-                  //     ],
-                  //   ),
-                  // ),
                   Container(child: _personStatusButton(user.id!))
                 ],
               ),
@@ -149,13 +136,41 @@ class _FriendsViewState extends State<FriendsView> {
       case UserRelationStatus.stranger:
         return FilledButton(onPressed: () {}, child: Text('Add Friend'));
       case UserRelationStatus.request:
-        return FilledButton.tonal(
-            onPressed: () {}, child: Text('Accept Request'));
+        return Container(
+          child: Row(
+            children: [
+              FilledButton.tonal(onPressed: () {}, child: Text('Accept')),
+              OutlinedButton(onPressed: () {}, child: Text('Reject'))
+            ],
+          ),
+        );
+
       case UserRelationStatus.pending:
         return FilledButton.tonal(
             onPressed: () {}, child: Text('Cancel Request'));
       case UserRelationStatus.friend:
         return OutlinedButton(onPressed: () {}, child: Text('Unfriend'));
+    }
+  }
+
+  // actions on the button
+  Future<void> _statusButtonAction(String otherId, String action) async {
+    switch (action) {
+      case 'addFriend':
+        await Provider.of<UserProvider>(context, listen: false)
+            .addFriend(otherId);
+      case 'acceptRequest':
+        await Provider.of<UserProvider>(context, listen: false)
+            .acceptRequest(otherId);
+      case 'rejectRequest':
+        await Provider.of<UserProvider>(context, listen: false)
+            .rejectRequest(otherId);
+      case 'cancelRequest':
+        await Provider.of<UserProvider>(context, listen: false)
+            .cancelRequest(otherId);
+      case 'removeFriend':
+        await Provider.of<UserProvider>(context, listen: false)
+            .removeFriend(otherId);
     }
   }
 

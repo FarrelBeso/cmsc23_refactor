@@ -132,6 +132,20 @@ class UserAPI {
   }
 
   // the perspective is on sender
+  Future<void> cancelRequest(String senderId, String receiverId) async {
+    final senderRef = db.collection("users").doc(senderId);
+    final receiverRef = db.collection("users").doc(receiverId);
+    // sender function
+    await senderRef.update({
+      "pendingRequests": FieldValue.arrayRemove([receiverId])
+    });
+    // receiver function
+    await receiverRef.update({
+      "friendRequests": FieldValue.arrayRemove([senderId])
+    });
+  }
+
+  // the perspective is on sender
   Future<void> removeFriend(String senderId, String receiverId) async {
     final senderRef = db.collection("users").doc(senderId);
     final receiverRef = db.collection("users").doc(receiverId);

@@ -9,7 +9,7 @@ class UserProvider extends ChangeNotifier {
 
   // friend request related
   // checking if operation is successful is a bit complicated
-  // make sure to update the provider
+  // make sure to update the provider via wrappers
   Future<ResponseModel> addFriend(String otherId) async {
     await UserUtils().addFriend(otherId);
     return ResponseModel(success: true);
@@ -22,6 +22,11 @@ class UserProvider extends ChangeNotifier {
 
   Future<ResponseModel> rejectRequest(String otherId) async {
     await UserUtils().rejectRequest(otherId);
+    return ResponseModel(success: true);
+  }
+
+  Future<ResponseModel> cancelRequest(String otherId) async {
+    await UserUtils().cancelRequest(otherId);
     return ResponseModel(success: true);
   }
 
