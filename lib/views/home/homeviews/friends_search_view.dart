@@ -271,22 +271,27 @@ class _FriendsViewState extends State<FriendsView> {
 
   // wrapper for calling the async user list
   Future<List<UserModel>?> _getUserListWrapper() async {
-    ResponseModel res = await Provider.of<UserProvider>(context, listen: false)
-        .searchUsers(searchQuery);
-    if (context.mounted) {
-      if (res.success) {
-        // remove the user itself
-        List<UserModel> userlist = res.content;
-        final currentuser =
-            Provider.of<AuthProvider>(context, listen: false).user!;
-        userlist =
-            userlist.where((user) => (user.id != currentuser.id)).toList();
-        return userlist;
-      } else {
-        // ScaffoldMessenger.of(context)
-        //     .showSnackBar(SnackBar(content: Text(res.message!)));
+    // only reload if the current is null
+    List<UserModel>? userlist =
+        Provider.of<UserProvider>(context, listen: false).userlist;
+    if (userlist == null) {
+      ResponseModel res =
+          await Provider.of<UserProvider>(context, listen: false)
+              .updateUserList(searchQuery);
+      if (context.mounted) {
+        if (res.success) {
+          // reupdate the tasklist
+          userlist = Provider.of<UserProvider>(context, listen: false).userlist;
+          // also update the state
+          setState(() {
+            currentLoadResult = userlist;
+          });
+        } else {
+          // ScaffoldMessenger.of(context)
+          //     .showSnackBar(SnackBar(content: Text(res.message!)));
+        }
       }
     }
-    return [];
+    return userlist;
   }
 }
