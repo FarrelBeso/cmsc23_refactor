@@ -83,6 +83,7 @@ class UserAPI {
   }
 
   // friend related functions
+  // the perspective is on sender
   Future<void> addFriend(String senderId, String receiverId) async {
     final senderRef = db.collection("users").doc(senderId);
     final receiverRef = db.collection("users").doc(receiverId);
@@ -96,6 +97,7 @@ class UserAPI {
     });
   }
 
+  // the perspective is on receiver
   Future<void> acceptRequest(String senderId, String receiverId) async {
     final senderRef = db.collection("users").doc(senderId);
     final receiverRef = db.collection("users").doc(receiverId);
@@ -115,6 +117,7 @@ class UserAPI {
     });
   }
 
+  // the perspective is on receiver
   Future<void> rejectRequest(String senderId, String receiverId) async {
     final senderRef = db.collection("users").doc(senderId);
     final receiverRef = db.collection("users").doc(receiverId);
@@ -128,6 +131,7 @@ class UserAPI {
     });
   }
 
+  // the perspective is on sender
   Future<void> removeFriend(String senderId, String receiverId) async {
     final senderRef = db.collection("users").doc(senderId);
     final receiverRef = db.collection("users").doc(receiverId);

@@ -1,3 +1,4 @@
+import 'package:todo_refactor/backend/auth_api.dart';
 import 'package:todo_refactor/backend/user_api.dart';
 import 'package:todo_refactor/model/constants.dart';
 import 'package:todo_refactor/model/response_model.dart';
@@ -48,4 +49,24 @@ class UserUtils {
   }
 
   // friend request related
+  // checking if operation is successful is a bit complicated
+  Future<ResponseModel> addFriend(String otherId) async {
+    await UserAPI().addFriend(AuthAPI().currentUser!.uid, otherId);
+    return ResponseModel(success: true);
+  }
+
+  Future<ResponseModel> acceptRequest(String otherId) async {
+    await UserAPI().acceptRequest(otherId, AuthAPI().currentUser!.uid);
+    return ResponseModel(success: true);
+  }
+
+  Future<ResponseModel> rejectRequest(String otherId) async {
+    await UserAPI().rejectRequest(otherId, AuthAPI().currentUser!.uid);
+    return ResponseModel(success: true);
+  }
+
+  Future<ResponseModel> removeFriend(String otherId) async {
+    await UserAPI().acceptRequest(AuthAPI().currentUser!.uid, otherId);
+    return ResponseModel(success: true);
+  }
 }
