@@ -14,8 +14,6 @@ class FriendsView extends StatefulWidget {
 class _FriendsViewState extends State<FriendsView> {
   // the search query
   String searchQuery = '';
-  // the whole list to be loaded
-  List<UserModel>? currentLoadResult;
 
   @override
   Widget build(BuildContext context) {
@@ -61,13 +59,13 @@ class _FriendsViewState extends State<FriendsView> {
   // future builder wrapper
   Widget _futureBuilderWrapper() {
     return FutureBuilder(
-        future: _getTaskListWrapper(),
+        future: _getUserListWrapper(),
         builder: ((context, snapshot) {
           Widget content;
           // what would be on it?
           if (snapshot.hasData) {
             if ((snapshot.data as List).isNotEmpty) {
-              content = _userListWidget();
+              content = _userListWidget(snapshot.data!);
             } else {
               content = _emptyListWidget();
             }
@@ -82,63 +80,63 @@ class _FriendsViewState extends State<FriendsView> {
   }
 
   // the info list
-  Widget _userListWidget() {
-    return Expanded(
-      child: ListView.separated(
-          padding: EdgeInsets.all(16),
-          itemCount: currentLoadResult!.length,
-          separatorBuilder: (context, index) {
-            return Divider();
-          },
-          itemBuilder: (BuildContext context, int index) {
-            UserModel user = currentLoadResult![index];
-            return InkWell(
-              onTap: () {
-                // switch to user view
-                // _viewTaskWrapper(user);
-              },
-              child: Container(
-                padding: EdgeInsets.all(16),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                        child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '${user.firstName} ${user.lastName}',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 18),
-                        ),
-                        Text(
-                          user.username!,
-                          style: TextStyle(fontSize: 14),
-                        ),
-                      ],
-                    )),
-                    // replace if friend or not
-                    // Container(
-                    //   child: Row(
-                    //     children: [
-                    //       Container(
-                    //         margin: EdgeInsets.all(5),
-                    //         width: 10.0,
-                    //         height: 10.0,
-                    //         decoration: BoxDecoration(
-                    //             color: status.color, shape: BoxShape.circle),
-                    //       ),
-                    //       Text(status.label),
-                    //     ],
-                    //   ),
-                    // ),
-                    FilledButton(onPressed: () {}, child: Text('ADD FRIEND'))
-                  ],
-                ),
+  Widget _userListWidget(List<UserModel> userlist) {
+    return ListView.separated(
+        padding: EdgeInsets.all(16),
+        itemCount: userlist.length,
+        separatorBuilder: (context, index) {
+          return Divider();
+        },
+        itemBuilder: (BuildContext context, int index) {
+          UserModel user = userlist[index];
+          return InkWell(
+            onTap: () {
+              // switch to user view
+              // _viewTaskWrapper(user);
+            },
+            child: Container(
+              padding: EdgeInsets.all(16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                      child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '${user.firstName} ${user.lastName}',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 18),
+                      ),
+                      Text(
+                        user.username!,
+                        style: TextStyle(fontSize: 14),
+                      ),
+                    ],
+                  )),
+                  // replace if friend or not
+                  // Container(
+                  //   child: Row(
+                  //     children: [
+                  //       Container(
+                  //         margin: EdgeInsets.all(5),
+                  //         width: 10.0,
+                  //         height: 10.0,
+                  //         decoration: BoxDecoration(
+                  //             color: status.color, shape: BoxShape.circle),
+                  //       ),
+                  //       Text(status.label),
+                  //     ],
+                  //   ),
+                  // ),
+                  Container(
+                      child: FilledButton(
+                          onPressed: () {}, child: Text('ADD FRIEND')))
+                ],
               ),
-            );
-          }),
-    );
+            ),
+          );
+        });
   }
 
   Widget _errorWidget() {
@@ -184,19 +182,17 @@ class _FriendsViewState extends State<FriendsView> {
   }
 
   // wrapper for calling the async user list
-  Future<void> _getTaskListWrapper() async {
+  Future<List<UserModel>?> _getUserListWrapper() async {
     ResponseModel res = await Provider.of<UserProvider>(context, listen: false)
         .searchUsers(searchQuery);
     if (context.mounted) {
       if (res.success) {
-        //update the state
-        setState(() {
-          currentLoadResult = res.content;
-        });
+        //return res.content;
       } else {
         // ScaffoldMessenger.of(context)
         //     .showSnackBar(SnackBar(content: Text(res.message!)));
       }
     }
+    return res.content;
   }
 }
