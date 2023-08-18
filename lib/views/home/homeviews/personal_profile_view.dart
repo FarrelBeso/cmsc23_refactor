@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:todo_refactor/model/response_model.dart';
 import 'package:todo_refactor/model/user_model.dart';
 import 'package:todo_refactor/provider/auth_provider.dart';
-import 'package:todo_refactor/utilities/auth_utils.dart';
 
 class PersonalProfileView extends StatefulWidget {
   const PersonalProfileView({super.key});
@@ -24,38 +22,36 @@ class _PersonalProfileViewState extends State<PersonalProfileView> {
 
   // widgets
   Widget _contentWrapper() {
-    return Container(
-      child: Column(
-        children: [
-          // put whatever the current tab is
-          _profileHeader(),
-          _profileSection(),
-          //FriendsSection()
-        ],
-      ),
+    return Column(
+      children: [
+        // put whatever the current tab is
+        _profileHeader(),
+        _profileSection(),
+        //FriendsSection()
+      ],
     );
   }
 
   Widget _profileHeader() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       color: Theme.of(context).primaryColor,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
+          const SizedBox(
             height: 24,
           ),
           Text(
             '${user.firstName} ${user.lastName}',
-            style: TextStyle(
+            style: const TextStyle(
                 fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
           ),
           Text(
             user.username!,
-            style: TextStyle(fontSize: 16, color: Colors.white70),
+            style: const TextStyle(fontSize: 16, color: Colors.white70),
           ),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           Row(
@@ -63,8 +59,8 @@ class _PersonalProfileViewState extends State<PersonalProfileView> {
             children: [
               Expanded(
                 child: Container(
-                  padding: EdgeInsets.all(8),
-                  child: Text(
+                  padding: const EdgeInsets.all(8),
+                  child: const Text(
                     'PROFILE',
                     textAlign: TextAlign.center,
                     style: TextStyle(color: Colors.white),
@@ -73,8 +69,8 @@ class _PersonalProfileViewState extends State<PersonalProfileView> {
               ),
               Expanded(
                 child: Container(
-                  padding: EdgeInsets.all(8),
-                  child: Text('FRIENDS',
+                  padding: const EdgeInsets.all(8),
+                  child: const Text('FRIENDS',
                       textAlign: TextAlign.center,
                       style: TextStyle(color: Colors.white)),
                 ),
@@ -88,25 +84,28 @@ class _PersonalProfileViewState extends State<PersonalProfileView> {
 
   Widget _profileSection() {
     return Container(
-      padding: EdgeInsets.all(8),
+      padding: const EdgeInsets.all(8),
       child: Column(
         children: [
           Container(
-            padding: EdgeInsets.all(6),
+            padding: const EdgeInsets.all(6),
             child: Row(
               children: [
-                Container(padding: EdgeInsets.all(8), child: Text('ID: ')),
+                Container(
+                    padding: const EdgeInsets.all(8),
+                    child: const Text('ID: ')),
                 Text(user.id!)
               ],
             ),
           ),
           Card(
             child: Container(
-              padding: EdgeInsets.all(12),
+              padding: const EdgeInsets.all(12),
               child: Row(
                 children: [
                   Container(
-                      padding: EdgeInsets.all(8), child: Icon(Icons.cake)),
+                      padding: const EdgeInsets.all(8),
+                      child: const Icon(Icons.cake)),
                   Text(DateFormat(DateFormat.YEAR_MONTH_DAY)
                       .format(user.birthday!))
                 ],
@@ -115,20 +114,20 @@ class _PersonalProfileViewState extends State<PersonalProfileView> {
           ),
           Card(
             child: Container(
-              padding: EdgeInsets.all(12),
+              padding: const EdgeInsets.all(12),
               child: Row(
                 children: [
                   Container(
-                      padding: EdgeInsets.all(8),
-                      child: Icon(Icons.location_on)),
+                      padding: const EdgeInsets.all(8),
+                      child: const Icon(Icons.location_on)),
                   Text(user.location!)
                 ],
               ),
             ),
           ),
-          Divider(),
+          const Divider(),
           Container(
-              padding: EdgeInsets.all(8),
+              padding: const EdgeInsets.all(8),
               alignment: Alignment.topLeft,
               child: Text(user.biography!))
         ],
@@ -138,7 +137,7 @@ class _PersonalProfileViewState extends State<PersonalProfileView> {
 
   // misc widgets
   Widget _errorWidget() {
-    return Center(
+    return const Center(
       child: Column(
         children: [
           SizedBox(
@@ -154,7 +153,7 @@ class _PersonalProfileViewState extends State<PersonalProfileView> {
   }
 
   Widget _loadingWidget() {
-    return Center(
+    return const Center(
       child: SizedBox(
         width: 60,
         height: 60,
@@ -165,15 +164,15 @@ class _PersonalProfileViewState extends State<PersonalProfileView> {
 
   Widget _friendSection(UserModel usermodel) {
     return Container(
-      padding: EdgeInsets.all(8),
+      padding: const EdgeInsets.all(8),
       child: ListView.builder(
           itemCount: 15,
           itemBuilder: ((context, index) {
             // the buttons depend on friend status
             return Card(
               child: Container(
-                padding: EdgeInsets.all(16),
-                child: Column(
+                padding: const EdgeInsets.all(16),
+                child: const Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(

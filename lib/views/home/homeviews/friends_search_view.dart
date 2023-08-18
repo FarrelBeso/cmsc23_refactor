@@ -29,13 +29,13 @@ class _FriendsViewState extends State<FriendsView> {
       child: Column(
         children: [
           Container(
-            padding: EdgeInsets.all(4),
+            padding: const EdgeInsets.all(4),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [_searchBar()],
             ),
           ),
-          Divider(),
+          const Divider(),
           _contentWrapper()
         ],
       ),
@@ -46,13 +46,13 @@ class _FriendsViewState extends State<FriendsView> {
   Widget _searchBar() {
     return Expanded(
       child: Container(
-        padding: EdgeInsets.all(8),
-        margin: EdgeInsets.all(8),
+        padding: const EdgeInsets.all(8),
+        margin: const EdgeInsets.all(8),
         child: SearchBar(
           trailing: [
             Container(
-                padding: EdgeInsets.symmetric(horizontal: 8),
-                child: Icon(Icons.search))
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: const Icon(Icons.search))
           ],
           onChanged: (value) {
             setState(() {
@@ -122,47 +122,44 @@ class _FriendsViewState extends State<FriendsView> {
 
   // the info list
   Widget _userListWidget(List<UserModel> userlist) {
-    return Expanded(
-      child: ListView.separated(
-          padding: EdgeInsets.all(16),
-          itemCount: userlist.length,
-          separatorBuilder: (context, index) {
-            return Divider();
-          },
-          itemBuilder: (BuildContext context, int index) {
-            UserModel user = userlist[index];
-            return InkWell(
-              onTap: () {
-                // switch to user view
-                // _viewTaskWrapper(user);
-              },
-              child: Container(
-                padding: EdgeInsets.all(16),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                        child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '${user.firstName} ${user.lastName}',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 18),
-                        ),
-                        Text(
-                          user.username!,
-                          style: TextStyle(fontSize: 14),
-                        ),
-                      ],
-                    )),
-                    Container(child: _personStatusButton(user.id!))
-                  ],
-                ),
+    return ListView.separated(
+        padding: const EdgeInsets.all(16),
+        itemCount: userlist.length,
+        separatorBuilder: (context, index) {
+          return const Divider();
+        },
+        itemBuilder: (BuildContext context, int index) {
+          UserModel user = userlist[index];
+          return InkWell(
+            onTap: () {
+              // switch to user view
+              // _viewTaskWrapper(user);
+            },
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '${user.firstName} ${user.lastName}',
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 18),
+                      ),
+                      Text(
+                        user.username!,
+                        style: const TextStyle(fontSize: 14),
+                      ),
+                    ],
+                  ),
+                  Container(child: _personStatusButton(user.id!))
+                ],
               ),
-            );
-          }),
-    );
+            ),
+          );
+        });
   }
 
   // button builder depending on friend status
@@ -174,26 +171,24 @@ class _FriendsViewState extends State<FriendsView> {
             onPressed: () {
               _statusButtonAction(otherId, 'addFriend');
             },
-            child: Text('Add Friend'));
+            child: const Text('Add Friend'));
       case UserRelationStatus.request:
-        return Container(
-          child: Row(
-            children: [
-              FilledButton.tonal(
-                  onPressed: () {
-                    _statusButtonAction(otherId, 'acceptRequest');
-                  },
-                  child: Text('Accept')),
-              SizedBox(
-                width: 4,
-              ),
-              OutlinedButton(
-                  onPressed: () {
-                    _statusButtonAction(otherId, 'rejectRequest');
-                  },
-                  child: Text('Reject'))
-            ],
-          ),
+        return Row(
+          children: [
+            FilledButton.tonal(
+                onPressed: () {
+                  _statusButtonAction(otherId, 'acceptRequest');
+                },
+                child: const Text('Accept')),
+            const SizedBox(
+              width: 4,
+            ),
+            OutlinedButton(
+                onPressed: () {
+                  _statusButtonAction(otherId, 'rejectRequest');
+                },
+                child: const Text('Reject'))
+          ],
         );
 
       case UserRelationStatus.pending:
@@ -201,13 +196,13 @@ class _FriendsViewState extends State<FriendsView> {
             onPressed: () {
               _statusButtonAction(otherId, 'cancelRequest');
             },
-            child: Text('Cancel Request'));
+            child: const Text('Cancel Request'));
       case UserRelationStatus.friend:
         return OutlinedButton(
             onPressed: () {
               _statusButtonAction(otherId, 'removeFriend');
             },
-            child: Text('Unfriend'));
+            child: const Text('Unfriend'));
     }
   }
 
@@ -250,7 +245,7 @@ class _FriendsViewState extends State<FriendsView> {
   }
 
   Widget _errorWidget() {
-    return Center(
+    return const Center(
       child: Column(
         children: [
           SizedBox(
@@ -266,7 +261,7 @@ class _FriendsViewState extends State<FriendsView> {
   }
 
   Widget _loadingWidget() {
-    return Center(
+    return const Center(
       child: SizedBox(
         width: 60,
         height: 60,
@@ -276,7 +271,7 @@ class _FriendsViewState extends State<FriendsView> {
   }
 
   Widget _emptyListWidget() {
-    return Center(
+    return const Center(
       child: Column(
         children: [
           SizedBox(

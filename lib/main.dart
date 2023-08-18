@@ -4,11 +4,8 @@ import 'package:provider/provider.dart';
 import 'package:todo_refactor/backend/auth_api.dart';
 import 'package:todo_refactor/firebase_options.dart';
 import 'package:todo_refactor/provider/auth_provider.dart';
-import 'package:todo_refactor/provider/homepage_provider.dart';
 import 'package:todo_refactor/views/authentication/auth_view.dart';
-import 'package:todo_refactor/views/authentication/login_view.dart';
 import 'package:todo_refactor/views/home/home_root.dart';
-import 'package:todo_refactor/views/home/home_view.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,7 +27,7 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
         ),
-        home: WidgetTree());
+        home: const WidgetTree());
   }
 }
 
@@ -48,7 +45,7 @@ class _WidgetTreeState extends State<WidgetTree> {
         stream: AuthAPI().authStateChanges,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return HomeRoot();
+            return const HomeRoot();
           } else {
             return const AuthView();
           }

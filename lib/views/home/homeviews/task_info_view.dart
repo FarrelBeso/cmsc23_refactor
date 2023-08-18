@@ -24,52 +24,49 @@ class _TaskInfoViewState extends State<TaskInfoView> {
 
 // the main component, call this when the future builder
   Widget _mainDisplayWidget() {
-    return Container(
-      child: Column(
-        children: [
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            color: Theme.of(context).primaryColor,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(
-                  height: 24,
-                ),
-                _taskNameWidget(),
-                _taskOwnerWidget(),
-                SizedBox(
-                  height: 8,
-                ),
-                Divider(),
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Container(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            _statusWidget(),
-                            SizedBox(
-                              width: 20,
-                            ),
-                            _deadlineWidget()
-                          ],
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          color: Theme.of(context).primaryColor,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(
+                height: 24,
+              ),
+              _taskNameWidget(),
+              _taskOwnerWidget(),
+              const SizedBox(
+                height: 8,
+              ),
+              const Divider(),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        _statusWidget(),
+                        const SizedBox(
+                          width: 20,
                         ),
-                      ),
-                    ],
-                  ),
-                )
-              ],
-            ),
+                        _deadlineWidget()
+                      ],
+                    ),
+                  ],
+                ),
+              )
+            ],
           ),
-          _modifyWidget(),
-          Divider(),
-          _descriptionWidget()
-        ],
-      ),
+        ),
+        _modifyWidget(),
+        const Divider(),
+        _descriptionWidget()
+      ],
     );
   }
 
@@ -77,7 +74,7 @@ class _TaskInfoViewState extends State<TaskInfoView> {
   Widget _taskNameWidget() {
     return Text(
       currentTask.taskName!,
-      style: TextStyle(
+      style: const TextStyle(
         fontSize: 24,
         fontWeight: FontWeight.bold,
         color: Colors.white,
@@ -88,31 +85,31 @@ class _TaskInfoViewState extends State<TaskInfoView> {
   Widget _taskOwnerWidget() {
     return Text(
       currentTask.ownerFullName!,
-      style: TextStyle(fontSize: 16, color: Colors.white70),
+      style: const TextStyle(fontSize: 16, color: Colors.white70),
     );
   }
 
   Widget _statusWidget() {
     TaskStatus taskstatus = TaskStatus.fetchFromName(currentTask.status!);
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
           color: Colors.white, borderRadius: BorderRadius.circular(24)),
       child: Row(
         children: [
           Container(
-            margin: EdgeInsets.all(5),
+            margin: const EdgeInsets.all(5),
             width: 10,
             height: 10,
             decoration:
                 BoxDecoration(color: taskstatus.color, shape: BoxShape.circle),
           ),
-          SizedBox(
+          const SizedBox(
             width: 8,
           ),
           Text(
             taskstatus.label,
-            style: TextStyle(fontSize: 12),
+            style: const TextStyle(fontSize: 12),
           )
         ],
       ),
@@ -122,17 +119,17 @@ class _TaskInfoViewState extends State<TaskInfoView> {
   Widget _deadlineWidget() {
     return Text(
       'Due ${_dateTimeFormat(currentTask.deadline!)}',
-      style: TextStyle(color: Colors.white),
+      style: const TextStyle(color: Colors.white),
     );
   }
 
   Widget _descriptionWidget() {
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       alignment: Alignment.topLeft,
       child: Text(
         currentTask.description!,
-        style: TextStyle(color: Colors.black45, fontSize: 14),
+        style: const TextStyle(color: Colors.black45, fontSize: 14),
         textAlign: TextAlign.justify,
         maxLines: 16,
       ),
@@ -141,7 +138,7 @@ class _TaskInfoViewState extends State<TaskInfoView> {
 
   Widget _modifyWidget() {
     return Container(
-      padding: EdgeInsets.only(top: 16, bottom: 4, left: 16, right: 16),
+      padding: const EdgeInsets.only(top: 16, bottom: 4, left: 16, right: 16),
       child: Row(
         children: [
           Expanded(
@@ -150,13 +147,13 @@ class _TaskInfoViewState extends State<TaskInfoView> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     'Last modified by',
                     style: TextStyle(fontSize: 10, color: Colors.black45),
                   ),
                   Text(
                     '${currentTask.lastEditFullName}, ${_dateTimeFormat(currentTask.lastEditedDate!)}',
-                    style: TextStyle(fontSize: 12, color: Colors.black87),
+                    style: const TextStyle(fontSize: 12, color: Colors.black87),
                   ),
                 ],
               ),
@@ -168,14 +165,14 @@ class _TaskInfoViewState extends State<TaskInfoView> {
                 Provider.of<HomepageProvider>(context, listen: false)
                     .setView(MainPageViews.taskEdit);
               },
-              icon: Icon(Icons.edit))
+              icon: const Icon(Icons.edit))
         ],
       ),
     );
   }
 
   Widget _errorWidget() {
-    return Center(
+    return const Center(
       child: Column(
         children: [
           SizedBox(
@@ -191,7 +188,7 @@ class _TaskInfoViewState extends State<TaskInfoView> {
   }
 
   Widget _loadingWidget() {
-    return Center(
+    return const Center(
       child: SizedBox(
         width: 60,
         height: 60,

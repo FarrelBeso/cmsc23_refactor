@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_refactor/model/constants.dart';
-import 'package:todo_refactor/model/response_model.dart';
 import 'package:todo_refactor/provider/homepage_provider.dart';
 import 'package:todo_refactor/utilities/auth_utils.dart';
 
@@ -23,15 +22,15 @@ class _HomeViewState extends State<HomeView> {
           children: [
             NavigationRail(
               leading: Container(
-                  padding: EdgeInsets.symmetric(vertical: 8),
+                  padding: const EdgeInsets.symmetric(vertical: 8),
                   child: IconButton(
                       onPressed: () {},
-                      icon: Icon(
+                      icon: const Icon(
                         Icons.menu,
                       ))),
               onDestinationSelected: (index) async {
                 if (index == 4) {
-                  ResponseModel response = await AuthUtils().signOut();
+                  await AuthUtils().signOut();
                   // put the message in a snackbar
                   if (context.mounted) {
                     // ScaffoldMessenger.of(context).showSnackBar(
@@ -45,7 +44,7 @@ class _HomeViewState extends State<HomeView> {
                   _updateDisplayByIndex(index, context);
                 });
               },
-              destinations: [
+              destinations: const [
                 NavigationRailDestination(
                     padding: EdgeInsets.symmetric(vertical: 8),
                     icon: Icon(Icons.person),
@@ -113,7 +112,7 @@ class _HomeViewState extends State<HomeView> {
                   .setView(MainPageViews.taskAdd);
             });
           },
-          child: Icon(Icons.add),
+          child: const Icon(Icons.add),
         ));
   }
 }

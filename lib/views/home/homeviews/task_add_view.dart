@@ -40,90 +40,87 @@ class _TaskAddViewState extends State<TaskAddView> {
     return Form(
       key: _formKey,
       child: Expanded(
-          child: Container(
-        child: Column(
-          children: [
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              color: Theme.of(context).primaryColor,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    height: 24,
-                  ),
-                  _taskNameEdit(),
-                  Divider(),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Container(
-                    padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Container(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              _taskStatusEdit(),
-                              SizedBox(
-                                width: 20,
-                              ),
-                              _deadlineEdit()
-                            ],
+          child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            color: Theme.of(context).primaryColor,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(
+                  height: 24,
+                ),
+                _taskNameEdit(),
+                const Divider(),
+                const SizedBox(
+                  height: 10,
+                ),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          _taskStatusEdit(),
+                          const SizedBox(
+                            width: 20,
                           ),
-                        ),
-                      ],
-                    ),
-                  )
-                ],
-              ),
-            ),
-            Divider(),
-            _descriptionEdit(),
-            Divider(),
-            Container(
-              padding: EdgeInsets.all(16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  IconButton.filled(
-                      onPressed: () async {
-                        // send the new task
-                        if (_formKey.currentState!.validate()) {
-                          // first set the task model
-                          TaskModel task = _setNewTask();
-
-                          ResponseModel res = await Provider.of<TaskProvider>(
-                                  context,
-                                  listen: false)
-                              .addTask(task);
-                          if (context.mounted) {
-                            if (res.success) {
-                              _resetTextFields();
-                            }
-                            // ScaffoldMessenger.of(context).showSnackBar(
-                            //     SnackBar(content: Text(res.message!)));
-                          }
-                        }
-                      },
-                      icon: Icon(Icons.check)),
-                  SizedBox(
-                    width: 16,
+                          _deadlineEdit()
+                        ],
+                      ),
+                    ],
                   ),
-                  IconButton.outlined(
-                      onPressed: () {
-                        // return back to home
-                        Provider.of<HomepageProvider>(context, listen: false)
-                            .setView(MainPageViews.taskAll);
-                      },
-                      icon: Icon(Icons.close))
-                ],
-              ),
-            )
-          ],
-        ),
+                )
+              ],
+            ),
+          ),
+          const Divider(),
+          _descriptionEdit(),
+          const Divider(),
+          Container(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                IconButton.filled(
+                    onPressed: () async {
+                      // send the new task
+                      if (_formKey.currentState!.validate()) {
+                        // first set the task model
+                        TaskModel task = _setNewTask();
+
+                        ResponseModel res = await Provider.of<TaskProvider>(
+                                context,
+                                listen: false)
+                            .addTask(task);
+                        if (context.mounted) {
+                          if (res.success) {
+                            _resetTextFields();
+                          }
+                          // ScaffoldMessenger.of(context).showSnackBar(
+                          //     SnackBar(content: Text(res.message!)));
+                        }
+                      }
+                    },
+                    icon: const Icon(Icons.check)),
+                const SizedBox(
+                  width: 16,
+                ),
+                IconButton.outlined(
+                    onPressed: () {
+                      // return back to home
+                      Provider.of<HomepageProvider>(context, listen: false)
+                          .setView(MainPageViews.taskAll);
+                    },
+                    icon: const Icon(Icons.close))
+              ],
+            ),
+          )
+        ],
       )),
     );
   }
@@ -150,25 +147,23 @@ class _TaskAddViewState extends State<TaskAddView> {
       if (status.selectable) {
         taskStatusEntries.add(DropdownMenuItem<TaskStatus>(
           value: status,
-          child: Container(
-            child: Row(
-              children: [
-                Container(
-                  margin: EdgeInsets.all(5),
-                  width: 10,
-                  height: 10,
-                  decoration: BoxDecoration(
-                      color: status.color, shape: BoxShape.circle),
-                ),
-                SizedBox(
-                  width: 16,
-                ),
-                Text(
-                  status.label,
-                  style: TextStyle(fontSize: 16),
-                )
-              ],
-            ),
+          child: Row(
+            children: [
+              Container(
+                margin: const EdgeInsets.all(5),
+                width: 10,
+                height: 10,
+                decoration:
+                    BoxDecoration(color: status.color, shape: BoxShape.circle),
+              ),
+              const SizedBox(
+                width: 16,
+              ),
+              Text(
+                status.label,
+                style: const TextStyle(fontSize: 16),
+              )
+            ],
           ),
         ));
       }
@@ -186,13 +181,13 @@ class _TaskAddViewState extends State<TaskAddView> {
         return null;
       },
       cursorColor: Colors.white,
-      decoration: InputDecoration(
+      decoration: const InputDecoration(
         border: InputBorder.none,
         labelText: 'Task Name',
         labelStyle: TextStyle(color: Colors.white60),
         errorStyle: TextStyle(color: Colors.white70),
       ),
-      style: TextStyle(
+      style: const TextStyle(
         fontSize: 24,
         fontWeight: FontWeight.bold,
         color: Colors.white,
@@ -202,7 +197,7 @@ class _TaskAddViewState extends State<TaskAddView> {
 
   Widget _taskStatusEdit() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 8),
       decoration: BoxDecoration(
           color: Colors.white, borderRadius: BorderRadius.circular(24)),
       child: DropdownButton(
@@ -222,24 +217,24 @@ class _TaskAddViewState extends State<TaskAddView> {
       onPressed: () {
         _dateTimeSelectWrapper(context);
       },
+      style: const ButtonStyle(
+          side: MaterialStatePropertyAll(BorderSide(color: Colors.white60))),
       child: Text(
         _dateTimeFormat(),
-        style: TextStyle(color: Colors.white),
+        style: const TextStyle(color: Colors.white),
       ),
-      style: ButtonStyle(
-          side: MaterialStatePropertyAll(BorderSide(color: Colors.white60))),
     );
   }
 
   Widget _descriptionEdit() {
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       child: TextFormField(
         controller: descriptionController,
         decoration: InputDecoration(
             hintText: 'Task Description (optional)',
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(8))),
-        style: TextStyle(color: Colors.black45, fontSize: 14),
+        style: const TextStyle(color: Colors.black45, fontSize: 14),
         keyboardType: TextInputType.multiline,
         maxLines: 16,
       ),
@@ -256,7 +251,7 @@ class _TaskAddViewState extends State<TaskAddView> {
   TaskModel _setNewTask() {
     UserModel user = Provider.of<AuthProvider>(context, listen: false).user!;
     TaskModel task = TaskModel(
-      id: Uuid().v4(),
+      id: const Uuid().v4(),
       taskName: nameController.text,
       status: currentStatus.label,
       deadline: currentDeadline,

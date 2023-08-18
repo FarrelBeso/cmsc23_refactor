@@ -3,8 +3,6 @@ import 'package:provider/provider.dart';
 import 'package:todo_refactor/model/constants.dart';
 import 'package:todo_refactor/model/response_model.dart';
 import 'package:todo_refactor/model/task_model.dart';
-import 'package:todo_refactor/model/user_model.dart';
-import 'package:todo_refactor/provider/auth_provider.dart';
 import 'package:todo_refactor/provider/homepage_provider.dart';
 import 'package:todo_refactor/provider/task_provider.dart';
 
@@ -27,13 +25,13 @@ class _TasksViewState extends State<TasksView> {
       child: Column(
         children: [
           Container(
-            padding: EdgeInsets.all(4),
+            padding: const EdgeInsets.all(4),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [_searchBar()],
             ),
           ),
-          Divider(),
+          const Divider(),
           _contentWrapper()
         ],
       ),
@@ -44,13 +42,13 @@ class _TasksViewState extends State<TasksView> {
   Widget _searchBar() {
     return Expanded(
       child: Container(
-        padding: EdgeInsets.all(8),
-        margin: EdgeInsets.all(8),
+        padding: const EdgeInsets.all(8),
+        margin: const EdgeInsets.all(8),
         child: SearchBar(
           trailing: [
             Container(
-                padding: EdgeInsets.symmetric(horizontal: 8),
-                child: Icon(Icons.search))
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: const Icon(Icons.search))
           ],
           onChanged: (value) {
             setState(() {
@@ -119,61 +117,57 @@ class _TasksViewState extends State<TasksView> {
 
   // the info list
   Widget _taskListWidget(List<TaskModel> tasklist) {
-    return Expanded(
-      child: ListView.separated(
-          padding: EdgeInsets.all(16),
-          itemCount: tasklist.length,
-          separatorBuilder: (context, index) {
-            return Divider();
-          },
-          itemBuilder: (BuildContext context, int index) {
-            TaskModel task = tasklist[index];
-            TaskStatus status = TaskStatus.fetchFromName(task.status!);
-            return InkWell(
-              onTap: () {
-                // switch to task info
-                _viewTaskWrapper(task);
-              },
-              child: Container(
-                padding: EdgeInsets.all(16),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                        child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          task.taskName!,
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 18),
-                        ),
-                        Text(
-                          task.ownerFullName!,
-                          style: TextStyle(fontSize: 14),
-                        ),
-                      ],
-                    )),
-                    Container(
-                      child: Row(
-                        children: [
-                          Container(
-                            margin: EdgeInsets.all(5),
-                            width: 10.0,
-                            height: 10.0,
-                            decoration: BoxDecoration(
-                                color: status.color, shape: BoxShape.circle),
-                          ),
-                          Text(status.label),
-                        ],
+    return ListView.separated(
+        padding: const EdgeInsets.all(16),
+        itemCount: tasklist.length,
+        separatorBuilder: (context, index) {
+          return const Divider();
+        },
+        itemBuilder: (BuildContext context, int index) {
+          TaskModel task = tasklist[index];
+          TaskStatus status = TaskStatus.fetchFromName(task.status!);
+          return InkWell(
+            onTap: () {
+              // switch to task info
+              _viewTaskWrapper(task);
+            },
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                      child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        task.taskName!,
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 18),
                       ),
-                    ),
-                  ],
-                ),
+                      Text(
+                        task.ownerFullName!,
+                        style: const TextStyle(fontSize: 14),
+                      ),
+                    ],
+                  )),
+                  Row(
+                    children: [
+                      Container(
+                        margin: const EdgeInsets.all(5),
+                        width: 10.0,
+                        height: 10.0,
+                        decoration: BoxDecoration(
+                            color: status.color, shape: BoxShape.circle),
+                      ),
+                      Text(status.label),
+                    ],
+                  ),
+                ],
               ),
-            );
-          }),
-    );
+            ),
+          );
+        });
   }
 
   // wrapper to view the task
@@ -186,7 +180,7 @@ class _TasksViewState extends State<TasksView> {
   }
 
   Widget _errorWidget() {
-    return Center(
+    return const Center(
       child: Column(
         children: [
           SizedBox(
@@ -202,7 +196,7 @@ class _TasksViewState extends State<TasksView> {
   }
 
   Widget _loadingWidget() {
-    return Center(
+    return const Center(
       child: SizedBox(
         width: 60,
         height: 60,
@@ -212,7 +206,7 @@ class _TasksViewState extends State<TasksView> {
   }
 
   Widget _emptyListWidget() {
-    return Center(
+    return const Center(
       child: Column(
         children: [
           SizedBox(

@@ -4,8 +4,6 @@ import 'package:string_validator/string_validator.dart';
 import 'package:todo_refactor/model/response_model.dart';
 import 'package:todo_refactor/model/user_model.dart';
 import 'package:todo_refactor/provider/auth_provider.dart';
-import 'package:todo_refactor/utilities/auth_utils.dart';
-import 'package:todo_refactor/views/authentication/login_view.dart';
 
 class SignupView extends StatefulWidget {
   const SignupView({super.key});
@@ -67,12 +65,13 @@ class _SignupViewState extends State<SignupView> {
               }
             },
             steps: <Step>[
-              Step(title: Text('Basic Info'), content: basicInfoSection()),
               Step(
-                  title: Text('Additional Info'),
+                  title: const Text('Basic Info'), content: basicInfoSection()),
+              Step(
+                  title: const Text('Additional Info'),
                   content: additionalInfoSection()),
               Step(
-                  title: Text('Authentication'),
+                  title: const Text('Authentication'),
                   content: authenticationSection()),
             ]),
       ],
@@ -108,11 +107,10 @@ class _SignupViewState extends State<SignupView> {
   Widget basicInfoSection() {
     return Form(
       key: _basicFormKey,
-      child: Container(
-          child: Column(
+      child: Column(
         children: [
           Container(
-            padding: EdgeInsets.all(8),
+            padding: const EdgeInsets.all(8),
             child: TextFormField(
               controller: firstnamefield,
               validator: (value) {
@@ -127,14 +125,14 @@ class _SignupViewState extends State<SignupView> {
               },
               decoration: InputDecoration(
                 hintText: 'First Name',
-                contentPadding: EdgeInsets.all(20),
+                contentPadding: const EdgeInsets.all(20),
                 border:
                     OutlineInputBorder(borderRadius: BorderRadius.circular(40)),
               ),
             ),
           ),
           Container(
-            padding: EdgeInsets.all(8),
+            padding: const EdgeInsets.all(8),
             child: TextFormField(
               controller: lastnamefield,
               validator: (value) {
@@ -149,13 +147,13 @@ class _SignupViewState extends State<SignupView> {
               },
               decoration: InputDecoration(
                   hintText: 'Last Name',
-                  contentPadding: EdgeInsets.all(20),
+                  contentPadding: const EdgeInsets.all(20),
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(40))),
             ),
           ),
           Container(
-            padding: EdgeInsets.all(8),
+            padding: const EdgeInsets.all(8),
             child: TextFormField(
               controller: usernamefield,
               validator: (value) {
@@ -170,68 +168,66 @@ class _SignupViewState extends State<SignupView> {
               },
               decoration: InputDecoration(
                   hintText: 'Username',
-                  contentPadding: EdgeInsets.all(20),
+                  contentPadding: const EdgeInsets.all(20),
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(40))),
             ),
           ),
         ],
-      )),
+      ),
     );
   }
 
   Widget additionalInfoSection() {
     return Form(
       key: _additionalFormKey,
-      child: Container(
-        child: Column(
-          children: [
-            Container(
-              padding: EdgeInsets.all(8),
-              child: TextFormField(
-                controller: birthdayfield,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'First enter some text';
-                  } else if (!isDate(value)) {
-                    return 'Kindly follow the format';
-                  } else if (!validRangeDate(value)) {
-                    return 'Improper date range';
-                  } else if (value.length > 50) {
-                    return 'Should be less than 50 chars';
-                  }
-                  return null;
-                },
-                decoration: InputDecoration(
-                    icon: Icon(Icons.cake),
-                    hintText: 'yyyy-mm-dd',
-                    contentPadding: EdgeInsets.all(20),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(40))),
-              ),
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            child: TextFormField(
+              controller: birthdayfield,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'First enter some text';
+                } else if (!isDate(value)) {
+                  return 'Kindly follow the format';
+                } else if (!validRangeDate(value)) {
+                  return 'Improper date range';
+                } else if (value.length > 50) {
+                  return 'Should be less than 50 chars';
+                }
+                return null;
+              },
+              decoration: InputDecoration(
+                  icon: const Icon(Icons.cake),
+                  hintText: 'yyyy-mm-dd',
+                  contentPadding: const EdgeInsets.all(20),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(40))),
             ),
-            Container(
-              padding: EdgeInsets.all(8),
-              child: TextFormField(
-                controller: locationfield,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'First enter some text';
-                  } else if (value.length > 100) {
-                    return 'Should be less than 100 chars';
-                  }
-                  return null;
-                },
-                decoration: InputDecoration(
-                    icon: Icon(Icons.place),
-                    hintText: 'Place, Country',
-                    contentPadding: EdgeInsets.all(20),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(40))),
-              ),
+          ),
+          Container(
+            padding: const EdgeInsets.all(8),
+            child: TextFormField(
+              controller: locationfield,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'First enter some text';
+                } else if (value.length > 100) {
+                  return 'Should be less than 100 chars';
+                }
+                return null;
+              },
+              decoration: InputDecoration(
+                  icon: const Icon(Icons.place),
+                  hintText: 'Place, Country',
+                  contentPadding: const EdgeInsets.all(20),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(40))),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -239,11 +235,10 @@ class _SignupViewState extends State<SignupView> {
   Widget authenticationSection() {
     return Form(
       key: _authenticationFormKey,
-      child: Container(
-          child: Column(
+      child: Column(
         children: [
           Container(
-            padding: EdgeInsets.all(8),
+            padding: const EdgeInsets.all(8),
             child: TextFormField(
               controller: emailfield,
               validator: (value) {
@@ -258,14 +253,14 @@ class _SignupViewState extends State<SignupView> {
               },
               decoration: InputDecoration(
                 hintText: 'Your Email',
-                contentPadding: EdgeInsets.all(20),
+                contentPadding: const EdgeInsets.all(20),
                 border:
                     OutlineInputBorder(borderRadius: BorderRadius.circular(40)),
               ),
             ),
           ),
           Container(
-            padding: EdgeInsets.all(8),
+            padding: const EdgeInsets.all(8),
             child: TextFormField(
               controller: passwordfield,
               validator: (value) {
@@ -289,13 +284,13 @@ class _SignupViewState extends State<SignupView> {
               obscureText: true,
               decoration: InputDecoration(
                   hintText: 'Enter Password',
-                  contentPadding: EdgeInsets.all(20),
+                  contentPadding: const EdgeInsets.all(20),
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(40))),
             ),
           ),
           Container(
-            padding: EdgeInsets.all(8),
+            padding: const EdgeInsets.all(8),
             child: TextFormField(
               controller: confirmfield,
               validator: (value) {
@@ -309,13 +304,13 @@ class _SignupViewState extends State<SignupView> {
               obscureText: true,
               decoration: InputDecoration(
                   hintText: 'Retype Password',
-                  contentPadding: EdgeInsets.all(20),
+                  contentPadding: const EdgeInsets.all(20),
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(40))),
             ),
           ),
         ],
-      )),
+      ),
     );
   }
 
@@ -328,8 +323,9 @@ class _SignupViewState extends State<SignupView> {
     int month = int.parse(dateToken[1]);
     int day = int.parse(dateToken[2]);
 
-    if (year > DateTime.now().year || year < (DateTime.now().year - 130))
+    if (year > DateTime.now().year || year < (DateTime.now().year - 130)) {
       return false;
+    }
     if (month <= 0 || month > 13) return false;
     if (day <= 0 || day > 31) return false;
     // switch for day and month

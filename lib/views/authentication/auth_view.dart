@@ -16,7 +16,7 @@ class _AuthViewState extends State<AuthView> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        padding: EdgeInsets.all(60),
+        padding: const EdgeInsets.all(60),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -43,7 +43,7 @@ class _AuthViewState extends State<AuthView> {
         },
         child: Text(
           isLogin ? 'Create new account' : 'Back to Login',
-          style: TextStyle(decoration: TextDecoration.underline),
+          style: const TextStyle(decoration: TextDecoration.underline),
         ));
   }
 }
