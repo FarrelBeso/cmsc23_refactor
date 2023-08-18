@@ -102,6 +102,10 @@ class _TaskEditViewState extends State<TaskEditView> {
                               .updateTask(updatedtask);
                           if (context.mounted) {
                             if (res.success) {
+                              // update the current task here
+                              Provider.of<TaskProvider>(context, listen: false)
+                                  .setSelectedTask(updatedtask);
+
                               Provider.of<HomepageProvider>(context,
                                       listen: false)
                                   .setView(MainPageViews.taskInfo);
