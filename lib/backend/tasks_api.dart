@@ -38,8 +38,7 @@ class TasksAPI {
     List<String> taskIds = [];
     await db
         .collection("tasks")
-        .where("ownerId",
-            isEqualTo: id) // should be adjusted to include friends
+        .where("ownerId", isEqualTo: id)
         .get()
         .then((querySnapshot) {
       for (var docSnapshot in querySnapshot.docs) {
