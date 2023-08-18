@@ -40,7 +40,7 @@ class TaskProvider extends ChangeNotifier {
   or updated if it deviated a lot
   */
   Future<ResponseModel> updateTaskList() async {
-    ResponseModel res = await TaskUtils().getTaskList();
+    ResponseModel res = await TaskUtils().getTaskListFromUser();
     // additional portion
     if (res.success) {
       setTaskList(res.content);
