@@ -92,6 +92,8 @@ class _HomeViewState extends State<HomeView> {
         view = MainPageViews.friendAll;
       case 2:
         view = MainPageViews.taskAll;
+      case 3:
+        view = MainPageViews.localMail;
       default:
         view = MainPageViews.taskAll;
         print('Unknown view');

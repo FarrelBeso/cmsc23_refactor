@@ -9,7 +9,6 @@ class LocalMailAPI {
     Task Related:
     - task is edited
     - task is deleted
-    - deadline today
     User Related:
     - friend request from others
     - friend request confirmed
