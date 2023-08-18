@@ -215,20 +215,15 @@ class _FriendsViewState extends State<FriendsView> {
   Future<void> _statusButtonAction(String otherId, String action) async {
     switch (action) {
       case 'addFriend':
-        await Provider.of<UserProvider>(context, listen: false)
-            .addFriend(otherId);
+        await UserUtils().addFriend(otherId);
       case 'acceptRequest':
-        await Provider.of<UserProvider>(context, listen: false)
-            .acceptRequest(otherId);
+        await UserUtils().acceptRequest(otherId);
       case 'rejectRequest':
-        await Provider.of<UserProvider>(context, listen: false)
-            .rejectRequest(otherId);
+        await UserUtils().rejectRequest(otherId);
       case 'cancelRequest':
-        await Provider.of<UserProvider>(context, listen: false)
-            .cancelRequest(otherId);
+        await UserUtils().cancelRequest(otherId);
       case 'removeFriend':
-        await Provider.of<UserProvider>(context, listen: false)
-            .removeFriend(otherId);
+        await UserUtils().removeFriend(otherId);
     }
 
     // the state would also change

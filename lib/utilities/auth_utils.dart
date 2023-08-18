@@ -49,12 +49,14 @@ class AuthUtils {
   }
 
   Future<ResponseModel> fetchCurrentUser() async {
-    if (AuthAPI().currentUser == null) {
-      return ResponseModel(
-          success: false, message: 'Failed to fetch current user');
-    } else {
-      return ResponseModel(
-          success: true, content: await AuthAPI().getCurrentUser());
+    try {
+      final user = await AuthAPI().getCurrentUser();
+      if (user == null) throw 'User not found';
+      return ResponseModel(success: true, content: user);
+    } catch (e) {
+      print(e);
     }
+    return ResponseModel(
+        success: false, message: 'Failed to fetch current user');
   }
 }
