@@ -126,7 +126,7 @@ class _TaskEditViewState extends State<TaskEditView> {
               ),
             ),
             Divider(),
-            _deleteButton()
+            Visibility(visible: _isEditorOwner(), child: _deleteButton())
           ],
         ),
       )),
@@ -271,9 +271,12 @@ class _TaskEditViewState extends State<TaskEditView> {
           items: taskStatusEntries,
           underline: Container(),
           onChanged: (value) {
-            setState(() {
-              currentStatus = value!;
-            });
+            // only changeable if the editor is the owner
+            if (_isEditorOwner()) {
+              setState(() {
+                currentStatus = value!;
+              });
+            }
           }),
     );
   }
@@ -388,5 +391,14 @@ class _TaskEditViewState extends State<TaskEditView> {
         _setDeadlineTime(picked);
       });
     }
+  }
+
+  // check if the current task is the owner
+  bool _isEditorOwner() {
+    final currenttask =
+        Provider.of<TaskProvider>(context, listen: false).selectedTask;
+    final currenteditor =
+        Provider.of<AuthProvider>(context, listen: false).currentUser;
+    return (currenttask!.ownerId == currenteditor!.id);
   }
 }
