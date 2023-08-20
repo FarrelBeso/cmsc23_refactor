@@ -52,24 +52,22 @@ class _LocalMailViewState extends State<LocalMailView> {
           } else {
             content = _loadingWidget();
           }
-          return Expanded(child: content);
+          return content;
         }));
   }
 
   // the info list
   Widget _mailListWidget() {
-    return Expanded(
-      child: ListView.separated(
-          padding: EdgeInsets.all(16),
-          itemCount: currentLoadResult!.length,
-          separatorBuilder: (context, index) {
-            return Divider();
-          },
-          itemBuilder: (BuildContext context, int index) {
-            LocalMailModel mail = currentLoadResult![index];
-            return _mailBuilder(mail);
-          }),
-    );
+    return ListView.separated(
+        padding: EdgeInsets.all(16),
+        itemCount: currentLoadResult!.length,
+        separatorBuilder: (context, index) {
+          return Divider();
+        },
+        itemBuilder: (BuildContext context, int index) {
+          LocalMailModel mail = currentLoadResult![index];
+          return _mailBuilder(mail);
+        });
   }
 
   // builder for the mail

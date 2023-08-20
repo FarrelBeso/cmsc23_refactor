@@ -16,6 +16,8 @@ class UserModel {
   // for friend requests
   List<String>? friendRequests; // friend request received from others
   List<String>? pendingRequests; // friend requests sent to others
+  // for mailing
+  List<String>? localMailIds;
   UserModel({
     // required objects are required from forms
     this.id,
@@ -32,6 +34,8 @@ class UserModel {
     // friend requests
     this.friendRequests = const [],
     this.pendingRequests = const [],
+    // for mailing
+    this.localMailIds = const [],
   });
 
   // copying some parts
@@ -51,6 +55,8 @@ class UserModel {
       // friend requests
       friendRequests: other.friendRequests ?? friendRequests,
       pendingRequests: other.pendingRequests ?? pendingRequests,
+      // for mailing
+      localMailIds: other.localMailIds ?? localMailIds,
     );
   }
 
@@ -71,6 +77,8 @@ class UserModel {
       // friend requests
       if (friendRequests != null) "friendRequests": friendRequests,
       if (pendingRequests != null) "pendingRequests": pendingRequests,
+      // for mailing
+      if (localMailIds != null) "localMailIds": localMailIds,
     };
   }
 
@@ -101,6 +109,10 @@ class UserModel {
           : null,
       pendingRequests: data?['pendingRequests'] is Iterable
           ? List.from(data?['pendingRequests'])
+          : null,
+      // for mailing
+      localMailIds: data?['localMailIds'] is Iterable
+          ? List.from(data?['localMailIds'])
           : null,
     );
   }
