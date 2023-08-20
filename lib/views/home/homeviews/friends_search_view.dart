@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_refactor/model/constants.dart';
+import 'package:todo_refactor/model/localmail_model.dart';
 import 'package:todo_refactor/model/response_model.dart';
 import 'package:todo_refactor/model/user_model.dart';
 import 'package:todo_refactor/provider/auth_provider.dart';
 import 'package:todo_refactor/provider/user_provider.dart';
+import 'package:todo_refactor/utilities/localmail_utils.dart';
 import 'package:todo_refactor/utilities/user_utils.dart';
+import 'package:uuid/uuid.dart';
 
 class FriendsView extends StatefulWidget {
   const FriendsView({super.key});
@@ -226,6 +229,14 @@ class _FriendsViewState extends State<FriendsView> {
         await UserUtils().removeFriend(otherId);
     }
 
+    // then notify them with mails if any
+    switch (action) {
+      case 'addFriend':
+        _sendRequestMail(otherId);
+      case 'acceptRequest':
+        _sendConfirmMail(otherId);
+    }
+
     // the state would also change
     setState(() {
       switch (action) {
@@ -242,6 +253,20 @@ class _FriendsViewState extends State<FriendsView> {
           currentUser.friendIds!.remove(otherId);
       }
     });
+  }
+
+  // wrapper for constructing a mail
+  Future<void> _sendRequestMail(String receiverId) async {
+    String id = Uuid().v4();
+    LocalMailModel mail = LocalMailUtils().requestPendingMail(id, currentUser);
+    await LocalMailUtils().addMailToUsers([receiverId], mail);
+  }
+
+  // wrapper for constructing a mail
+  Future<void> _sendConfirmMail(String receiverId) async {
+    String id = Uuid().v4();
+    LocalMailModel mail = LocalMailUtils().requestConfirmMail(id, currentUser);
+    await LocalMailUtils().addMailToUsers([receiverId], mail);
   }
 
   Widget _errorWidget() {

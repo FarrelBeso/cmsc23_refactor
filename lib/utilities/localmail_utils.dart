@@ -10,15 +10,19 @@ import 'package:todo_refactor/model/user_model.dart';
 class LocalMailUtils {
   final db = FirebaseFirestore.instance;
 
-  Future<ResponseModel> addMailToUser(
-      String userId, LocalMailModel mail) async {
+  // the mail would be broadcasted
+  Future<ResponseModel> addMailToUsers(
+      List<String> userIdList, LocalMailModel mail) async {
     try {
-      await LocalMailAPI().addMailToUser(userId, mail);
+      for (var id in userIdList) {
+        await LocalMailAPI().addMailToUser(id, mail);
+      }
       return ResponseModel(success: true, message: 'Local mail sent');
     } catch (e) {
       print(e);
     }
-    return ResponseModel(success: false, message: 'Failed to send local mail');
+    return ResponseModel(
+        success: false, message: 'Failed to send all local mail');
   }
 
   Future<ResponseModel> getLocalMailFromUser() async {

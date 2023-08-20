@@ -8,8 +8,6 @@ import 'package:todo_refactor/model/user_model.dart';
 import 'package:todo_refactor/provider/auth_provider.dart';
 import 'package:todo_refactor/provider/homepage_provider.dart';
 import 'package:todo_refactor/provider/task_provider.dart';
-import 'package:todo_refactor/utilities/auth_utils.dart';
-import 'package:todo_refactor/utilities/task_utils.dart';
 
 class TaskEditView extends StatefulWidget {
   const TaskEditView({super.key});
