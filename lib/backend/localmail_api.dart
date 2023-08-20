@@ -42,7 +42,7 @@ class LocalMailAPI {
     await db
         .collection("localmails")
         .where("id", whereIn: mailIds)
-        .orderBy("timestamp", descending: true)
+        //.orderBy("createdAt", descending: true)
         .get()
         .then((querySnapshot) {
       for (var docSnapshot in querySnapshot.docs) {

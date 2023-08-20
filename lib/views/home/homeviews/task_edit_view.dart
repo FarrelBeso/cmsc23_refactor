@@ -159,11 +159,10 @@ class _TaskEditViewState extends State<TaskEditView> {
   // value initialization
   void _valuesInit() {
     // fetch the task info here from the provider
-    currentTask =
+    originalTask =
         Provider.of<TaskProvider>(context, listen: false).selectedTask!;
     // store the original values
-    originalTask = TaskModel();
-    originalTask.copyWith(currentTask);
+    currentTask = originalTask;
     // init
     currentStatus = TaskStatus.fetchFromName(currentTask.status!);
     currentDeadline = currentTask.deadline!;
