@@ -36,16 +36,16 @@ class LocalMailUtils {
   }
 
   // wrapper for mails
-  LocalMailModel editMail(String id, TaskModel task) {
+  LocalMailModel editMail(String id, TaskModel prevTask, TaskModel task) {
     return LocalMailModel(
         id: id,
         type: 'edit',
         message:
-            'The task ${task.taskName} has recently been edited by ${task.lastEditFullName}. See task for full details.',
+            'The task ${prevTask.taskName} has recently been edited by ${task.lastEditFullName}. See task for full details.',
         timestamp: DateTime.now());
   }
 
-  LocalMailModel deleteMail(String id, TaskModel task) {
+  LocalMailModel deleteMail(String id, TaskModel prevTask, TaskModel task) {
     return LocalMailModel(
         id: id,
         type: 'delete',

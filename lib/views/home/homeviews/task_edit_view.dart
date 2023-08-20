@@ -2,12 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_refactor/model/constants.dart';
+import 'package:todo_refactor/model/localmail_model.dart';
 import 'package:todo_refactor/model/response_model.dart';
 import 'package:todo_refactor/model/task_model.dart';
 import 'package:todo_refactor/model/user_model.dart';
 import 'package:todo_refactor/provider/auth_provider.dart';
 import 'package:todo_refactor/provider/homepage_provider.dart';
 import 'package:todo_refactor/provider/task_provider.dart';
+import 'package:todo_refactor/utilities/auth_utils.dart';
+import 'package:todo_refactor/utilities/localmail_utils.dart';
+import 'package:uuid/uuid.dart';
 
 class TaskEditView extends StatefulWidget {
   const TaskEditView({super.key});
@@ -28,7 +32,10 @@ class _TaskEditViewState extends State<TaskEditView> {
   final List<DropdownMenuItem<TaskStatus>> taskStatusEntries =
       <DropdownMenuItem<TaskStatus>>[];
 
+// the original task
+  late TaskModel originalTask;
   late TaskModel currentTask;
+  late UserModel currentUser;
 
   bool hasInit = false;
 
@@ -100,13 +107,18 @@ class _TaskEditViewState extends State<TaskEditView> {
                               .updateTask(updatedtask);
                           if (context.mounted) {
                             if (res.success) {
-                              // update the current task here
-                              Provider.of<TaskProvider>(context, listen: false)
-                                  .setSelectedTask(updatedtask);
+                              // then send the mail
+                              await _sendEditMail(originalTask, currentTask);
+                              if (context.mounted) {
+                                // update the current task here
+                                Provider.of<TaskProvider>(context,
+                                        listen: false)
+                                    .setSelectedTask(updatedtask);
 
-                              Provider.of<HomepageProvider>(context,
-                                      listen: false)
-                                  .setView(MainPageViews.taskInfo);
+                                Provider.of<HomepageProvider>(context,
+                                        listen: false)
+                                    .setView(MainPageViews.taskInfo);
+                              }
                             }
                             // ScaffoldMessenger.of(context).showSnackBar(
                             //     SnackBar(content: Text(res.message!)));
@@ -149,6 +161,9 @@ class _TaskEditViewState extends State<TaskEditView> {
     // fetch the task info here from the provider
     currentTask =
         Provider.of<TaskProvider>(context, listen: false).selectedTask!;
+    // store the original values
+    originalTask = TaskModel();
+    originalTask.copyWith(currentTask);
     // init
     currentStatus = TaskStatus.fetchFromName(currentTask.status!);
     currentDeadline = currentTask.deadline!;
@@ -156,6 +171,9 @@ class _TaskEditViewState extends State<TaskEditView> {
     nameController.text = currentTask.taskName!;
     // and of the description
     descriptionController.text = currentTask.description!;
+    // set current user
+    currentUser =
+        Provider.of<AuthProvider>(context, listen: false).currentUser!;
   }
 
   // set the status choice list
@@ -240,15 +258,22 @@ class _TaskEditViewState extends State<TaskEditView> {
 
           if (context.mounted) {
             if (response == 'OK') {
-              ResponseModel res =
+              final res =
                   await Provider.of<TaskProvider>(context, listen: false)
                       .removeTask(currentTask);
+
               if (context.mounted) {
                 if (res.success) {
+                  // send a delete mail
+                  await _sendDeleteMail(originalTask, currentTask);
                   // move back to the home page
-                  Provider.of<HomepageProvider>(context, listen: false)
-                      .setView(MainPageViews.taskAll);
+                  if (context.mounted) {
+                    Provider.of<HomepageProvider>(context, listen: false)
+                        .setView(MainPageViews.taskAll);
+                  }
                 }
+
+                // then
 
                 // ScaffoldMessenger.of(context)
                 //     .showSnackBar(SnackBar(content: Text(res.message!)));
@@ -259,6 +284,20 @@ class _TaskEditViewState extends State<TaskEditView> {
         child: Container(
             padding: EdgeInsets.symmetric(vertical: 16, horizontal: 8),
             child: Text('Delete Task')));
+  }
+
+  // wrapper for constructing a mail
+  Future<void> _sendEditMail(TaskModel prev, TaskModel curr) async {
+    String id = Uuid().v4();
+    LocalMailModel mail = LocalMailUtils().editMail(id, prev, curr);
+    await LocalMailUtils().addMailToUsers(currentUser.friendIds!, mail);
+  }
+
+  // wrapper for constructing a mail
+  Future<void> _sendDeleteMail(TaskModel prev, TaskModel curr) async {
+    String id = Uuid().v4();
+    LocalMailModel mail = LocalMailUtils().deleteMail(id, prev, curr);
+    await LocalMailUtils().addMailToUsers(currentUser.friendIds!, mail);
   }
 
   // the modal
