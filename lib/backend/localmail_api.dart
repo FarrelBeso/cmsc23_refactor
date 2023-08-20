@@ -41,13 +41,15 @@ class LocalMailAPI {
 
     await db
         .collection("localmails")
-        .where("id", arrayContains: mailIds)
+        .where("id", whereIn: mailIds)
+        .orderBy("timestamp", descending: true)
         .get()
         .then((querySnapshot) {
       for (var docSnapshot in querySnapshot.docs) {
         mails.add(LocalMailModel.fromFirestore(docSnapshot, null));
       }
     });
+    print(mails);
 
     return mails;
   }

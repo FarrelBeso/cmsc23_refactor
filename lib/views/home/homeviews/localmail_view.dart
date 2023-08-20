@@ -75,9 +75,13 @@ class _LocalMailViewState extends State<LocalMailView> {
     // choose icon
 
     return ListTile(
-      leading: LocalMailUtils().mailIcon(mail),
-      title: Text(mail.message!),
-      subtitle: Text(mail.timestamp.toString()),
+      leading: Container(
+          padding: EdgeInsets.all(8), child: LocalMailUtils().mailIcon(mail)),
+      title: Text(
+        mail.message!,
+        style: TextStyle(fontSize: 16),
+      ),
+      subtitle: Text(mail.timestamp.toString(), style: TextStyle(fontSize: 14)),
     );
   }
 
