@@ -9,7 +9,6 @@ import 'package:todo_refactor/model/user_model.dart';
 import 'package:todo_refactor/provider/auth_provider.dart';
 import 'package:todo_refactor/provider/homepage_provider.dart';
 import 'package:todo_refactor/provider/task_provider.dart';
-import 'package:todo_refactor/utilities/auth_utils.dart';
 import 'package:todo_refactor/utilities/localmail_utils.dart';
 import 'package:uuid/uuid.dart';
 
