@@ -6,33 +6,53 @@ import 'package:todo_refactor/model/user_model.dart';
 
 class UserUtils {
   Future<ResponseModel> getUser(String id) async {
-    UserModel? usermodel;
-    await UserAPI().getUser(id).then((value) {
-      usermodel = value;
-      if (usermodel == null) {
-        print('User not found');
-        return ResponseModel(success: false);
+    try {
+      ResponseModel res;
+      res = await UserAPI().getUser(id);
+      if (!res.success) throw Error;
+      if (res.content == null) {
+        return ResponseModel(success: true, message: 'User not found.');
+      } else {
+        return ResponseModel(
+            success: true, message: 'User found.', content: res.content);
       }
-    }).onError((error, stackTrace) {
-      print(error);
-      return ResponseModel(success: false);
-    });
-    return ResponseModel(success: true, content: usermodel);
+    } catch (e) {
+      return ResponseModel(success: false, message: 'Failed to fetch user.');
+    }
   }
 
   // fetch users based on search
   // i.e., first and last name, or username
   Future<ResponseModel> getUsersByQuery(String stringQuery) async {
-    Set<UserModel> searchResult = {};
-    if (stringQuery.isEmpty) {
-      searchResult.addAll(await UserAPI().getAllUsers());
-    } else {
-      searchResult.addAll(await UserAPI().getByUsername(stringQuery));
-      searchResult.addAll(await UserAPI().getByLastName(stringQuery));
-      searchResult.addAll(await UserAPI().getByFirstName(stringQuery));
-    }
+    try {
+      ResponseModel res;
+      dynamic content;
+      Set searchResult = {};
+      if (stringQuery.isEmpty) {
+        res = await UserAPI().getAllUsers();
+        content = res.success ? res.content : throw Error;
+        searchResult.addAll(content);
+      } else {
+        res = await UserAPI().getByUsername(stringQuery);
+        content = res.success ? res.content : throw Error;
+        searchResult.addAll(content);
 
-    return ResponseModel(success: true, content: searchResult.toList());
+        res = await UserAPI().getByLastName(stringQuery);
+        content = res.success ? res.content : throw Error;
+        searchResult.addAll(content);
+
+        res = await UserAPI().getByFirstName(stringQuery);
+        content = res.success ? res.content : throw Error;
+        searchResult.addAll(content);
+      }
+
+      return ResponseModel(
+          success: true,
+          message: 'User search finished.',
+          content: searchResult.toList());
+    } catch (e) {
+      return ResponseModel(success: false, message: 'Failed querying users.');
+    }
   }
 
   // check the status of two people from current user
@@ -51,27 +71,22 @@ class UserUtils {
   // friend request related
   // checking if operation is successful is a bit complicated
   Future<ResponseModel> addFriend(String otherId) async {
-    await UserAPI().addFriend(AuthAPI().currentUser!.uid, otherId);
-    return ResponseModel(success: true);
+    return await UserAPI().addFriend(AuthAPI().currentUser!.uid, otherId);
   }
 
   Future<ResponseModel> acceptRequest(String otherId) async {
-    await UserAPI().acceptRequest(otherId, AuthAPI().currentUser!.uid);
-    return ResponseModel(success: true);
+    return await UserAPI().acceptRequest(otherId, AuthAPI().currentUser!.uid);
   }
 
   Future<ResponseModel> rejectRequest(String otherId) async {
-    await UserAPI().rejectRequest(otherId, AuthAPI().currentUser!.uid);
-    return ResponseModel(success: true);
+    return await UserAPI().rejectRequest(otherId, AuthAPI().currentUser!.uid);
   }
 
   Future<ResponseModel> cancelRequest(String otherId) async {
-    await UserAPI().cancelRequest(AuthAPI().currentUser!.uid, otherId);
-    return ResponseModel(success: true);
+    return await UserAPI().cancelRequest(AuthAPI().currentUser!.uid, otherId);
   }
 
   Future<ResponseModel> removeFriend(String otherId) async {
-    await UserAPI().acceptRequest(AuthAPI().currentUser!.uid, otherId);
-    return ResponseModel(success: true);
+    return await UserAPI().acceptRequest(AuthAPI().currentUser!.uid, otherId);
   }
 }

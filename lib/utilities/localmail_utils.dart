@@ -13,25 +13,20 @@ class LocalMailUtils {
   Future<ResponseModel> addMailToUsers(
       List<String> userIdList, LocalMailModel mail) async {
     try {
+      ResponseModel res;
       for (var id in userIdList) {
-        await LocalMailAPI().addMailToUser(id, mail);
+        res = await LocalMailAPI().addMailToUser(id, mail);
+        if (!res.success) throw Error;
       }
-      return ResponseModel(success: true, message: 'Local mail sent');
+      return ResponseModel(success: true, message: 'Local mail sent.');
     } catch (e) {
-      print(e);
+      return ResponseModel(
+          success: false, message: 'Failed to send all local mail.');
     }
-    return ResponseModel(
-        success: false, message: 'Failed to send all local mail');
   }
 
   Future<ResponseModel> getLocalMailFromUser() async {
-    try {
-      final mails = await LocalMailAPI().getLocalMailFromUser();
-      return ResponseModel(success: true, content: mails);
-    } catch (e) {
-      print(e);
-    }
-    return ResponseModel(success: false, message: 'Failed to fetch mails');
+    return await LocalMailAPI().getLocalMailFromUser();
   }
 
   // wrapper for mails
