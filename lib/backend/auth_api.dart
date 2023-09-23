@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:todo_refactor/model/response_model.dart';
 import 'package:todo_refactor/model/user_model.dart';
 
 class AuthAPI {
@@ -9,41 +10,88 @@ class AuthAPI {
   Stream<User?> get authStateChanges =>
       FirebaseAuth.instance.authStateChanges();
 
-  Future<void> signIn(UserModel usermodel, String password) async {
-    final result = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: usermodel.email!, password: password);
-    usermodel.id = result.user!.uid; // set the user here
-    await addToDatabase(usermodel);
+  Future<ResponseModel> signIn(UserModel usermodel, String password) async {
+    try {
+      final result = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: usermodel.email!, password: password);
+      usermodel.id = result.user!.uid; // set the user here
+      final dbres = await addToDatabase(usermodel);
+      if (!dbres.success) throw Error;
+      return ResponseModel(success: true, message: 'Successfully signed in.');
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'email-already-in-use') {
+        return ResponseModel(success: false, message: 'Email already in use');
+      }
+      return ResponseModel(
+          success: false,
+          message: 'Failed to sign in (Unknown Firebase Auth Error).');
+    } catch (e) {
+      return ResponseModel(
+          success: false, message: 'Failed to sign in (Unknown Error).');
+    }
   }
 
-  Future<void> login(String email, String password) async {
-    await FirebaseAuth.instance
-        .signInWithEmailAndPassword(email: email, password: password);
+  Future<ResponseModel> login(String email, String password) async {
+    try {
+      await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: email, password: password);
+      return ResponseModel(success: true, message: 'Successfully logged in.');
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        return ResponseModel(
+            success: false, message: 'User or email not found');
+      } else if (e.code == 'wrong-password') {
+        return ResponseModel(success: false, message: 'Incorrect password');
+      }
+      return ResponseModel(
+          success: false, message: 'Login Error (Unknown Firebase Auth Error)');
+    } catch (e) {
+      return ResponseModel(
+          success: false, message: 'Failed to log in (Unknown Error).');
+    }
   }
 
-  Future<void> signOut() async {
-    await FirebaseAuth.instance.signOut();
+  Future<ResponseModel> signOut() async {
+    try {
+      await FirebaseAuth.instance.signOut();
+      return ResponseModel(success: true, message: 'Successfully signed out.');
+    } catch (e) {
+      return ResponseModel(success: false, message: 'Failed to sign out.');
+    }
   }
 
   // database related actions
-  Future<void> addToDatabase(UserModel usermodel) async {
-    final docRef = db
-        .collection("users")
-        .withConverter(
-            fromFirestore: UserModel.fromFirestore,
-            toFirestore: (UserModel model, options) => model.toFirestore())
-        .doc(usermodel.id);
-    await docRef.set(usermodel);
+  Future<ResponseModel> addToDatabase(UserModel usermodel) async {
+    try {
+      final docRef = db
+          .collection("users")
+          .withConverter(
+              fromFirestore: UserModel.fromFirestore,
+              toFirestore: (UserModel model, options) => model.toFirestore())
+          .doc(usermodel.id);
+      await docRef.set(usermodel);
+      return ResponseModel(success: true);
+    } catch (e) {
+      return ResponseModel(success: false);
+    }
   }
 
-  Future<UserModel?> getCurrentUser() async {
-    if (currentUser == null) return null;
-    String id = currentUser!.uid;
-    final docRef = db.collection("users").doc(id).withConverter(
-        fromFirestore: UserModel.fromFirestore,
-        toFirestore: (UserModel model, _) => model.toFirestore());
-    final docSnap = await docRef.get();
-    final usermodel = docSnap.data();
-    return usermodel;
+  Future<ResponseModel> getCurrentUser() async {
+    try {
+      if (currentUser == null) {
+        return ResponseModel(
+            success: true, message: 'User not found', content: null);
+      }
+      String id = currentUser!.uid;
+      final docRef = db.collection("users").doc(id).withConverter(
+          fromFirestore: UserModel.fromFirestore,
+          toFirestore: (UserModel model, _) => model.toFirestore());
+      final docSnap = await docRef.get();
+      final usermodel = docSnap.data();
+      return ResponseModel(success: true, content: usermodel);
+    } catch (e) {
+      return ResponseModel(
+          success: false, message: 'Failed to fetch current user.');
+    }
   }
 }

@@ -51,7 +51,7 @@ class TaskUtils {
       List<TaskModel> tasklist = [];
       // get the current user
       UserModel? currentuser = await AuthAPI().getCurrentUser();
-      if (currentuser == null) throw 'Failed to fetch current user';
+      if (currentuser == null) throw Error;
       // first fetch the tasklist of the user themselves
       final res = await getTaskList(currentuser.id!);
       tasklist.addAll(res.content);
@@ -92,7 +92,7 @@ class TaskUtils {
   Future<ResponseModel> getTaskFromId(String id) async {
     try {
       TaskModel? task = await TasksAPI().getTaskInfo(id);
-      if (task == null) throw 'Failed to fetch task';
+      if (task == null) throw Error;
 
       return ResponseModel(success: true, content: task);
     } catch (e) {
