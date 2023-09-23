@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_refactor/model/response_model.dart';
 import 'package:todo_refactor/provider/auth_provider.dart';
-import 'package:todo_refactor/utilities/auth_utils.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});

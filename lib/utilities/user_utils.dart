@@ -26,24 +26,23 @@ class UserUtils {
   Future<ResponseModel> getUsersByQuery(String stringQuery) async {
     try {
       ResponseModel res;
-      dynamic content;
       Set searchResult = {};
       if (stringQuery.isEmpty) {
         res = await UserAPI().getAllUsers();
-        content = res.success ? res.content : throw Error;
-        searchResult.addAll(content);
+        if (!res.success) throw Error;
+        searchResult.addAll(res.content);
       } else {
         res = await UserAPI().getByUsername(stringQuery);
-        content = res.success ? res.content : throw Error;
-        searchResult.addAll(content);
+        if (!res.success) throw Error;
+        searchResult.addAll(res.content);
 
         res = await UserAPI().getByLastName(stringQuery);
-        content = res.success ? res.content : throw Error;
-        searchResult.addAll(content);
+        if (!res.success) throw Error;
+        searchResult.addAll(res.content);
 
         res = await UserAPI().getByFirstName(stringQuery);
-        content = res.success ? res.content : throw Error;
-        searchResult.addAll(content);
+        if (!res.success) throw Error;
+        searchResult.addAll(res.content);
       }
 
       return ResponseModel(

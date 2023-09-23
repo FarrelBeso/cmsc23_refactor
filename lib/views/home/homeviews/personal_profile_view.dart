@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:todo_refactor/model/response_model.dart';
 import 'package:todo_refactor/model/user_model.dart';
 import 'package:todo_refactor/provider/auth_provider.dart';
-import 'package:todo_refactor/utilities/auth_utils.dart';
 
 class PersonalProfileView extends StatefulWidget {
   const PersonalProfileView({super.key});

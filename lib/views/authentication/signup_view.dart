@@ -4,8 +4,6 @@ import 'package:string_validator/string_validator.dart';
 import 'package:todo_refactor/model/response_model.dart';
 import 'package:todo_refactor/model/user_model.dart';
 import 'package:todo_refactor/provider/auth_provider.dart';
-import 'package:todo_refactor/utilities/auth_utils.dart';
-import 'package:todo_refactor/views/authentication/login_view.dart';
 
 class SignupView extends StatefulWidget {
   const SignupView({super.key});

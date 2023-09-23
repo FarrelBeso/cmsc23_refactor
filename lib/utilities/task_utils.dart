@@ -3,6 +3,7 @@ import 'package:todo_refactor/backend/tasks_api.dart';
 import 'package:todo_refactor/backend/user_api.dart';
 import 'package:todo_refactor/model/response_model.dart';
 import 'package:todo_refactor/model/task_model.dart';
+import 'package:todo_refactor/model/user_model.dart';
 
 class TaskUtils {
   Future<ResponseModel> addTask(TaskModel taskmodel) async {
@@ -41,18 +42,21 @@ class TaskUtils {
   Future<ResponseModel> getTaskListFromUser() async {
     try {
       ResponseModel res;
-      final tasklist = [];
+      List<TaskModel> tasklist = [];
       // get the current user
       res = await AuthAPI().getCurrentUser();
-      final currentuser = res.success ? res.content : throw Error;
+      if (!res.success) throw Error;
+      UserModel currentuser = res.content;
       // first fetch the tasklist of the user themselves
       res = await getTaskList(currentuser.id!);
-      final list = res.success ? res.content : throw Error;
+      if (!res.success) throw Error;
+      List<TaskModel> list = res.content;
       tasklist.addAll(list);
       // then the rest of the user's friends
       for (var friendid in currentuser.friendIds!) {
         res = await getTaskList(friendid);
-        final list = res.success ? res.content : throw Error;
+        if (!res.success) throw Error;
+        List<TaskModel> list = res.content;
         tasklist.addAll(list);
       }
       return ResponseModel(
@@ -68,13 +72,15 @@ class TaskUtils {
   Future<ResponseModel> getTaskList(String userId) async {
     try {
       ResponseModel res;
-      final tasklist = [];
+      List<TaskModel> tasklist = [];
       res = await TasksAPI().getTaskIdsFromUser(userId);
-      final taskIds = res.success ? res.content : throw Error;
+      if (!res.success) throw Error;
+      List<String> taskIds = res.content;
 
       for (var id in taskIds) {
         res = await TasksAPI().getTaskInfo(id);
-        final task = res.success ? res.content : throw Error;
+        if (!res.success) throw Error;
+        TaskModel task = res.content;
         tasklist.add(task);
       }
 
@@ -91,7 +97,8 @@ class TaskUtils {
     try {
       ResponseModel res;
       res = await TasksAPI().getTaskInfo(id);
-      final task = res.success ? res.content : throw Error;
+      if (!res.success) throw Error;
+      TaskModel task = res.content;
 
       return ResponseModel(
           success: true, message: 'Fetched task from id.', content: task);

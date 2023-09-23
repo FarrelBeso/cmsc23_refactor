@@ -81,7 +81,7 @@ class TasksAPI {
           fromFirestore: TaskModel.fromFirestore,
           toFirestore: (TaskModel model, _) => model.toFirestore());
       final docSnap = await docRef.get();
-      final taskmodel = docSnap.data();
+      TaskModel taskmodel = docSnap.data()!;
       return ResponseModel(
           success: true,
           message: 'Task model retrieved successfully',

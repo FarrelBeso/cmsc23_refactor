@@ -3,8 +3,6 @@ import 'package:provider/provider.dart';
 import 'package:todo_refactor/model/constants.dart';
 import 'package:todo_refactor/model/response_model.dart';
 import 'package:todo_refactor/model/task_model.dart';
-import 'package:todo_refactor/model/user_model.dart';
-import 'package:todo_refactor/provider/auth_provider.dart';
 import 'package:todo_refactor/provider/homepage_provider.dart';
 import 'package:todo_refactor/provider/task_provider.dart';
 
@@ -109,6 +107,7 @@ class _TasksViewState extends State<TasksView> {
             }
             // assign the data here
           } else if (snapshot.hasError) {
+            print(snapshot.stackTrace);
             content = _errorWidget();
           } else {
             content = _loadingWidget();
