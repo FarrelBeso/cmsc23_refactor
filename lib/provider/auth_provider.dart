@@ -35,17 +35,17 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<ResponseModel> login(String email, String password) async {
-    ResponseModel res;
-    res = await AuthUtils().login(email, password);
-    // the additional part
-    if (res.success) {
-      // fetch info
+    try {
+      ResponseModel res;
+      res = await AuthUtils().login(email, password);
+      if (!res.success) throw Error;
       res = await AuthUtils().fetchCurrentUser();
-      if (res.success) {
-        setCurrentUser(res.content);
-      }
+      if (!res.success) throw Error;
+      setCurrentUser(res.content);
+      return ResponseModel(success: true, message: 'Login successful.');
+    } catch (e) {
+      return ResponseModel(success: false, message: 'Login unsuccessful.');
     }
-    return res;
   }
 
   Future<ResponseModel> signOut() async {
