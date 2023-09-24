@@ -70,10 +70,17 @@ class _LoginViewState extends State<LoginView> {
                 onPressed: () async {
                   if (!_isSubmitting) _loginButtonAction();
                 },
-                child: Padding(
-                    padding: const EdgeInsets.all(12),
-                    child:
-                        _isSubmitting ? _loadingWidget() : _defaultContent())),
+                child: SizedBox(
+                  width: 100,
+                  height: 50,
+                  child: Center(
+                    child: Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: _isSubmitting
+                            ? _loadingWidget()
+                            : _defaultContent()),
+                  ),
+                )),
           ],
         ),
       ),
@@ -87,16 +94,12 @@ class _LoginViewState extends State<LoginView> {
 
     if (_formKey.currentState!.validate()) {
       await Provider.of<AuthProvider>(context, listen: false)
-          .login(emailcontroller.text, passwordcontroller.text)
-          .then((res) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(res.message!)));
+          .login(emailcontroller.text, passwordcontroller.text);
+    } else {
+      setState(() {
+        _isSubmitting = false;
       });
     }
-
-    setState(() {
-      _isSubmitting = false;
-    });
   }
 
   Widget _defaultContent() {
@@ -107,12 +110,10 @@ class _LoginViewState extends State<LoginView> {
   }
 
   Widget _loadingWidget() {
-    return const Center(
-      child: SizedBox(
-        width: 30,
-        height: 30,
-        child: CircularProgressIndicator(),
-      ),
+    return SizedBox(
+      width: 20,
+      height: 20,
+      child: CircularProgressIndicator(),
     );
   }
 }
