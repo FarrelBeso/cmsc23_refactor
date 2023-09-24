@@ -4,11 +4,8 @@ import 'package:provider/provider.dart';
 import 'package:todo_refactor/backend/auth_api.dart';
 import 'package:todo_refactor/firebase_options.dart';
 import 'package:todo_refactor/provider/auth_provider.dart';
-import 'package:todo_refactor/provider/homepage_provider.dart';
 import 'package:todo_refactor/views/authentication/auth_view.dart';
-import 'package:todo_refactor/views/authentication/login_view.dart';
 import 'package:todo_refactor/views/home/home_root.dart';
-import 'package:todo_refactor/views/home/home_view.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

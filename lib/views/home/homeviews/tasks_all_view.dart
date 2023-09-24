@@ -107,7 +107,6 @@ class _TasksViewState extends State<TasksView> {
             }
             // assign the data here
           } else if (snapshot.hasError) {
-            print(snapshot.stackTrace);
             content = _errorWidget();
           } else {
             content = _loadingWidget();

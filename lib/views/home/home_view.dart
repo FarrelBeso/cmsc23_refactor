@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_refactor/model/constants.dart';
-import 'package:todo_refactor/model/response_model.dart';
 import 'package:todo_refactor/provider/homepage_provider.dart';
 import 'package:todo_refactor/utilities/auth_utils.dart';
 
@@ -31,7 +30,8 @@ class _HomeViewState extends State<HomeView> {
                       ))),
               onDestinationSelected: (index) async {
                 if (index == 4) {
-                  ResponseModel response = await AuthUtils().signOut();
+                  //ResponseModel response = await AuthUtils().signOut();
+                  await AuthUtils().signOut();
                   // put the message in a snackbar
                   if (context.mounted) {
                     // ScaffoldMessenger.of(context).showSnackBar(
@@ -96,7 +96,6 @@ class _HomeViewState extends State<HomeView> {
         view = MainPageViews.localMail;
       default:
         view = MainPageViews.taskAll;
-        print('Unknown view');
     }
     // update the provider
     Provider.of<HomepageProvider>(context, listen: false).setView(view);

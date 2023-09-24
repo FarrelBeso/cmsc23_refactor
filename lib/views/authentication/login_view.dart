@@ -15,6 +15,10 @@ class _LoginViewState extends State<LoginView> {
 
   final emailcontroller = TextEditingController();
   final passwordcontroller = TextEditingController();
+
+  // on the state of being submitted
+  bool _isSubmitting = false;
+
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -64,27 +68,50 @@ class _LoginViewState extends State<LoginView> {
             ),
             ElevatedButton(
                 onPressed: () async {
-                  if (_formKey.currentState!.validate()) {
-                    ResponseModel response =
-                        await Provider.of<AuthProvider>(context, listen: false)
-                            .login(
-                                emailcontroller.text, passwordcontroller.text);
-                    if (context.mounted) {
-                      // ScaffoldMessenger.of(context).showSnackBar(
-                      //     SnackBar(content: Text(response.message!)));
-                      print(response.message);
-                    }
-                  }
+                  if (!_isSubmitting) _loginButtonAction();
                 },
                 child: Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Text(
-                    'LOGIN',
-                    style: TextStyle(fontSize: 20),
-                  ),
-                )),
+                    padding: const EdgeInsets.all(12),
+                    child:
+                        _isSubmitting ? _loadingWidget() : _defaultContent())),
           ],
         ),
+      ),
+    );
+  }
+
+  Future<void> _loginButtonAction() async {
+    setState(() {
+      _isSubmitting = true;
+    });
+
+    if (_formKey.currentState!.validate()) {
+      await Provider.of<AuthProvider>(context, listen: false)
+          .login(emailcontroller.text, passwordcontroller.text)
+          .then((res) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(res.message!)));
+      });
+    }
+
+    setState(() {
+      _isSubmitting = false;
+    });
+  }
+
+  Widget _defaultContent() {
+    return const Text(
+      'LOGIN',
+      style: TextStyle(fontSize: 20),
+    );
+  }
+
+  Widget _loadingWidget() {
+    return const Center(
+      child: SizedBox(
+        width: 30,
+        height: 30,
+        child: CircularProgressIndicator(),
       ),
     );
   }

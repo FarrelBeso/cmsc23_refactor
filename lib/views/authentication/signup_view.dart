@@ -59,7 +59,6 @@ class _SignupViewState extends State<SignupView> {
                   if (context.mounted) {
                     // ScaffoldMessenger.of(context).showSnackBar(
                     //     SnackBar(content: Text(response.message!)));
-                    print(response.message);
                   }
                 }
               }

@@ -36,7 +36,6 @@ enum TaskStatus {
       case 'Done Late':
         return TaskStatus.doneLate;
       default:
-        print('Undefined task status');
         return TaskStatus.notStarted;
     }
   }
