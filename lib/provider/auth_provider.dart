@@ -10,7 +10,23 @@ from databases
 class AuthProvider extends ChangeNotifier {
   UserModel? currentUser;
 
+  // unsafe
   UserModel? get user => currentUser;
+
+  // safer method
+  Future<ResponseModel> fetchUser() async {
+    if (currentUser != null) {
+      return ResponseModel(success: true, content: currentUser);
+    }
+    // refetch if null
+    else {
+      final res = await AuthUtils().fetchCurrentUser();
+      if (res.success) {
+        currentUser = res.content;
+      }
+      return res;
+    }
+  }
 
   // set the current user
   void setCurrentUser(UserModel user) {

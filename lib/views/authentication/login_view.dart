@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:todo_refactor/model/response_model.dart';
 import 'package:todo_refactor/provider/auth_provider.dart';
 
 class LoginView extends StatefulWidget {
@@ -68,7 +67,7 @@ class _LoginViewState extends State<LoginView> {
             ),
             ElevatedButton(
                 onPressed: () async {
-                  if (!_isSubmitting) _loginButtonAction();
+                  if (!_isSubmitting) await _loginButtonAction();
                 },
                 child: SizedBox(
                   width: 100,
@@ -99,6 +98,8 @@ class _LoginViewState extends State<LoginView> {
       setState(() {
         _isSubmitting = false;
       });
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('Login Failed.')));
     }
   }
 
@@ -110,7 +111,7 @@ class _LoginViewState extends State<LoginView> {
   }
 
   Widget _loadingWidget() {
-    return SizedBox(
+    return const SizedBox(
       width: 20,
       height: 20,
       child: CircularProgressIndicator(),

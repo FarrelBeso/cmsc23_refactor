@@ -31,12 +31,14 @@ class _TaskAddViewState extends State<TaskAddView> {
   // call this if variables haven't been initialized properly
   bool hasInit = false;
 
+  // check if the user is going to submit
+  bool _isSubmitting = false;
+
   @override
   Widget build(BuildContext context) {
-// initialize here
+    // initialize here
     _initWrapper();
 
-    //
     return Form(
       key: _formKey,
       child: Expanded(
@@ -88,43 +90,77 @@ class _TaskAddViewState extends State<TaskAddView> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  IconButton.filled(
+                  FilledButton(
                       onPressed: () async {
-                        // send the new task
-                        if (_formKey.currentState!.validate()) {
-                          // first set the task model
-                          TaskModel task = _setNewTask();
-
-                          ResponseModel res = await Provider.of<TaskProvider>(
-                                  context,
-                                  listen: false)
-                              .addTask(task);
-                          if (context.mounted) {
-                            if (res.success) {
-                              _resetTextFields();
-                            }
-                            // ScaffoldMessenger.of(context).showSnackBar(
-                            //     SnackBar(content: Text(res.message!)));
-                          }
-                        }
+                        if (!_isSubmitting) await _addButtonAction();
                       },
-                      icon: Icon(Icons.check)),
+                      child:
+                          _isSubmitting ? _loadingWidget() : _defaultContent()),
                   SizedBox(
                     width: 16,
                   ),
-                  IconButton.outlined(
+                  OutlinedButton(
                       onPressed: () {
                         // return back to home
                         Provider.of<HomepageProvider>(context, listen: false)
                             .setView(MainPageViews.taskAll);
                       },
-                      icon: Icon(Icons.close))
+                      child: Icon(
+                        Icons.close,
+                        size: 20,
+                      ))
                 ],
               ),
             )
           ],
         ),
       )),
+    );
+  }
+
+  Future<void> _addButtonAction() async {
+    // future task response
+    ResponseModel res;
+
+    setState(() {
+      _isSubmitting = true;
+    });
+
+    if (_formKey.currentState!.validate()) {
+      // first set the task model
+      TaskModel task = _setNewTask();
+
+      res =
+          await Provider.of<TaskProvider>(context, listen: false).addTask(task);
+      if (context.mounted) {
+        if (res.success) {
+          _resetTextFields();
+        }
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(res.message!)));
+      }
+    } else {
+      setState(() {
+        _isSubmitting = false;
+      });
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('Failed to add task.')));
+    }
+  }
+
+  Widget _defaultContent() {
+    return const SizedBox(
+      width: 20,
+      height: 20,
+      child: Icon(Icons.check),
+    );
+  }
+
+  Widget _loadingWidget() {
+    return const SizedBox(
+      width: 20,
+      height: 20,
+      child: CircularProgressIndicator(),
     );
   }
 
