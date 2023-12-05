@@ -1,8 +1,15 @@
+import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:todo_refactor/backend/api_setting.dart';
 import 'package:todo_refactor/fakefirebase/fake_firebase_auth.dart';
 
 void main() async {
+  // reset the auth and db every test
+  setUp(() {
+    currentAuth = FakeFirebaseAuth();
+    currentFirebase = FakeFirebaseFirestore();
+  });
   group('Sanity Check for self-defined fake firebase auth', () {
     group('Happy Paths', () {
       test('Signing in', () async {

@@ -4,8 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:todo_refactor/fakefirebase/fake_firebase_auth.dart';
 
 // fake
-final currentAuth = FakeFirebaseAuth();
-final currentFirebase = FakeFirebaseFirestore();
+var currentAuth = FakeFirebaseAuth();
+var currentFirebase = FakeFirebaseFirestore();
 
 // actual
 // final currentAuth = FirebaseAuth.instance;
