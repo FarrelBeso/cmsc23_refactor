@@ -57,6 +57,33 @@ void main() {
       expect(res.content, isNotNull);
     });
   });
+
+  group('Sad Paths', () {
+    test('User does not exist', () async {
+      final authapi = AuthAPI();
+      final res = await authapi.login('lorem@ipsum.com', '12345678');
+      expect(res.success, false);
+      expect(res.message, 'User or email not found');
+    });
+
+    test('Incorrect Password', () async {
+      final authapi = AuthAPI();
+      // inject here
+      addUser(usermodel, 'lorem@ipsum.com', '12345678X');
+      final res = await authapi.login('lorem@ipsum.com', '12345678');
+      expect(res.success, false);
+      expect(res.message, 'Incorrect password');
+    });
+
+    test('User already exists', () async {
+      final authapi = AuthAPI();
+      // inject here
+      addUser(usermodel, 'lorem@ipsum.com', '12345678');
+      final res = await authapi.signIn(usermodel, '12345678');
+      expect(res.success, false);
+      expect(res.message, 'Email already in use');
+    });
+  });
 }
 
 // cheat functions

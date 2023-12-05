@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mockito/mockito.dart';
 import 'package:uuid/uuid.dart';
 
-const fakeDelay = 20; // in ms
+const fakeDelay = 5; // in ms
 
 class FakeUserCredential extends Fake implements UserCredential {
   FakeUser? currentFakeUser;
