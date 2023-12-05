@@ -3,16 +3,17 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:todo_refactor/model/response_model.dart';
 import 'package:todo_refactor/model/user_model.dart';
 
-class AuthAPI {
-  final db = FirebaseFirestore.instance;
-  User? get currentUser => FirebaseAuth.instance.currentUser;
+import 'api_setting.dart';
 
-  Stream<User?> get authStateChanges =>
-      FirebaseAuth.instance.authStateChanges();
+class AuthAPI {
+  final db = currentFirebase;
+  User? get currentUser => currentAuth.currentUser;
+
+  Stream<User?> get authStateChanges => currentAuth.authStateChanges();
 
   Future<ResponseModel> signIn(UserModel usermodel, String password) async {
     try {
-      final result = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      final result = await currentAuth.createUserWithEmailAndPassword(
           email: usermodel.email!, password: password);
       usermodel.id = result.user!.uid; // set the user here
       final dbres = await addToDatabase(usermodel);
@@ -33,8 +34,8 @@ class AuthAPI {
 
   Future<ResponseModel> login(String email, String password) async {
     try {
-      await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: email, password: password);
+      await currentAuth.signInWithEmailAndPassword(
+          email: email, password: password);
       return ResponseModel(success: true, message: 'Successfully logged in.');
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
@@ -53,7 +54,7 @@ class AuthAPI {
 
   Future<ResponseModel> signOut() async {
     try {
-      await FirebaseAuth.instance.signOut();
+      await currentAuth.signOut();
       return ResponseModel(success: true, message: 'Successfully signed out.');
     } catch (e) {
       return ResponseModel(success: false, message: 'Failed to sign out.');

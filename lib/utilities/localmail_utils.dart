@@ -6,8 +6,10 @@ import 'package:todo_refactor/model/response_model.dart';
 import 'package:todo_refactor/model/task_model.dart';
 import 'package:todo_refactor/model/user_model.dart';
 
+import '../backend/api_setting.dart';
+
 class LocalMailUtils {
-  final db = FirebaseFirestore.instance;
+  final db = currentFirebase;
 
   // the mail would be broadcasted
   Future<ResponseModel> addMailToUsers(

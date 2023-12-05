@@ -3,9 +3,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:todo_refactor/model/response_model.dart';
 import 'package:todo_refactor/model/user_model.dart';
 
+import 'api_setting.dart';
+
 class UserAPI {
-  final db = FirebaseFirestore.instance;
-  final _currentUser = FirebaseAuth.instance.currentUser;
+  final db = currentFirebase;
+  final _currentUser = currentAuth.currentUser;
 
   // get the user info
   Future<ResponseModel> getUser(String id) async {

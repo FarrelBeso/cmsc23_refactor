@@ -2,8 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:todo_refactor/model/response_model.dart';
 import 'package:todo_refactor/model/task_model.dart';
 
+import 'api_setting.dart';
+
 class TasksAPI {
-  final db = FirebaseFirestore.instance;
+  final db = currentFirebase;
 
   // make sure the data is complete before sending here
   Future<ResponseModel> addTask(TaskModel taskmodel) async {

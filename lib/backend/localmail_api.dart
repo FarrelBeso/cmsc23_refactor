@@ -4,6 +4,8 @@ import 'package:todo_refactor/model/localmail_model.dart';
 import 'package:todo_refactor/model/response_model.dart';
 import 'package:todo_refactor/model/user_model.dart';
 
+import 'api_setting.dart';
+
 class LocalMailAPI {
   /*  
     LocalMails are emails for the app
@@ -15,8 +17,8 @@ class LocalMailAPI {
     - friend request from others
     - friend request confirmed
   */
-  final db = FirebaseFirestore.instance;
-  final _currentUser = FirebaseAuth.instance.currentUser;
+  final db = currentFirebase;
+  final _currentUser = currentAuth.currentUser;
 
   // add a mail
   Future<ResponseModel> addMailToUser(
