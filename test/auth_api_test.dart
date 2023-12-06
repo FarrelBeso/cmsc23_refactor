@@ -7,6 +7,7 @@ import 'package:todo_refactor/model/user_model.dart';
 
 void main() {
   final usermodel = UserModel(
+      id: '1234XXX',
       firstName: 'Lorem',
       lastName: 'Ipsum',
       username: 'LoremIpsum',
@@ -20,76 +21,77 @@ void main() {
     currentFirebase = FakeFirebaseFirestore();
   });
 
-  group('Happy Paths', () {
-    test('Sign In and Add to Database', () async {
-      final authapi = AuthAPI();
-      final res = await authapi.signIn(usermodel, '12345678');
-      expect(res.success, true);
-      expect(res.message, 'Successfully signed in.');
-      expect(authapi.currentUser, isNotNull);
+  group('Auth API Test', () {
+    group('Happy Paths', () {
+      test('Sign In and Add to Database', () async {
+        final authapi = AuthAPI();
+        final res = await authapi.signIn(usermodel, '12345678');
+        expect(res.success, true);
+        expect(res.message, 'Successfully signed in.');
+        expect(authapi.currentUser, isNotNull);
+      });
+
+      test('Log In', () async {
+        final authapi = AuthAPI();
+        // inject here
+        await addUser(usermodel, 'lorem@ipsum.com', '12345678');
+        final res = await authapi.login('lorem@ipsum.com', '12345678');
+        expect(res.success, true);
+        expect(res.message, 'Successfully logged in.');
+        expect(authapi.currentUser, isNotNull);
+      });
+
+      test('Sign Out', () async {
+        final authapi = AuthAPI();
+        await authapi.signIn(usermodel, '12345678');
+        final res = await authapi.signOut();
+        expect(res.success, true);
+        expect(res.message, 'Successfully signed out.');
+        expect(authapi.currentUser, isNull);
+      });
+
+      test('Get from Database', () async {
+        final authapi = AuthAPI();
+        await authapi.signIn(usermodel, '12345678');
+        expect(authapi.currentUser, isNotNull);
+        final res = await authapi.getCurrentUser();
+        expect(res.success, true);
+        expect(res.content, isNotNull);
+      });
     });
 
-    test('Log In', () async {
-      final authapi = AuthAPI();
-      // inject here
-      await addUser(usermodel, 'lorem@ipsum.com', '12345678');
-      final res = await authapi.login('lorem@ipsum.com', '12345678');
-      expect(res.success, true);
-      expect(res.message, 'Successfully logged in.');
-      expect(authapi.currentUser, isNotNull);
-    });
+    group('Sad Paths', () {
+      test('User does not exist', () async {
+        final authapi = AuthAPI();
+        final res = await authapi.login('lorem@ipsum.com', '12345678');
+        expect(res.success, false);
+        expect(res.message, 'User or email not found');
+      });
 
-    test('Sign Out', () async {
-      final authapi = AuthAPI();
-      await authapi.signIn(usermodel, '12345678');
-      final res = await authapi.signOut();
-      expect(res.success, true);
-      expect(res.message, 'Successfully signed out.');
-      expect(authapi.currentUser, isNull);
-    });
+      test('Incorrect Password', () async {
+        final authapi = AuthAPI();
+        // inject here
+        addUser(usermodel, 'lorem@ipsum.com', '12345678X');
+        final res = await authapi.login('lorem@ipsum.com', '12345678');
+        expect(res.success, false);
+        expect(res.message, 'Incorrect password');
+      });
 
-    test('Get from Database', () async {
-      final authapi = AuthAPI();
-      await authapi.signIn(usermodel, '12345678');
-      expect(authapi.currentUser, isNotNull);
-      final res = await authapi.getCurrentUser();
-      expect(res.success, true);
-      expect(res.content, isNotNull);
-    });
-  });
-
-  group('Sad Paths', () {
-    test('User does not exist', () async {
-      final authapi = AuthAPI();
-      final res = await authapi.login('lorem@ipsum.com', '12345678');
-      expect(res.success, false);
-      expect(res.message, 'User or email not found');
-    });
-
-    test('Incorrect Password', () async {
-      final authapi = AuthAPI();
-      // inject here
-      addUser(usermodel, 'lorem@ipsum.com', '12345678X');
-      final res = await authapi.login('lorem@ipsum.com', '12345678');
-      expect(res.success, false);
-      expect(res.message, 'Incorrect password');
-    });
-
-    test('User already exists', () async {
-      final authapi = AuthAPI();
-      // inject here
-      addUser(usermodel, 'lorem@ipsum.com', '12345678');
-      final res = await authapi.signIn(usermodel, '12345678');
-      expect(res.success, false);
-      expect(res.message, 'Email already in use');
+      test('User already exists', () async {
+        final authapi = AuthAPI();
+        // inject here
+        addUser(usermodel, 'lorem@ipsum.com', '12345678');
+        final res = await authapi.signIn(usermodel, '12345678');
+        expect(res.success, false);
+        expect(res.message, 'Email already in use');
+      });
     });
   });
 }
 
 // cheat functions
 Future<void> addUser(UserModel usermodel, String email, String password) async {
-  final fakeuser = currentAuth.addNewAccount(email, password);
-  usermodel.id = fakeuser.uid;
+  currentAuth.addNewAccount(email, password, uid: usermodel.id);
   final docRef = currentFirebase
       .collection("users")
       .withConverter(

@@ -31,8 +31,7 @@ void main() async {
       test('Logging in', () async {
         final auth = FakeFirebaseAuth();
         // assert that there's already an account
-        auth.existingAccounts
-            .add(FakeUser(email: 'test@test.com', password: '12345678'));
+        auth.addNewAccount('test@test.com', '12345678');
 
         var result = await auth.signInWithEmailAndPassword(
             email: 'test@test.com', password: '12345678');
@@ -44,8 +43,7 @@ void main() async {
       test('Logging in and signing out', () async {
         final auth = FakeFirebaseAuth();
         // assert that there's already an account
-        auth.existingAccounts
-            .add(FakeUser(email: 'test@test.com', password: '12345678'));
+        auth.addNewAccount('test@test.com', '12345678');
 
         await auth.signInWithEmailAndPassword(
             email: 'test@test.com', password: '12345678');
@@ -56,8 +54,7 @@ void main() async {
       test('Logging in and signing out', () async {
         final auth = FakeFirebaseAuth();
         // assert that there's already an account
-        auth.existingAccounts
-            .add(FakeUser(email: 'test@test.com', password: '12345678'));
+        auth.addNewAccount('test@test.com', '12345678');
 
         await auth.signInWithEmailAndPassword(
             email: 'test@test.com', password: '12345678');
@@ -107,8 +104,7 @@ void main() async {
       test('Incorrect password', () async {
         final auth = FakeFirebaseAuth();
         // assert that there's already an account
-        auth.existingAccounts
-            .add(FakeUser(email: 'test@test.com', password: '12345678'));
+        auth.addNewAccount('test@test.com', '12345678');
         expect(
             () => auth.signInWithEmailAndPassword(
                 email: 'test@test.com', password: '123456789'),
@@ -118,8 +114,7 @@ void main() async {
       test('User already exists', () async {
         final auth = FakeFirebaseAuth();
         // assert that there's already an account
-        auth.existingAccounts
-            .add(FakeUser(email: 'test@test.com', password: '12345678'));
+        auth.addNewAccount('test@test.com', '12345678');
         expect(
             () => auth.createUserWithEmailAndPassword(
                 email: 'test@test.com', password: '123456789'),

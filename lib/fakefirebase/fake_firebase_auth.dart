@@ -21,12 +21,12 @@ class FakeUserCredential extends Fake implements UserCredential {
 }
 
 class FakeUser extends Fake implements User {
-  FakeUser({this.email, this.password});
+  FakeUser({this.email, this.password, required this.uid});
   @override
   String? email;
-  @override
-  String uid = const Uuid().v4();
   String? password;
+  @override
+  String uid;
 }
 
 class FakeFirebaseAuth extends Fake implements FirebaseAuth {
@@ -37,8 +37,9 @@ class FakeFirebaseAuth extends Fake implements FirebaseAuth {
   @override
   FakeUser? get currentUser => fakeCredential.user;
 
-  FakeUser addNewAccount(String email, String password) {
-    final fakeUser = FakeUser(email: email, password: password);
+  FakeUser addNewAccount(String email, String password, {String? uid}) {
+    final uidinput = uid ?? Uuid().v4().toString();
+    final fakeUser = FakeUser(email: email, password: password, uid: uidinput);
     existingAccounts.add(fakeUser);
     return fakeUser;
   }
