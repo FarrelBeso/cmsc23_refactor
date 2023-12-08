@@ -62,7 +62,7 @@ class LocalMailUtils {
   LocalMailModel requestConfirmMail(String id, UserModel respondent) {
     return LocalMailModel(
         id: id,
-        type: 'request_pending',
+        type: 'request_confirm',
         message:
             '${respondent.firstName} ${respondent.lastName} (${respondent.username}) has accepted your friend request.',
         timestamp: DateTime.now());
