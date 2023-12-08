@@ -7,7 +7,6 @@ import 'api_setting.dart';
 
 class UserAPI {
   final db = currentFirebase;
-  final _currentUser = currentAuth.currentUser;
 
   // get the user info
   Future<ResponseModel> getUser(String id) async {
@@ -29,12 +28,13 @@ class UserAPI {
   // update that the user has a new task that they made
   Future<ResponseModel> addTaskId(String taskId) async {
     try {
-      final docRef = db.collection("users").doc(_currentUser!.uid);
+      final docRef = db.collection("users").doc(currentAuth.currentUser!.uid);
       await docRef.update({
         "taskOwnIds": FieldValue.arrayUnion([taskId])
       });
       return ResponseModel(success: true, message: 'Task id added.');
     } catch (e) {
+      print(e);
       return ResponseModel(success: false, message: 'Failed to add task id.');
     }
   }
@@ -42,7 +42,7 @@ class UserAPI {
   // remove the task from id
   Future<ResponseModel> removeTaskId(String taskId) async {
     try {
-      final docRef = db.collection("users").doc(_currentUser!.uid);
+      final docRef = db.collection("users").doc(currentAuth.currentUser!.uid);
       await docRef.update({
         "taskOwnIds": FieldValue.arrayRemove([taskId])
       });

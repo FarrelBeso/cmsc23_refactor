@@ -18,7 +18,6 @@ class LocalMailAPI {
     - friend request confirmed
   */
   final db = currentFirebase;
-  final _currentUser = currentAuth.currentUser;
 
   // add a mail
   Future<ResponseModel> addMailToUser(
@@ -76,7 +75,7 @@ class LocalMailAPI {
     try {
       final docRef = db
           .collection("users")
-          .doc(_currentUser!.uid)
+          .doc(currentAuth.currentUser!.uid)
           .withConverter(
               fromFirestore: UserModel.fromFirestore,
               toFirestore: (UserModel model, _) => model.toFirestore());

@@ -34,7 +34,7 @@ void main() {
       test('Log In', () async {
         final authapi = AuthAPI();
         // inject here
-        await addUser(usermodel, 'lorem@ipsum.com', '12345678');
+        await addUser(usermodel, '12345678');
         final res = await authapi.login('lorem@ipsum.com', '12345678');
         expect(res.success, true);
         expect(res.message, 'Successfully logged in.');
@@ -71,7 +71,7 @@ void main() {
       test('Incorrect Password', () async {
         final authapi = AuthAPI();
         // inject here
-        addUser(usermodel, 'lorem@ipsum.com', '12345678X');
+        await addUser(usermodel, '12345678X');
         final res = await authapi.login('lorem@ipsum.com', '12345678');
         expect(res.success, false);
         expect(res.message, 'Incorrect password');
@@ -80,7 +80,7 @@ void main() {
       test('User already exists', () async {
         final authapi = AuthAPI();
         // inject here
-        addUser(usermodel, 'lorem@ipsum.com', '12345678');
+        await addUser(usermodel, '12345678');
         final res = await authapi.signIn(usermodel, '12345678');
         expect(res.success, false);
         expect(res.message, 'Email already in use');
@@ -90,8 +90,8 @@ void main() {
 }
 
 // cheat functions
-Future<void> addUser(UserModel usermodel, String email, String password) async {
-  currentAuth.addNewAccount(email, password, uid: usermodel.id);
+Future<void> addUser(UserModel usermodel, String password) async {
+  currentAuth.addNewAccount(usermodel.email!, password, uid: usermodel.id);
   final docRef = currentFirebase
       .collection("users")
       .withConverter(
