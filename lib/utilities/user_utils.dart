@@ -86,6 +86,6 @@ class UserUtils {
   }
 
   Future<ResponseModel> removeFriend(String otherId) async {
-    return await UserAPI().acceptRequest(AuthAPI().currentUser!.uid, otherId);
+    return await UserAPI().removeFriend(AuthAPI().currentUser!.uid, otherId);
   }
 }
