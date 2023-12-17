@@ -75,11 +75,5 @@ Future<void> setToLogin(UserModel usermodel, String password) async {
 
 Future<void> addUser(UserModel usermodel, String password) async {
   currentAuth.addNewAccount(usermodel.email!, password, uid: usermodel.id);
-  final docRef = currentFirebase
-      .collection("users")
-      .withConverter(
-          fromFirestore: UserModel.fromFirestore,
-          toFirestore: (UserModel model, options) => model.toFirestore())
-      .doc(usermodel.id);
-  await docRef.set(usermodel);
+  await AuthAPI().addToDatabase(usermodel);
 }
