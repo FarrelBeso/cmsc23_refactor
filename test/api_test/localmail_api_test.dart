@@ -38,35 +38,31 @@ void main() {
   });
 
   group('User API Test', () {
-    group('Happy Paths', () {
-      test('Add and check mail', () async {
-        final localmailapi = LocalMailAPI();
-        // autologin
-        await setToLogin(usermodel, '12345678');
-        ResponseModel res;
-        // 1. add the two mails
-        res = await localmailapi.addMailToUser(usermodel.id!, mail1);
-        expect(res.success, true);
-        res = await localmailapi.addMailToUser(usermodel.id!, mail2);
-        expect(res.success, true);
-        // 2. check the contents of the mail
-        res = await localmailapi.getLocalMailFromUser();
-        final reslist = res.content.map((mail) => mail.id).toList();
-        expect(reslist, containsAll([mail1.id, mail2.id]));
-      });
-
-      test('No mail available', () async {
-        final localmailapi = LocalMailAPI();
-        // autologin
-        await setToLogin(usermodel, '12345678');
-        ResponseModel res;
-        // 1. check the contents of the mail
-        res = await localmailapi.getLocalMailFromUser();
-        expect(res.content, hasLength(0));
-      });
+    test('Add and check mail', () async {
+      final localmailapi = LocalMailAPI();
+      // autologin
+      await setToLogin(usermodel, '12345678');
+      ResponseModel res;
+      // 1. add the two mails
+      res = await localmailapi.addMailToUser(usermodel.id!, mail1);
+      expect(res.success, true);
+      res = await localmailapi.addMailToUser(usermodel.id!, mail2);
+      expect(res.success, true);
+      // 2. check the contents of the mail
+      res = await localmailapi.getLocalMailFromUser();
+      final reslist = res.content.map((mail) => mail.id).toList();
+      expect(reslist, containsAll([mail1.id, mail2.id]));
     });
 
-    group('Sad Paths', () {});
+    test('No mail available', () async {
+      final localmailapi = LocalMailAPI();
+      // autologin
+      await setToLogin(usermodel, '12345678');
+      ResponseModel res;
+      // 1. check the contents of the mail
+      res = await localmailapi.getLocalMailFromUser();
+      expect(res.content, hasLength(0));
+    });
   });
 }
 

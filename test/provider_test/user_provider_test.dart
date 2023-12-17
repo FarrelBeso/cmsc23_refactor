@@ -4,22 +4,17 @@ import 'package:todo_refactor/backend/api_setting.dart';
 import 'package:todo_refactor/backend/auth_api.dart';
 import 'package:todo_refactor/backend/tasks_api.dart';
 import 'package:todo_refactor/fakefirebase/fake_firebase_auth.dart';
-import 'package:todo_refactor/model/response_model.dart';
 import 'package:todo_refactor/model/task_model.dart';
 import 'package:todo_refactor/model/user_model.dart';
 import 'package:todo_refactor/provider/auth_provider.dart';
-import 'package:todo_refactor/provider/task_provider.dart';
 import 'package:todo_refactor/provider/user_provider.dart';
-import 'package:todo_refactor/utilities/task_utils.dart';
 import 'package:todo_refactor/utilities/user_utils.dart';
 
 void main() {
   // long continuous test
   // providers to be used
   AuthProvider authProvider = AuthProvider();
-  TaskProvider taskProvider = TaskProvider();
   UserProvider userProvider = UserProvider();
-  ResponseModel res;
 
   // mock data
   final usermodel = UserModel(

@@ -2,14 +2,11 @@ import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:todo_refactor/backend/api_setting.dart';
 import 'package:todo_refactor/backend/auth_api.dart';
-import 'package:todo_refactor/backend/tasks_api.dart';
-import 'package:todo_refactor/backend/user_api.dart';
 import 'package:todo_refactor/fakefirebase/fake_firebase_auth.dart';
 import 'package:todo_refactor/model/response_model.dart';
 import 'package:todo_refactor/model/task_model.dart';
 import 'package:todo_refactor/model/user_model.dart';
 import 'package:todo_refactor/utilities/localmail_utils.dart';
-import 'package:todo_refactor/utilities/task_utils.dart';
 
 void main() {
   final usermodel1 = UserModel(
@@ -57,62 +54,58 @@ void main() {
   });
 
   group('Task Utils Test', () {
-    group('Happy Paths', () {
-      test('Add mail to users', () async {
-        final localmailutils = LocalMailUtils();
-        ResponseModel res;
-        List reslist;
-        // add users
-        await addUser(usermodel1, '12345678');
-        await addUser(usermodel2, '12345678');
-        // generate fake mails
-        final editmail = localmailutils.editMail('edit', task1, task2);
-        final deletemail = localmailutils.deleteMail('delete', task1, task2);
-        final requestpendingmail =
-            localmailutils.requestPendingMail('request', usermodel1);
-        final requestconfirmmail =
-            localmailutils.requestConfirmMail('confirm', usermodel2);
-        // disseminate the mails
-        await localmailutils
-            .addMailToUsers([usermodel1.id!, usermodel2.id!], editmail);
-        await localmailutils
-            .addMailToUsers([usermodel1.id!, usermodel2.id!], deletemail);
-        await localmailutils.addMailToUsers(
-            [usermodel1.id!, usermodel2.id!], requestpendingmail);
-        await localmailutils.addMailToUsers(
-            [usermodel1.id!, usermodel2.id!], requestconfirmmail);
-        // check on each accs
-        await AuthAPI().login(usermodel1.email!, '12345678');
-        res = await localmailutils.getLocalMailFromUser();
-        reslist = res.content.map((mail) => mail.id).toList();
-        expect(reslist, hasLength(4));
-        expect(
-            reslist,
-            containsAll([
-              editmail.id,
-              deletemail.id,
-              requestpendingmail.id,
-              requestconfirmmail.id
-            ]));
-        await AuthAPI().signOut();
-        // the other acc
-        await AuthAPI().login(usermodel2.email!, '12345678');
-        res = await localmailutils.getLocalMailFromUser();
-        reslist = res.content.map((mail) => mail.id).toList();
-        expect(reslist, hasLength(4));
-        expect(
-            reslist,
-            containsAll([
-              editmail.id,
-              deletemail.id,
-              requestpendingmail.id,
-              requestconfirmmail.id
-            ]));
-        await AuthAPI().signOut();
-      });
+    test('Add mail to users', () async {
+      final localmailutils = LocalMailUtils();
+      ResponseModel res;
+      List reslist;
+      // add users
+      await addUser(usermodel1, '12345678');
+      await addUser(usermodel2, '12345678');
+      // generate fake mails
+      final editmail = localmailutils.editMail('edit', task1, task2);
+      final deletemail = localmailutils.deleteMail('delete', task1, task2);
+      final requestpendingmail =
+          localmailutils.requestPendingMail('request', usermodel1);
+      final requestconfirmmail =
+          localmailutils.requestConfirmMail('confirm', usermodel2);
+      // disseminate the mails
+      await localmailutils
+          .addMailToUsers([usermodel1.id!, usermodel2.id!], editmail);
+      await localmailutils
+          .addMailToUsers([usermodel1.id!, usermodel2.id!], deletemail);
+      await localmailutils
+          .addMailToUsers([usermodel1.id!, usermodel2.id!], requestpendingmail);
+      await localmailutils
+          .addMailToUsers([usermodel1.id!, usermodel2.id!], requestconfirmmail);
+      // check on each accs
+      await AuthAPI().login(usermodel1.email!, '12345678');
+      res = await localmailutils.getLocalMailFromUser();
+      reslist = res.content.map((mail) => mail.id).toList();
+      expect(reslist, hasLength(4));
+      expect(
+          reslist,
+          containsAll([
+            editmail.id,
+            deletemail.id,
+            requestpendingmail.id,
+            requestconfirmmail.id
+          ]));
+      await AuthAPI().signOut();
+      // the other acc
+      await AuthAPI().login(usermodel2.email!, '12345678');
+      res = await localmailutils.getLocalMailFromUser();
+      reslist = res.content.map((mail) => mail.id).toList();
+      expect(reslist, hasLength(4));
+      expect(
+          reslist,
+          containsAll([
+            editmail.id,
+            deletemail.id,
+            requestpendingmail.id,
+            requestconfirmmail.id
+          ]));
+      await AuthAPI().signOut();
     });
-
-    group('Sad Paths', () {});
   });
 }
 

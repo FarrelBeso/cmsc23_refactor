@@ -52,119 +52,115 @@ void main() {
   });
 
   group('Task Utils Test', () {
-    group('Happy Paths', () {
-      test('Get user', () async {
-        final userutils = UserUtils();
-        ResponseModel res;
-        // add user
-        await addUser(usermodel, '12345678');
-        res = await userutils.getUser(usermodel.id!);
-        expect(res.content.id, usermodel.id);
-      });
-
-      test('Get user by query', () async {
-        final userutils = UserUtils();
-        ResponseModel res;
-        List reslist;
-        // add users
-        await addUser(friend1, '12345678');
-        await addUser(friend2, '12345678');
-        await addUser(friend3, '12345678');
-        // 1. no query (all users)
-        res = await userutils.getUsersByQuery('');
-        reslist = res.content.map((user) => user.id).toList();
-        expect(reslist, hasLength(3));
-        expect(reslist, containsAll([friend1.id, friend2.id, friend3.id]));
-        // 2. by username
-        res = await userutils.getUsersByQuery('friendone');
-        reslist = res.content.map((user) => user.id).toList();
-        expect(reslist, hasLength(1));
-        expect(reslist, containsAll([friend1.id]));
-        // 3. by lastname
-        res = await userutils.getUsersByQuery('Smith');
-        reslist = res.content.map((user) => user.id).toList();
-        expect(reslist, hasLength(2));
-        expect(reslist, containsAll([friend2.id, friend3.id]));
-        // 4. by firstname
-        res = await userutils.getUsersByQuery('Granny');
-        reslist = res.content.map((user) => user.id).toList();
-        expect(reslist, hasLength(0));
-      });
-
-      test('Friend Mechanics Check', () async {
-        final userutils = UserUtils();
-        // add users
-        await addUser(usermodel, '12345678');
-        await addUser(friend1, '12345678');
-        await addUser(friend2, '12345678');
-        await addUser(friend3, '12345678');
-        // usermodel adds friend 1, 2, and 3
-        await AuthAPI().login(usermodel.email!, '12345678');
-        await userutils.addFriend(friend1.id!);
-        await userutils.addFriend(friend2.id!);
-        await userutils.addFriend(friend3.id!);
-        // usermodel cancels friend 3 anyway
-        await userutils.cancelRequest(friend3.id!);
-        await AuthAPI().signOut();
-        // friend 1 accepts while 2 rejects
-        await AuthAPI().login(friend1.email!, '12345678');
-        await userutils.acceptRequest(usermodel.id!);
-        await AuthAPI().signOut();
-        await AuthAPI().login(friend2.email!, '12345678');
-        await userutils.rejectRequest(usermodel.id!);
-        await AuthAPI().signOut();
-        // usermodel signs in and removes friend 1
-        await AuthAPI().login(usermodel.email!, '12345678');
-        await userutils.removeFriend(friend1.id!);
-        // at the end everyone should be a stranger
-        final res = await userutils.getUser(usermodel.id!);
-        expect(userutils.getStatus(res.content, friend1.id!),
-            UserRelationStatus.stranger);
-        expect(userutils.getStatus(res.content, friend2.id!),
-            UserRelationStatus.stranger);
-        expect(userutils.getStatus(res.content, friend3.id!),
-            UserRelationStatus.stranger);
-      });
-
-      test('Friend Status', () async {
-        final userutils = UserUtils();
-        ResponseModel res;
-        // add users
-        await addUser(usermodel, '12345678');
-        await addUser(friend1, '12345678');
-        await addUser(friend2, '12345678');
-        await addUser(friend3, '12345678');
-        // usermodel is a friend of 1, pending of 2, and stranger for 3
-        await AuthAPI().login(usermodel.email!, '12345678');
-        await userutils.addFriend(friend1.id!);
-        await userutils.addFriend(friend2.id!);
-        // check and refetch the model
-        res = await userutils.getUser(usermodel.id!);
-        expect(userutils.getStatus(res.content, friend1.id!),
-            UserRelationStatus.pending);
-        expect(userutils.getStatus(res.content, friend2.id!),
-            UserRelationStatus.pending);
-        await AuthAPI().signOut();
-        await AuthAPI().login(friend1.email!, '12345678');
-        await userutils.acceptRequest(usermodel.id!);
-        await AuthAPI().signOut();
-        await AuthAPI().login(usermodel.email!, '12345678');
-        // check and refetch the model
-        res = await userutils.getUser(usermodel.id!);
-        expect(userutils.getStatus(res.content, friend1.id!),
-            UserRelationStatus.friend);
-        expect(userutils.getStatus(res.content, friend3.id!),
-            UserRelationStatus.stranger);
-        // perspective of friend 2
-        await AuthAPI().signOut();
-        await AuthAPI().login(friend2.email!, '12345678');
-        res = await userutils.getUser(friend2.id!);
-        expect(userutils.getStatus(res.content, usermodel.id!),
-            UserRelationStatus.request);
-      });
+    test('Get user', () async {
+      final userutils = UserUtils();
+      ResponseModel res;
+      // add user
+      await addUser(usermodel, '12345678');
+      res = await userutils.getUser(usermodel.id!);
+      expect(res.content.id, usermodel.id);
     });
 
-    group('Sad Paths', () {});
+    test('Get user by query', () async {
+      final userutils = UserUtils();
+      ResponseModel res;
+      List reslist;
+      // add users
+      await addUser(friend1, '12345678');
+      await addUser(friend2, '12345678');
+      await addUser(friend3, '12345678');
+      // 1. no query (all users)
+      res = await userutils.getUsersByQuery('');
+      reslist = res.content.map((user) => user.id).toList();
+      expect(reslist, hasLength(3));
+      expect(reslist, containsAll([friend1.id, friend2.id, friend3.id]));
+      // 2. by username
+      res = await userutils.getUsersByQuery('friendone');
+      reslist = res.content.map((user) => user.id).toList();
+      expect(reslist, hasLength(1));
+      expect(reslist, containsAll([friend1.id]));
+      // 3. by lastname
+      res = await userutils.getUsersByQuery('Smith');
+      reslist = res.content.map((user) => user.id).toList();
+      expect(reslist, hasLength(2));
+      expect(reslist, containsAll([friend2.id, friend3.id]));
+      // 4. by firstname
+      res = await userutils.getUsersByQuery('Granny');
+      reslist = res.content.map((user) => user.id).toList();
+      expect(reslist, hasLength(0));
+    });
+
+    test('Friend Mechanics Check', () async {
+      final userutils = UserUtils();
+      // add users
+      await addUser(usermodel, '12345678');
+      await addUser(friend1, '12345678');
+      await addUser(friend2, '12345678');
+      await addUser(friend3, '12345678');
+      // usermodel adds friend 1, 2, and 3
+      await AuthAPI().login(usermodel.email!, '12345678');
+      await userutils.addFriend(friend1.id!);
+      await userutils.addFriend(friend2.id!);
+      await userutils.addFriend(friend3.id!);
+      // usermodel cancels friend 3 anyway
+      await userutils.cancelRequest(friend3.id!);
+      await AuthAPI().signOut();
+      // friend 1 accepts while 2 rejects
+      await AuthAPI().login(friend1.email!, '12345678');
+      await userutils.acceptRequest(usermodel.id!);
+      await AuthAPI().signOut();
+      await AuthAPI().login(friend2.email!, '12345678');
+      await userutils.rejectRequest(usermodel.id!);
+      await AuthAPI().signOut();
+      // usermodel signs in and removes friend 1
+      await AuthAPI().login(usermodel.email!, '12345678');
+      await userutils.removeFriend(friend1.id!);
+      // at the end everyone should be a stranger
+      final res = await userutils.getUser(usermodel.id!);
+      expect(userutils.getStatus(res.content, friend1.id!),
+          UserRelationStatus.stranger);
+      expect(userutils.getStatus(res.content, friend2.id!),
+          UserRelationStatus.stranger);
+      expect(userutils.getStatus(res.content, friend3.id!),
+          UserRelationStatus.stranger);
+    });
+
+    test('Friend Status', () async {
+      final userutils = UserUtils();
+      ResponseModel res;
+      // add users
+      await addUser(usermodel, '12345678');
+      await addUser(friend1, '12345678');
+      await addUser(friend2, '12345678');
+      await addUser(friend3, '12345678');
+      // usermodel is a friend of 1, pending of 2, and stranger for 3
+      await AuthAPI().login(usermodel.email!, '12345678');
+      await userutils.addFriend(friend1.id!);
+      await userutils.addFriend(friend2.id!);
+      // check and refetch the model
+      res = await userutils.getUser(usermodel.id!);
+      expect(userutils.getStatus(res.content, friend1.id!),
+          UserRelationStatus.pending);
+      expect(userutils.getStatus(res.content, friend2.id!),
+          UserRelationStatus.pending);
+      await AuthAPI().signOut();
+      await AuthAPI().login(friend1.email!, '12345678');
+      await userutils.acceptRequest(usermodel.id!);
+      await AuthAPI().signOut();
+      await AuthAPI().login(usermodel.email!, '12345678');
+      // check and refetch the model
+      res = await userutils.getUser(usermodel.id!);
+      expect(userutils.getStatus(res.content, friend1.id!),
+          UserRelationStatus.friend);
+      expect(userutils.getStatus(res.content, friend3.id!),
+          UserRelationStatus.stranger);
+      // perspective of friend 2
+      await AuthAPI().signOut();
+      await AuthAPI().login(friend2.email!, '12345678');
+      res = await userutils.getUser(friend2.id!);
+      expect(userutils.getStatus(res.content, usermodel.id!),
+          UserRelationStatus.request);
+    });
   });
 }
 

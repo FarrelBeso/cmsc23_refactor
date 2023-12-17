@@ -95,75 +95,70 @@ void main() {
   });
 
   group('Task Utils Test', () {
-    group('Happy Paths', () {
-      test('Add task, retrieve task info, then remove task', () async {
-        final taskutils = TaskUtils();
-        ResponseModel res;
-        // autologin
-        await setToLogin(usermodel, '12345678');
-        // 1. add task
-        res = await taskutils.addTask(task1);
-        expect(res.success, true);
-        // db checks
-        res = await TasksAPI().getTaskIdsFromUser(usermodel.id!);
-        expect(res.content, contains(task1.id));
-        res = await UserAPI().getUser(usermodel.id!);
-        expect(res.content.taskOwnIds, contains(task1.id));
-        // 2. get task from id
-        res = await taskutils.getTaskFromId(task1.id!);
-        expect(res.content.id, task1.id);
-        // 3. remove task
-        res = await taskutils.removeTask(task1);
-        expect(res.success, true);
-        // db checks
-        res = await TasksAPI().getTaskIdsFromUser(usermodel.id!);
-        expect(res.content, isEmpty);
-        res = await UserAPI().getUser(usermodel.id!);
-        expect(res.content.taskOwnIds, isEmpty);
-      });
-
-      test('Get task list from a user', () async {
-        final taskutils = TaskUtils();
-        ResponseModel res;
-        // autologin
-        await setToLogin(usermodel, '12345678');
-        // add tasks
-        await taskutils.addTask(task1);
-        await taskutils.addTask(task2);
-        await taskutils.addTask(task3);
-        // get task list
-        res = await taskutils.getTaskList(usermodel.id!);
-        final reslist = res.content.map((task) => task.id).toList();
-        expect(reslist, containsAll([task1.id, task2.id, task3.id]));
-      });
-
-      test('Get task list from current user (with friends\'s)', () async {
-        final taskutils = TaskUtils();
-        ResponseModel res;
-        // add tasks to friends and friend request to main user
-        await setToLogin(friend1, '12345678');
-        await taskutils.addTask(friendtask1);
-        await UserAPI().addFriend(friend1.id!, usermodel.id!);
-        await AuthAPI().signOut();
-        await setToLogin(friend2, '12345678');
-        await taskutils.addTask(friendtask2);
-        await UserAPI().addFriend(friend1.id!, usermodel.id!);
-        await AuthAPI().signOut();
-        // autologin
-        await setToLogin(usermodel, '12345678');
-        await taskutils.addTask(task1);
-        // accept requests
-        await UserAPI().acceptRequest(friend1.id!, usermodel.id!);
-        await UserAPI().acceptRequest(friend2.id!, usermodel.id!);
-        // the three tasks should be shown
-        res = await taskutils.getTaskListFromUser();
-        final reslist = res.content.map((task) => task.id).toList();
-        expect(
-            reslist, containsAll([friendtask1.id, friendtask2.id, task1.id]));
-      });
+    test('Add task, retrieve task info, then remove task', () async {
+      final taskutils = TaskUtils();
+      ResponseModel res;
+      // autologin
+      await setToLogin(usermodel, '12345678');
+      // 1. add task
+      res = await taskutils.addTask(task1);
+      expect(res.success, true);
+      // db checks
+      res = await TasksAPI().getTaskIdsFromUser(usermodel.id!);
+      expect(res.content, contains(task1.id));
+      res = await UserAPI().getUser(usermodel.id!);
+      expect(res.content.taskOwnIds, contains(task1.id));
+      // 2. get task from id
+      res = await taskutils.getTaskFromId(task1.id!);
+      expect(res.content.id, task1.id);
+      // 3. remove task
+      res = await taskutils.removeTask(task1);
+      expect(res.success, true);
+      // db checks
+      res = await TasksAPI().getTaskIdsFromUser(usermodel.id!);
+      expect(res.content, isEmpty);
+      res = await UserAPI().getUser(usermodel.id!);
+      expect(res.content.taskOwnIds, isEmpty);
     });
 
-    group('Sad Paths', () {});
+    test('Get task list from a user', () async {
+      final taskutils = TaskUtils();
+      ResponseModel res;
+      // autologin
+      await setToLogin(usermodel, '12345678');
+      // add tasks
+      await taskutils.addTask(task1);
+      await taskutils.addTask(task2);
+      await taskutils.addTask(task3);
+      // get task list
+      res = await taskutils.getTaskList(usermodel.id!);
+      final reslist = res.content.map((task) => task.id).toList();
+      expect(reslist, containsAll([task1.id, task2.id, task3.id]));
+    });
+
+    test('Get task list from current user (with friends\'s)', () async {
+      final taskutils = TaskUtils();
+      ResponseModel res;
+      // add tasks to friends and friend request to main user
+      await setToLogin(friend1, '12345678');
+      await taskutils.addTask(friendtask1);
+      await UserAPI().addFriend(friend1.id!, usermodel.id!);
+      await AuthAPI().signOut();
+      await setToLogin(friend2, '12345678');
+      await taskutils.addTask(friendtask2);
+      await UserAPI().addFriend(friend1.id!, usermodel.id!);
+      await AuthAPI().signOut();
+      // autologin
+      await setToLogin(usermodel, '12345678');
+      await taskutils.addTask(task1);
+      // accept requests
+      await UserAPI().acceptRequest(friend1.id!, usermodel.id!);
+      await UserAPI().acceptRequest(friend2.id!, usermodel.id!);
+      // the three tasks should be shown
+      res = await taskutils.getTaskListFromUser();
+      final reslist = res.content.map((task) => task.id).toList();
+      expect(reslist, containsAll([friendtask1.id, friendtask2.id, task1.id]));
+    });
   });
 }
 
