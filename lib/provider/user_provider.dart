@@ -24,9 +24,11 @@ class UserProvider extends ChangeNotifier {
     ResponseModel res = await UserUtils().getUsersByQuery(stringQuery);
     if (res.success) {
       // except the main user
-      List<UserModel> list = (res.content)
-          .where((user) => (user.id != AuthAPI().currentUser!.uid))
-          .toList();
+      List<UserModel> list = [];
+
+      (res.content).forEach((user) {
+        if (user.id != AuthAPI().currentUser!.uid) list.add(user);
+      });
       setResultList(list);
     }
     return res;

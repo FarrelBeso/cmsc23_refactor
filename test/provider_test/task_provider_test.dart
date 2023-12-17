@@ -73,9 +73,9 @@ void main() {
       currentAuth = FakeFirebaseAuth();
       currentFirebase = FakeFirebaseFirestore();
       // adding test data
-      addUser(usermodel, '12345678');
+      await addUser(usermodel, '12345678');
       // bind tasks
-      bindTasksToUser(usermodel, '12345678', [task1, task2, task3]);
+      await bindTasksToUser(usermodel, '12345678', [task1, task2, task3]);
       // login
       await authProvider.login(usermodel.email!, '12345678');
     });
@@ -83,7 +83,7 @@ void main() {
     test('Update Task List', () async {
       await taskProvider.updateTaskList();
       // check
-      final ids = taskProvider.tasklist!.map((task) => task.id);
+      final ids = taskProvider.tasklist!.map((task) => task.id).toList();
       expect(ids, hasLength(3));
       expect(ids, containsAll([task1.id, task2.id, task3.id]));
     });
@@ -91,7 +91,7 @@ void main() {
     test('Add Task', () async {
       await taskProvider.addTask(task4);
       // check
-      final ids = taskProvider.tasklist!.map((task) => task.id);
+      final ids = taskProvider.tasklist!.map((task) => task.id).toList();
       expect(ids, hasLength(4));
       expect(ids, containsAll([task1.id, task2.id, task3.id, task4.id]));
     });
@@ -101,7 +101,7 @@ void main() {
       task1.status = 'Done';
       await taskProvider.updateTask(task1);
       // check
-      final ids = taskProvider.tasklist!.map((task) => task.id);
+      final ids = taskProvider.tasklist!.map((task) => task.id).toList();
       expect(ids, hasLength(4));
       expect(ids, containsAll([task1.id, task2.id, task3.id, task4.id]));
       res = await TaskUtils().getTaskFromId(task1.id!);
@@ -111,7 +111,7 @@ void main() {
     test('Remove Task', () async {
       await taskProvider.removeTask(task1);
       // check
-      final ids = taskProvider.tasklist!.map((task) => task.id);
+      final ids = taskProvider.tasklist!.map((task) => task.id).toList();
       expect(ids, hasLength(3));
       expect(ids, containsAll([task2.id, task3.id, task4.id]));
     });
@@ -125,6 +125,7 @@ Future<void> bindTasksToUser(
   for (final task in tasklist) {
     await TasksAPI().addTask(task);
   }
+  await AuthAPI().signOut();
 }
 
 Future<void> setToLogin(UserModel usermodel, String password) async {

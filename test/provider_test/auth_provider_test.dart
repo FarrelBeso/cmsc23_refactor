@@ -32,11 +32,11 @@ void main() {
       birthday: DateTime(2000, 1, 2),
       location: 'Philippines');
   group('Auth Provider Test', () {
-    test('Setting up', () {
+    test('Setting up', () async {
       currentAuth = FakeFirebaseAuth();
       currentFirebase = FakeFirebaseFirestore();
       // adding test data
-      addUser(friend1, '12345678');
+      await addUser(friend1, '12345678');
     });
     test('Sign In Check', () async {
       await authProvider.signIn(usermodel, '12345678');
